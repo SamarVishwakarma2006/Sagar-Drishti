@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: #040a10;
+  overflow: hidden;
+  color: #d9e7ec;
+}
+
+#root {
+  height: 100%;
+}
+
+.glass {
+  background: rgba(6, 15, 23, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(126, 196, 207, 0.16);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-subtle {
+  background: rgba(6, 15, 23, 0.60);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(126, 196, 207, 0.10);
+  border-radius: 6px;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(126, 196, 207, 0.22);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(86, 212, 226, 0.45);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(126, 196, 207, 0.22) transparent;
+}
+
+/* Timeline Custom Range Slider */
+input[type=range].tl-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+input[type=range].tl-range::-webkit-slider-runnable-track {
+  height: 16px;
+  background: transparent;
+}
+input[type=range].tl-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #06121a;
+  border: 2px solid #56d4e2;
+  margin-top: 1px;
+  box-shadow: 0 0 8px rgba(86, 212, 226, 0.6);
+  transition: transform 0.15s, border-color 0.15s;
+}
+input[type=range].tl-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  border-color: #7ce0ec;
+}
+input[type=range].tl-range::-moz-range-track {
+  height: 16px;
+  background: transparent;
+}
+input[type=range].tl-range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #06121a;
+  border: 2px solid #56d4e2;
+}
+
+/* Hatch pattern for forecast zone */
+.hatch {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(226, 180, 90, 0.35) 0px,
+    rgba(226, 180, 90, 0.35) 3px,
+    rgba(226, 180, 90, 0.08) 3px,
+    rgba(226, 180, 90, 0.08) 8px
+  );
+}
+
+/* Loading animations */
+.boot-bar {
+  animation: bootbar 1.2s ease-in-out infinite;
+}
+@keyframes bootbar {
+  0% { transform: translateX(-110%); }
+  100% { transform: translateX(440%); }
+}
+
+.cesium-viewer-bottom {
+  display: none !important;
+}
+
+canvas {
+  display: block;
+}
+
+button {
+  transition: color 0.18s, border-color 0.18s, background-color 0.18s, transform 0.18s;
+}

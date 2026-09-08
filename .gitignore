@@ -1,0 +1,85 @@
+# ==========================================
+# Sagar Drishti - Git Ignore
+# ==========================================
+
+# Environment variables & secrets
+.env
+.env.*
+*.env
+!.env.example
+*.pem
+*.key
+*.cert
+*.pfx
+*.p12
+
+# Python artifacts & caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Python Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Node & Frontend dependencies / build outputs
+frontend/node_modules/
+node_modules/
+frontend/dist/
+dist/
+dist-ssr/
+*.local
+.package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Cesium generated / runtime assets if any
+cesium/
+
+# Temporary user upload storage
+backend/uploads/
+uploads/
+*.tmp
+*.temp
+
+# Operating System & IDE files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
