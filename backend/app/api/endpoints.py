@@ -22,6 +22,7 @@ from ..models.schemas import (
     DataQualityReport,
     PredictionRequest,
     PredictionResponse,
+    CustomObservationRequest,
 )
 from ..parsers.netcdf_parser import NetCDFParser
 from ..parsers.tabular_parser import TabularParser
@@ -193,7 +194,8 @@ async def upload_dataset(
                 variables=site_record.variables or ["temp", "sal", "cur", "oxy"],
                 float_count=meta["float_count"],
                 site_record=site_record,
-                message=f"Successfully ingested tabular dataset '{filename}' with {meta['float_count']} profiles."
+                message=f"Successfully ingested tabular dataset '{filename}' with {meta['float_count']} profiles.",
+                custom_observation=meta.get("custom_observation"),
             )
 
     except HTTPException:
@@ -573,6 +575,33 @@ async def predict_ocean_risk(req: PredictionRequest):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Prediction error: {str(e)}"
+        )
+
+
+@router.post("/prediction/predict-custom", response_model=PredictionResponse, tags=["ML Prediction"])
+async def predict_custom_ocean_risk(req: CustomObservationRequest):
+    """
+    Live Machine Learning Risk Inference for Custom In-Situ / Single-Day Observation:
+    Accepts physical measurements (thetao, so, uo, vo, zos, mlotst) for a specific date and location,
+    computes rolling context from Copernicus reanalysis history, overrides current features with
+    user-supplied values, and runs the frozen 101-feature risk model.
+    """
+    try:
+        return PredictionService.predict_with_custom_observation(req)
+    except FileNotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Model artifact or dataset unavailable: {str(e)}"
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Custom prediction error: {str(e)}"
         )
 
 

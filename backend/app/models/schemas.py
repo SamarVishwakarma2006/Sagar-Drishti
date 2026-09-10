@@ -155,6 +155,10 @@ class UploadResponse(BaseModel):
     float_count: int
     site_record: SitePhysics
     message: str
+    # When a CSV contains Copernicus-style physical columns, this carries the
+    # extracted single-day observation for custom prediction routing.
+    custom_observation: Optional[Dict[str, Any]] = None
+
 
 
 class HistoricalStatusResponse(BaseModel):
@@ -382,6 +386,27 @@ class PredictionRequest(BaseModel):
     min_lon: Optional[float] = None
     max_lon: Optional[float] = None
     horizon_days: int = 3  # 0 for active disturbance, 1..3 for early warning
+
+
+class CustomObservationRequest(BaseModel):
+    """
+    One-shot custom observation request.
+    Carries a single new in-situ/model observation with Copernicus-standard physical fields.
+    The backend uses Copernicus history (preceding days) as rolling context and overrides
+    the *_current features with the user-supplied values.
+    """
+    date: str = Field(..., description="Observation date ISO YYYY-MM-DD")
+    lat: float = Field(..., description="Latitude (°N, 0–25)")
+    lon: float = Field(..., description="Longitude (°E, 50–100)")
+    horizon_days: int = Field(3, description="Forecast horizon 0–3 days")
+    # Copernicus physical variable names (aliases accepted by HistoricalFeatureEngine)
+    thetao: Optional[float] = Field(None, description="Sea water potential temperature (°C)")
+    so: Optional[float] = Field(None, description="Sea water salinity (PSU)")
+    uo: Optional[float] = Field(None, description="Eastward sea water velocity (m/s)")
+    vo: Optional[float] = Field(None, description="Northward sea water velocity (m/s)")
+    zos: Optional[float] = Field(None, description="Sea surface height above geoid (m)")
+    mlotst: Optional[float] = Field(None, description="Mixed layer thickness (m)")
+
 
 
 class FeatureAttribution(BaseModel):

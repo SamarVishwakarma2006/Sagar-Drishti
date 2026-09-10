@@ -49,7 +49,7 @@ export const DataIngestionPanel: React.FC = () => {
 
   if (s.customDataMode && activeMeta) {
     return (
-      <div className="absolute top-16 right-3 md:right-4 z-20 w-[270px] glass overflow-hidden border border-line shadow-xl">
+      <div className="absolute top-16 right-3 md:right-4 z-20 w-[290px] glass overflow-hidden border border-line shadow-xl">
         <button
           onClick={() => setExpanded(!expanded)}
           className="w-full flex items-center justify-between px-3 py-2.5 bg-accent/[0.04] border-b border-line"
@@ -97,6 +97,58 @@ export const DataIngestionPanel: React.FC = () => {
                 </div>
               )}
             </div>
+
+            {/* Parsed Physical Variables (for 1-day or multi-variable custom observations) */}
+            {s.customObservation && (
+              <div className="space-y-1.5 p-2 rounded bg-cyan-950/30 border border-cyan-500/40">
+                <div className="flex items-center justify-between text-[8.5px] font-mono text-cyan-300 font-semibold border-b border-cyan-500/30 pb-1">
+                  <span>PARSED PHYSICAL VARIABLES</span>
+                  <span className="text-cyan-200">{s.customObservation.date}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-1 text-[8.5px] font-mono">
+                  {s.customObservation.thetao !== undefined && (
+                    <div className="bg-black/30 p-1 rounded border border-line/30">
+                      <span className="text-dim">SST: </span>
+                      <span className="text-mist font-semibold">{s.customObservation.thetao.toFixed(2)}°C</span>
+                    </div>
+                  )}
+                  {s.customObservation.so !== undefined && (
+                    <div className="bg-black/30 p-1 rounded border border-line/30">
+                      <span className="text-dim">Salinity: </span>
+                      <span className="text-mist font-semibold">{s.customObservation.so.toFixed(2)} PSU</span>
+                    </div>
+                  )}
+                  {(s.customObservation.uo !== undefined || s.customObservation.vo !== undefined) && (
+                    <div className="bg-black/30 p-1 rounded border border-line/30">
+                      <span className="text-dim">Velocity U/V: </span>
+                      <span className="text-mist font-semibold">
+                        {s.customObservation.uo?.toFixed(2) ?? '0'}/{s.customObservation.vo?.toFixed(2) ?? '0'} m/s
+                      </span>
+                    </div>
+                  )}
+                  {s.customObservation.zos !== undefined && (
+                    <div className="bg-black/30 p-1 rounded border border-line/30">
+                      <span className="text-dim">SSH (zos): </span>
+                      <span className="text-mist font-semibold">{s.customObservation.zos.toFixed(2)} m</span>
+                    </div>
+                  )}
+                  {s.customObservation.mlotst !== undefined && (
+                    <div className="bg-black/30 p-1 rounded border border-line/30">
+                      <span className="text-dim">MLD: </span>
+                      <span className="text-mist font-semibold">{s.customObservation.mlotst.toFixed(1)} m</span>
+                    </div>
+                  )}
+                  {s.customObservation.lat !== undefined && s.customObservation.lon !== undefined && (
+                    <div className="bg-black/30 p-1 rounded border border-line/30 col-span-2">
+                      <span className="text-dim">Coordinates: </span>
+                      <span className="text-accent font-semibold">
+                        {s.customObservation.lat.toFixed(2)}°N, {s.customObservation.lon.toFixed(2)}°E
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <button
               onClick={() => {

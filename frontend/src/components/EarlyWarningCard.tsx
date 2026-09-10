@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useApp, store, toast } from '../store/oceanStore';
-import { PredictionResponse, PredictionRequest } from '../types/ocean';
+import { useApp, store, toast, globeRegistry } from '../store/oceanStore';
+import { PredictionResponse, PredictionRequest, CustomPredictionRequest } from '../types/ocean';
 import { PredictionAPI } from '../services/api';
 import {
   ShieldAlert,
@@ -16,6 +16,7 @@ import {
   ChevronUp,
   Activity,
   Compass,
+  LocateFixed,
 } from 'lucide-react';
 
 interface EarlyWarningCardProps {
@@ -40,17 +41,24 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
   const [activeTab, setActiveTab] = useState<'predicted' | 'observed' | 'historical' | 'quality'>('predicted');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [prediction, setPrediction] = useState<PredictionResponse | null>(s.activePrediction || null);
+  const [prediction, setPrediction] = useState<PredictionResponse | null>(null);
   const [showVariableBreakdown, setShowVariableBreakdown] = useState<boolean>(false);
 
-  // Target date for prediction: use s.historicalDate if historicalMode is active, otherwise default to latest 2024-10-24
-  const targetDate = s.historicalMode ? s.historicalDate : (s.historicalDate || '2024-10-24');
+  // Target date for prediction:
+  // If custom observation exists in customDataMode, use its exact date!
+  // Otherwise, use s.historicalDate if historicalMode is active, else default to '2024-10-24'
+  const isCustomMode = s.customDataMode && !!s.customObservation;
+  const targetDate = isCustomMode
+    ? s.customObservation!.date
+    : (s.historicalMode ? s.historicalDate : (s.historicalDate || '2024-10-24'));
 
   // Resolve study site or coordinates
-  const effectiveSiteId = siteId || (s.site?.id === 'bob' || s.site?.id === 'aras' ? s.site.id : undefined);
-  const effectiveLat = lat !== undefined ? lat : s.site?.lat;
-  const effectiveLon = lon !== undefined ? lon : s.site?.lon;
-  const effectiveRegion = regionName || s.site?.name || (effectiveSiteId === 'aras' ? 'Arabian Sea' : 'Bay of Bengal');
+  const effectiveSiteId = isCustomMode ? undefined : (siteId || (s.site?.id === 'bob' || s.site?.id === 'aras' ? s.site.id : undefined));
+  const effectiveLat = isCustomMode ? s.customObservation?.lat : (lat !== undefined ? lat : s.site?.lat);
+  const effectiveLon = isCustomMode ? s.customObservation?.lon : (lon !== undefined ? lon : s.site?.lon);
+  const effectiveRegion = isCustomMode
+    ? `Custom Observation (${effectiveLat?.toFixed(2)}°N, ${effectiveLon?.toFixed(2)}°E)`
+    : (regionName || s.site?.name || (effectiveSiteId === 'aras' ? 'Arabian Sea' : 'Bay of Bengal'));
 
   useEffect(() => {
     let isCancelled = false;
@@ -58,26 +66,45 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
     const fetchPrediction = async () => {
       setLoading(true);
       setError(null);
+      setPrediction(null);
 
       try {
-        const req: PredictionRequest = {
-          date: targetDate,
-          horizon_days: horizon,
-        };
-
-        if (effectiveSiteId) {
-          req.site_id = effectiveSiteId;
-          req.mode = 'region';
-        } else if (effectiveLat !== undefined && effectiveLon !== undefined) {
-          req.lat = effectiveLat;
-          req.lon = effectiveLon;
-          req.mode = 'point';
+        let res: PredictionResponse;
+        if (isCustomMode && s.customObservation) {
+          const customReq: CustomPredictionRequest = {
+            date: s.customObservation.date,
+            lat: s.customObservation.lat,
+            lon: s.customObservation.lon,
+            horizon_days: horizon,
+            thetao: s.customObservation.thetao,
+            so: s.customObservation.so,
+            uo: s.customObservation.uo,
+            vo: s.customObservation.vo,
+            zos: s.customObservation.zos,
+            mlotst: s.customObservation.mlotst,
+          };
+          res = await PredictionAPI.predictCustom(customReq);
         } else {
-          req.site_id = 'bob';
-          req.mode = 'region';
+          const req: PredictionRequest = {
+            date: targetDate,
+            horizon_days: horizon,
+          };
+
+          if (effectiveSiteId) {
+            req.site_id = effectiveSiteId;
+            req.mode = 'region';
+          } else if (effectiveLat !== undefined && effectiveLon !== undefined) {
+            req.lat = effectiveLat;
+            req.lon = effectiveLon;
+            req.mode = 'point';
+          } else {
+            req.site_id = 'bob';
+            req.mode = 'region';
+          }
+
+          res = await PredictionAPI.predict(req);
         }
 
-        const res = await PredictionAPI.predict(req);
         if (!isCancelled) {
           setPrediction(res);
           store.setActivePrediction(res);
@@ -100,7 +127,7 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
     return () => {
       isCancelled = true;
     };
-  }, [targetDate, horizon, effectiveSiteId, effectiveLat, effectiveLon]);
+  }, [targetDate, horizon, effectiveSiteId, effectiveLat, effectiveLon, isCustomMode, s.customObservation]);
 
   const warningLevel = prediction?.warning_level || 'NO_ALERT';
   const prob = prediction ? Math.round((prediction.model_estimated_probability ?? prediction.probability) * 100) : 0;
@@ -443,39 +470,128 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
                 </div>
 
                 {prediction.historical_context?.event_id ? (
-                  <div className="p-2.5 rounded bg-black/30 border border-line/40 space-y-1.5">
-                    <div className="flex justify-between items-center">
-                      <span className="text-mist font-bold text-[10.5px]">
-                        {prediction.historical_context.event_name}
-                      </span>
+                  <div className="p-2.5 rounded bg-black/30 border border-line/40 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="text-mist font-bold text-[11px]">
+                          {prediction.historical_context.event_name}
+                        </div>
+                        <div className="text-[8.5px] font-mono text-dim mt-0.5">
+                          {prediction.historical_context.event_dates} · {prediction.historical_context.affected_region}
+                        </div>
+                      </div>
                       <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[8px] font-semibold border border-amber-500/40">
                         {prediction.historical_context.event_type}
                       </span>
                     </div>
 
-                    <div className="text-[8.5px] text-dim flex justify-between">
-                      <span>Event Dates:</span>
-                      <span className="text-mist">{prediction.historical_context.event_dates}</span>
-                    </div>
+                    {/* Similarity Score */}
+                    {prediction.historical_context.similarity_score !== undefined &&
+                      prediction.historical_context.similarity_score !== null && (
+                        <div className="p-1.5 rounded bg-amber-950/30 border border-amber-500/30 space-y-1">
+                          <div className="flex justify-between items-center text-[8.5px]">
+                            <span className="text-amber-200 font-semibold">HISTORICAL PARAMETER SIMILARITY</span>
+                            <span className="text-accent font-bold text-[10px]">
+                              {prediction.historical_context.similarity_score.toFixed(1)}% MATCH
+                            </span>
+                          </div>
+                          <div className="w-full bg-black/50 h-1.5 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${
+                                prediction.historical_context.similarity_score >= 80
+                                  ? 'bg-rose-500'
+                                  : prediction.historical_context.similarity_score >= 60
+                                  ? 'bg-amber-400'
+                                  : 'bg-cyan-400'
+                              }`}
+                              style={{
+                                width: `${Math.min(100, Math.max(5, prediction.historical_context.similarity_score))}%`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
 
-                    <div className="text-[8.5px] text-dim flex justify-between">
-                      <span>Basin:</span>
-                      <span className="text-mist">{prediction.historical_context.affected_region}</span>
-                    </div>
+                    {/* Parameter Comparison Matrix */}
+                    {prediction.historical_context.parameter_comparison &&
+                      Object.keys(prediction.historical_context.parameter_comparison).length > 0 && (
+                        <div className="space-y-1">
+                          <div className="text-[8px] text-dim uppercase tracking-wider">
+                            Oceanographic Parameter Comparison (Observed vs Historical Event)
+                          </div>
+                          <div className="grid grid-cols-1 gap-1">
+                            {Object.entries(prediction.historical_context.parameter_comparison).map(
+                              ([pKey, pVal]) => (
+                                <div
+                                  key={pKey}
+                                  className="bg-white/[0.02] border border-line/20 rounded p-1.5 flex items-center justify-between text-[8.5px]"
+                                >
+                                  <span className="text-dim uppercase font-semibold">{pKey}</span>
+                                  <div className="flex items-center gap-2.5">
+                                    <span className="text-mist">
+                                      Obs: <span className="font-semibold text-cyan-300">{pVal.observed.toFixed(1)}{pVal.unit}</span>
+                                    </span>
+                                    <span className="text-dim">
+                                      Hist: <span className="font-semibold text-amber-200">{pVal.historical.toFixed(1)}{pVal.unit}</span>
+                                    </span>
+                                    <span className="text-accent font-mono text-[8px] bg-accent/10 px-1 py-0.5 rounded">
+                                      {pVal.match_pct.toFixed(0)}% sim
+                                    </span>
+                                  </div>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+                      )}
 
-                    {prediction.historical_context.distance_days !== null && prediction.historical_context.distance_days !== undefined && (
-                      <div className="text-[8.5px] text-dim flex justify-between">
-                        <span>Temporal Proximity:</span>
-                        <span className="text-accent font-semibold">
-                          {prediction.historical_context.distance_days === 0
-                            ? 'ACTIVE TODAY'
-                            : `${prediction.historical_context.distance_days} days from observation date`}
-                        </span>
+                    {/* Analog Assessment */}
+                    {prediction.historical_context.analog_assessment && (
+                      <div className="text-[8.5px] text-dim/90 bg-white/[0.02] p-1.5 rounded border border-line/20 leading-relaxed">
+                        <span className="text-accent font-semibold">Physical Assessment: </span>
+                        {prediction.historical_context.analog_assessment}
                       </div>
                     )}
 
-                    <div className="text-[8px] text-dim/90 pt-1 border-t border-line/30 italic">
-                      {prediction.historical_context.note}
+                    {/* Button to Mark on 3D Cesium Globe */}
+                    <div className="pt-1">
+                      <button
+                        onClick={() => {
+                          if (prediction.historical_context && globeRegistry.g) {
+                            globeRegistry.g.markDisasterHazardArea({
+                              name: prediction.historical_context.event_name || 'Disaster Event',
+                              type: prediction.historical_context.event_type,
+                              date: prediction.historical_context.event_dates,
+                              severity: prediction.historical_context.severity,
+                              bbox: prediction.historical_context.bbox,
+                              centroid_lat: prediction.historical_context.centroid_lat,
+                              centroid_lon: prediction.historical_context.centroid_lon,
+                              track_coordinates: prediction.historical_context.track_coordinates,
+                              analog_assessment: prediction.historical_context.analog_assessment,
+                            });
+
+                            globeRegistry.g.flyToDisasterArea(
+                              prediction.historical_context.bbox,
+                              prediction.historical_context.centroid_lat &&
+                                prediction.historical_context.centroid_lon
+                                ? {
+                                    lat: prediction.historical_context.centroid_lat,
+                                    lon: prediction.historical_context.centroid_lon,
+                                  }
+                                : null
+                            );
+
+                            store.setActiveHazardZone(prediction.historical_context);
+                            toast(
+                              `Marked ${prediction.historical_context.event_name} hazard zone on 3D globe`
+                            );
+                          }
+                        }}
+                        className="w-full flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 text-[9px] font-mono tracking-wider transition-colors"
+                      >
+                        <LocateFixed size={12} />
+                        <span>MARK HAZARD ZONE ON 3D GLOBE</span>
+                      </button>
                     </div>
                   </div>
                 ) : (
@@ -497,19 +613,25 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
                 <div className="p-2 rounded bg-white/[0.02] border border-line/40 space-y-1">
                   <div className="flex justify-between">
                     <span className="text-dim">Dataset Source:</span>
-                    <span className="text-mist">{prediction.data_quality?.source_dataset || 'Copernicus Marine 0.083° Daily'}</span>
+                    <span className="text-mist">{prediction.data_quality?.source_dataset || (isCustomMode ? 'Custom Observation + Copernicus Rolling Context' : 'Copernicus Marine 0.083° Daily')}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-dim">Reanalysis Coverage:</span>
-                    <span className="text-mist">2024-06-24 → 2026-06-23</span>
+                    <span className="text-dim">Coverage Window:</span>
+                    <span className="text-mist">
+                      {prediction.data_quality?.dataset_date_range ? `${prediction.data_quality.dataset_date_range[0]} → ${prediction.data_quality.dataset_date_range[1]}` : '2024-06-24 → 2026-06-23'}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-dim">Feature Compatibility:</span>
-                    <span className="text-emerald-400 font-semibold">{prediction.data_quality?.model_feature_compatibility || '101/101 Features Valid'}</span>
+                    <span className={`font-semibold ${prediction.data_quality?.is_available ? 'text-emerald-400' : 'text-amber-400'}`}>
+                      {prediction.data_quality?.model_feature_compatibility ?? (prediction.status === 'insufficient_data' ? 'Incompatible (Insufficient Data)' : 'N/A')}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-dim">Missing Features:</span>
-                    <span className="text-emerald-400 font-semibold">{prediction.data_quality?.missing_feature_count ?? 0}</span>
+                    <span className={`font-semibold ${(prediction.data_quality?.missing_feature_count ?? 0) > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
+                      {prediction.data_quality?.missing_feature_count ?? 0}
+                    </span>
                   </div>
                 </div>
 
@@ -535,7 +657,7 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
       {/* Footer Info */}
       <div className="mt-3 pt-2 border-t border-line/40 flex items-center justify-between text-[8.5px] font-mono text-dim">
         <span className="flex items-center gap-1">
-          <Database size={10} /> Copernicus Physical Reanalysis
+          <Database size={10} /> {isCustomMode ? 'Custom Observation + Copernicus Context' : 'Copernicus Physical Reanalysis'}
         </span>
         <span className="text-dim/80">
           Leak-Free Chronological ML

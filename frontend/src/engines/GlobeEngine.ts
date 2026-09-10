@@ -7,6 +7,7 @@ export class GlobeEngine {
   private flying = false;
   private lastAct = 0;
   private group: Cesium.Entity[] = [];
+  private disasterGroup: Cesium.Entity[] = [];
   private hover: LatLon | null = null;
   private lastHover = 0;
 
@@ -370,6 +371,184 @@ export class GlobeEngine {
         },
       }
     );
+  }
+
+  markDisasterHazardArea(hazard: {
+    name: string;
+    type?: string;
+    date?: string;
+    severity?: string;
+    bbox?: BoundingBox | null;
+    centroid_lat?: number | null;
+    centroid_lon?: number | null;
+    track_coordinates?: Array<{ date?: string; lat: number; lon: number; intensity_kts?: number }>;
+    analog_assessment?: string;
+  }) {
+    if (!this.viewer) return;
+    this.clearDisasterHazardArea();
+
+    const cLat =
+      hazard.centroid_lat ??
+      (hazard.bbox ? (hazard.bbox.min_lat + hazard.bbox.max_lat) / 2 : undefined);
+    const cLon =
+      hazard.centroid_lon ??
+      (hazard.bbox ? (hazard.bbox.min_lon + hazard.bbox.max_lon) / 2 : undefined);
+
+    if (cLat === undefined || cLon === undefined) return;
+
+    // 1. Hazard Bounding Box (if available)
+    if (hazard.bbox) {
+      const b = hazard.bbox;
+      this.disasterGroup.push(
+        this.viewer.entities.add({
+          name: `Hazard BBox: ${hazard.name}`,
+          rectangle: {
+            coordinates: Cesium.Rectangle.fromDegrees(b.min_lon, b.min_lat, b.max_lon, b.max_lat),
+            material: Cesium.Color.fromCssColorString('#ef4444').withAlpha(0.12),
+            outline: true,
+            outlineColor: Cesium.Color.fromCssColorString('#ef4444').withAlpha(0.7),
+            outlineWidth: 2,
+          },
+        })
+      );
+    }
+
+    // 2. Centroid Hazard Footprint & Warning Beacon
+    this.disasterGroup.push(
+      this.viewer.entities.add({
+        name: `Hazard Center: ${hazard.name}`,
+        position: Cesium.Cartesian3.fromDegrees(cLon, cLat, 0),
+        ellipse: {
+          semiMajorAxis: 180000,
+          semiMinorAxis: 180000,
+          height: 0,
+          material: Cesium.Color.fromCssColorString('#dc2626').withAlpha(0.22),
+          outline: true,
+          outlineColor: Cesium.Color.fromCssColorString('#f87171').withAlpha(0.85),
+          outlineWidth: 2.5,
+        },
+        point: {
+          pixelSize: 10,
+          color: Cesium.Color.fromCssColorString('#ef4444'),
+          outlineColor: Cesium.Color.fromCssColorString('#ffffff'),
+          outlineWidth: 2.5,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+        },
+        label: {
+          text: `⚠️ HAZARD ZONE: ${hazard.name.toUpperCase()}\n${hazard.severity ? `[${hazard.severity}] ` : ''}${hazard.date || ''}`,
+          font: 'bold 13px "Space Grotesk", sans-serif',
+          fillColor: Cesium.Color.fromCssColorString('#fee2e2'),
+          showBackground: true,
+          backgroundColor: Cesium.Color.fromCssColorString('rgba(153, 27, 27, 0.88)'),
+          backgroundPadding: new Cesium.Cartesian2(10, 6),
+          pixelOffset: new Cesium.Cartesian2(0, -32),
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 2.5e7),
+        },
+      })
+    );
+
+    // 3. Cyclone Track Polyline (if track coordinates present)
+    if (hazard.track_coordinates && hazard.track_coordinates.length > 1) {
+      const coords: number[] = [];
+      hazard.track_coordinates.forEach((pt) => {
+        coords.push(pt.lon, pt.lat);
+      });
+
+      this.disasterGroup.push(
+        this.viewer.entities.add({
+          name: `Track: ${hazard.name}`,
+          polyline: {
+            positions: Cesium.Cartesian3.fromDegreesArray(coords),
+            width: 3.5,
+            material: new Cesium.PolylineGlowMaterialProperty({
+              glowPower: 0.3,
+              color: Cesium.Color.fromCssColorString('#f87171'),
+            }),
+            clampToGround: true,
+          },
+        })
+      );
+
+      // Track Waypoints
+      hazard.track_coordinates.forEach((pt, idx) => {
+        this.disasterGroup.push(
+          this.viewer!.entities.add({
+            name: `Track Pt ${idx + 1}`,
+            position: Cesium.Cartesian3.fromDegrees(pt.lon, pt.lat, 0),
+            point: {
+              pixelSize: 6,
+              color: Cesium.Color.fromCssColorString('#fca5a5'),
+              outlineColor: Cesium.Color.fromCssColorString('#7f1d1d'),
+              outlineWidth: 1.5,
+              heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+            },
+            label: pt.intensity_kts
+              ? {
+                  text: `${pt.intensity_kts}kt`,
+                  font: '500 10px "IBM Plex Mono", monospace',
+                  fillColor: Cesium.Color.fromCssColorString('#fca5a5'),
+                  pixelOffset: new Cesium.Cartesian2(0, -12),
+                  verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                  distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 5e6),
+                }
+              : undefined,
+          })
+        );
+      });
+    }
+  }
+
+  flyToDisasterArea(
+    bbox?: BoundingBox | null,
+    centroid?: { lat: number; lon: number } | null
+  ) {
+    if (!this.viewer) return;
+    this.flying = true;
+
+    if (bbox) {
+      const rect = Cesium.Rectangle.fromDegrees(
+        bbox.min_lon,
+        bbox.min_lat,
+        bbox.max_lon,
+        bbox.max_lat
+      );
+      this.viewer.camera.flyTo({
+        destination: rect,
+        duration: 2.0,
+        easingFunction: Cesium.EasingFunction.QUADRATIC_OUT,
+        complete: () => {
+          this.flying = false;
+        },
+        cancel: () => {
+          this.flying = false;
+        },
+      });
+    } else if (centroid) {
+      this.viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(centroid.lon, centroid.lat, 1.2e6),
+        duration: 2.0,
+        easingFunction: Cesium.EasingFunction.QUADRATIC_OUT,
+        complete: () => {
+          this.flying = false;
+        },
+        cancel: () => {
+          this.flying = false;
+        },
+      });
+    }
+  }
+
+  clearDisasterHazardArea() {
+    if (!this.viewer) return;
+    this.disasterGroup.forEach((e) => {
+      try {
+        this.viewer!.entities.remove(e);
+      } catch (_) {
+        // entity might have been removed
+      }
+    });
+    this.disasterGroup = [];
   }
 
   setPaused(p: boolean) {

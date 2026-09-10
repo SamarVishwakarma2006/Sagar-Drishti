@@ -2,7 +2,7 @@ import React from 'react';
 import { useApp, store } from '../store/oceanStore';
 import { VARIABLES, timeUTC } from '../services/syntheticOcean';
 import { VariableKey } from '../types/ocean';
-import { Waves, Thermometer, Droplets, Wind, Sliders } from 'lucide-react';
+import { Waves, Thermometer, Droplets, Wind, Sliders, AlertTriangle } from 'lucide-react';
 
 const iconMap: Record<string, React.ReactNode> = {
   Thermometer: <Thermometer size={13} />,
@@ -14,9 +14,16 @@ const iconMap: Record<string, React.ReactNode> = {
 interface TopBarProps {
   onToggleColorbar?: () => void;
   showColorbar?: boolean;
+  onToggleDisasters?: () => void;
+  showDisasters?: boolean;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ onToggleColorbar, showColorbar }) => {
+export const TopBar: React.FC<TopBarProps> = ({
+  onToggleColorbar,
+  showColorbar,
+  onToggleDisasters,
+  showDisasters,
+}) => {
   const s = useApp();
   const uw = s.phase === 'underwater';
 
@@ -74,6 +81,27 @@ export const TopBar: React.FC<TopBarProps> = ({ onToggleColorbar, showColorbar }
           >
             <Sliders size={12} />
             <span className="hidden sm:inline">COLORBAR</span>
+          </button>
+        )}
+
+        {/* Historical Disaster & Hazard Zone Marker */}
+        {onToggleDisasters && (
+          <button
+            onClick={onToggleDisasters}
+            title="Historical Disasters & 3D Globe Hazard Area Marker"
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded text-[10px] font-mono border transition-colors ${
+              showDisasters || s.activeHazardZone
+                ? 'border-rose-500/60 text-rose-200 bg-rose-500/20 font-semibold shadow-sm'
+                : 'border-line text-dim hover:text-amber-200 hover:border-amber-500/40 bg-white/[0.02]'
+            }`}
+          >
+            <AlertTriangle
+              size={12}
+              className={s.activeHazardZone ? 'text-rose-400 animate-pulse' : 'text-amber-400'}
+            />
+            <span className="hidden sm:inline">
+              {s.activeHazardZone ? 'HAZARD ZONE ACTIVE' : 'DISASTER HAZARDS'}
+            </span>
           </button>
         )}
 

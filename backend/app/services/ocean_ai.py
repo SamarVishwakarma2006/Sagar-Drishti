@@ -1,6 +1,5 @@
 import os
 import re
-import httpx
 from typing import Dict, Any, Optional
 from ..models.schemas import ChatContext, ChatRequest, ChatResponse
 
@@ -8,8 +7,8 @@ from ..models.schemas import ChatContext, ChatRequest, ChatResponse
 class OceanAIService:
     """
     Context-aware Oceanographic AI service for SagarBot.
-    Embeds live 3D viewport state into system grounding prompts and supports
-    Google Gemini, Groq, OpenAI, and offline physics-based expert reasoning.
+    Embeds live 3D viewport state into system grounding prompts and uses
+    offline physics-based expert reasoning (deterministic mode).
     """
 
     SYSTEM_PROMPT_TEMPLATE = """You are SagarBot, an expert oceanographic AI assistant embedded inside "Sagar Drishti" (Immersive Ocean Observatory).
@@ -32,9 +31,11 @@ CORE INSTRUCTIONS:
 4. Keep answers concise, highly informative, and scientifically rigorous.
 """
 
+    # LLM providers disabled — deterministic offline mode only.
     DEFAULT_GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
     DEFAULT_GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
     DEFAULT_OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+
 
     @classmethod
     async def process_chat(cls, req: ChatRequest) -> ChatResponse:
@@ -66,57 +67,8 @@ CORE INSTRUCTIONS:
                 "SCIENTIFIC GUARDRAILS: Each horizon has a distinct causal target definition, with logically nested labels. 0d and 1d models do not demonstrate useful discriminative ability and are statistically underpowered; 2d and especially 3d models show stronger preliminary discrimination. Risk scores are uncalibrated empirical associations. Do NOT assert causation."
             )
 
-        system_prompt = cls.SYSTEM_PROMPT_TEMPLATE.format(
-            active_site=ctx.active_site,
-            lat=f"{lat:.3f}",
-            lon=f"{lon:.3f}",
-            current_depth=ctx.current_depth,
-            variable=ctx.variable,
-            current_value=ctx.current_value,
-            time_offset=ctx.time_offset,
-            nearby_floats=nearby_str,
-            data_mode=data_mode
-        ) + f"\n- Extreme Event & Early Warning Telemetry: {pred_summary}\n"
-
-        provider = (req.provider or "gemini").lower()
-        effective_key = req.api_key
-        if not effective_key:
-            if "gemini" in provider:
-                effective_key = cls.DEFAULT_GEMINI_API_KEY
-            elif "groq" in provider:
-                effective_key = cls.DEFAULT_GROQ_API_KEY
-            elif "openai" in provider:
-                effective_key = cls.DEFAULT_OPENAI_API_KEY
-
-        # Try online LLM providers if API key is present
-        if provider != "offline" and effective_key:
-            try:
-                if provider == "gemini" or "gemini" in provider:
-                    reply = await cls._call_gemini(req.message, system_prompt, effective_key)
-                    return ChatResponse(
-                        reply=reply,
-                        provider="Google Gemini (Gemini 2.5 Flash)",
-                        grounded_context=ctx.model_dump()
-                    )
-                elif provider == "groq" or "groq" in provider:
-                    reply = await cls._call_groq(req.message, system_prompt, effective_key)
-                    return ChatResponse(
-                        reply=reply,
-                        provider="Groq Cloud (Llama 3.1 8B)",
-                        grounded_context=ctx.model_dump()
-                    )
-                elif provider == "openai" or "openai" in provider:
-                    reply = await cls._call_openai(req.message, system_prompt, effective_key)
-                    return ChatResponse(
-                        reply=reply,
-                        provider="OpenAI GPT (GPT-4o-mini)",
-                        grounded_context=ctx.model_dump()
-                    )
-            except Exception as e:
-                # Log error and gracefully fall back to offline expert engine if online API fails
-                print(f"[OceanAIService] Online LLM error ({provider}): {e}. Falling back to physics engine.")
-
-        # Offline Oceanographic Expert Reasoning Engine
+        # Always use the offline deterministic physics engine.
+        # External LLM providers (Gemini, Groq, OpenAI) are disabled.
         expert_reply = cls._offline_ocean_expert(req.message, ctx)
         return ChatResponse(
             reply=expert_reply,
@@ -125,44 +77,6 @@ CORE INSTRUCTIONS:
         )
 
 
-
-    @classmethod
-    async def _call_gemini(cls, message: str, system_prompt: str, api_key: str) -> str:
-        models_to_try = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-flash-latest"]
-        last_err = None
-
-        payload = {
-            "contents": [
-                {
-                    "role": "user",
-                    "parts": [{"text": f"{system_prompt}\n\nUser Question: {message}"}]
-                }
-            ],
-            "generationConfig": {
-                "temperature": 0.3,
-                "maxOutputTokens": 800
-            }
-        }
-
-        async with httpx.AsyncClient(timeout=25.0) as client:
-            for model_name in models_to_try:
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
-                try:
-                    resp = await client.post(url, json=payload)
-                    if resp.status_code == 200:
-                        data = resp.json()
-                        candidates = data.get("candidates", [])
-                        if candidates and "content" in candidates[0]:
-                            parts = candidates[0]["content"].get("parts", [])
-                            if parts and "text" in parts[0]:
-                                return parts[0]["text"].strip()
-                    else:
-                        last_err = f"HTTP {resp.status_code}: {resp.text[:150]}"
-                except Exception as e:
-                    last_err = str(e)
-                    continue
-
-        raise RuntimeError(f"All Gemini models failed. Last error: {last_err}")
 
     @classmethod
     async def _call_groq(cls, message: str, system_prompt: str, api_key: str) -> str:

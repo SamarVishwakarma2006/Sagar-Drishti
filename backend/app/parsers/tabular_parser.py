@@ -17,11 +17,17 @@ class TabularParser:
     LAT_PATTERNS = [r"^lat", r"^latitude", r"^nav_lat", r"^y$"]
     LON_PATTERNS = [r"^lon", r"^long", r"^longitude", r"^nav_lon", r"^x$"]
     DEPTH_PATTERNS = [r"^depth", r"^pres", r"^pressure", r"^ctdprs", r"^level", r"^z$"]
-    TEMP_PATTERNS = [r"^temp", r"^temperature", r"^ctdtmp", r"^theta", r"^sst"]
-    SAL_PATTERNS = [r"^sal", r"^salinity", r"^psal", r"^ctdsal", r"^sss", r"^salt"]
+    TEMP_PATTERNS = [r"^temp", r"^temperature", r"^ctdtmp", r"^theta", r"^sst", r"^thetao$"]
+    SAL_PATTERNS = [r"^sal", r"^salinity", r"^psal", r"^ctdsal", r"^sss", r"^salt", r"^so$"]
     OXY_PATTERNS = [r"^oxy", r"^oxygen", r"^doxy", r"^ctdoxy", r"^dox2", r"^o2"]
     CUR_PATTERNS = [r"^cur", r"^current", r"^speed", r"^cur_speed", r"^velocity"]
     DIR_PATTERNS = [r"^dir", r"^direction", r"^cur_dir", r"^heading"]
+    # Copernicus-specific velocity components
+    CUR_U_PATTERNS = [r"^uo$", r"^cur_u", r"^u_vel", r"^eastward"]
+    CUR_V_PATTERNS = [r"^vo$", r"^cur_v", r"^v_vel", r"^northward"]
+    # Copernicus SSH and MLD
+    SSH_PATTERNS = [r"^zos$", r"^ssh", r"^sea_surface_height", r"^sla"]
+    MLD_PATTERNS = [r"^mlotst$", r"^mld", r"^mixed_layer", r"^mld_"]
     ID_PATTERNS = [r"^platform", r"^float", r"^id", r"^wmo", r"^station", r"^expocode", r"^float_id"]
     CYCLE_PATTERNS = [r"^cycle", r"^cast", r"^profile", r"^station_number"]
     TIME_PATTERNS = [r"^time", r"^date", r"^datetime", r"^juld", r"^timestamp"]
@@ -99,6 +105,11 @@ class TabularParser:
         id_col = cls._find_column(df, cls.ID_PATTERNS)
         cycle_col = cls._find_column(df, cls.CYCLE_PATTERNS)
         time_col = cls._find_column(df, cls.TIME_PATTERNS)
+        # Copernicus-specific component columns
+        cur_u_col = cls._find_column(df, cls.CUR_U_PATTERNS)
+        cur_v_col = cls._find_column(df, cls.CUR_V_PATTERNS)
+        ssh_col = cls._find_column(df, cls.SSH_PATTERNS)
+        mld_col = cls._find_column(df, cls.MLD_PATTERNS)
 
         if not lat_col or not lon_col:
             raise ValueError(f"Could not identify Latitude/Longitude columns in tabular file '{filename}'. Found headers: {list(df.columns)}")
@@ -247,8 +258,71 @@ class TabularParser:
             "depth_range": {"min": 0.0, "max": max_depth},
             "float_count": len(floats),
             "floats": floats,
-            "site_record": site_record
+            "site_record": site_record,
+            "custom_observation": cls._extract_custom_observation(
+                df, time_col, lat_col, lon_col,
+                temp_col, sal_col, cur_u_col, cur_v_col, ssh_col, mld_col
+            ),
         }
+
+    @classmethod
+    def _extract_custom_observation(
+        cls,
+        df: pd.DataFrame,
+        time_col: Optional[str],
+        lat_col: Optional[str],
+        lon_col: Optional[str],
+        temp_col: Optional[str],
+        sal_col: Optional[str],
+        cur_u_col: Optional[str],
+        cur_v_col: Optional[str],
+        ssh_col: Optional[str],
+        mld_col: Optional[str],
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Extracts a single-row custom observation if the CSV contains Copernicus physical columns.
+        Normalizes date to YYYY-MM-DD format preserving the exact date without substitution.
+        """
+        if df.empty:
+            return None
+
+        has_phys = any(col is not None for col in [temp_col, sal_col, cur_u_col, cur_v_col, ssh_col, mld_col])
+        if not has_phys:
+            return None
+
+        row = df.iloc[0]
+
+        obs_date = None
+        if time_col and time_col in df.columns:
+            raw_date = str(row[time_col]).strip()
+            try:
+                dt = pd.to_datetime(raw_date)
+                obs_date = dt.strftime("%Y-%m-%d")
+            except Exception:
+                obs_date = raw_date[:10]
+
+        obs: Dict[str, Any] = {}
+        if obs_date:
+            obs["date"] = obs_date
+        if lat_col and lat_col in df.columns and pd.notna(row[lat_col]):
+            obs["lat"] = float(row[lat_col])
+        if lon_col and lon_col in df.columns and pd.notna(row[lon_col]):
+            obs["lon"] = float(row[lon_col])
+
+        if temp_col and temp_col in df.columns and pd.notna(row[temp_col]):
+            obs["thetao"] = float(row[temp_col])
+        if sal_col and sal_col in df.columns and pd.notna(row[sal_col]):
+            obs["so"] = float(row[sal_col])
+        if cur_u_col and cur_u_col in df.columns and pd.notna(row[cur_u_col]):
+            obs["uo"] = float(row[cur_u_col])
+        if cur_v_col and cur_v_col in df.columns and pd.notna(row[cur_v_col]):
+            obs["vo"] = float(row[cur_v_col])
+        if ssh_col and ssh_col in df.columns and pd.notna(row[ssh_col]):
+            obs["zos"] = float(row[ssh_col])
+        if mld_col and mld_col in df.columns and pd.notna(row[mld_col]):
+            obs["mlotst"] = float(row[mld_col])
+
+        return obs if len(obs) >= 3 else None
 
     @classmethod
     def to_geojson(cls, floats: List[FloatRecord]) -> Dict[str, Any]:

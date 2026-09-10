@@ -653,7 +653,9 @@ class SagarBotService:
     Unified, reliable, deterministic-first SagarBot conversational service.
     """
 
-    DEFAULT_GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+    # LLM providers disabled — deterministic offline mode only.
+    # To re-enable, set GEMINI_API_KEY / GROQ_API_KEY / OPENAI_API_KEY env vars
+    # and restore the Gemini/Groq branches in _call_llm_synthesizer.
     DEFAULT_GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
     DEFAULT_OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
@@ -869,34 +871,10 @@ class SagarBotService:
                 "limitations": pred_res_dict.get("limitations", []),
             }
 
-        # 4. Optional LLM Polish (Deterministic First, LLM Second)
+        # LLM polish step is disabled — always use the deterministic response.
+        # To re-enable, restore the _call_llm_synthesizer logic and set an API key.
         final_reply = deterministic_reply
         provider_name = "SagarBot Decision Support (Deterministic)"
-
-        provider = (req.provider or "offline").lower()
-        effective_key = req.api_key
-        if not effective_key:
-            if "gemini" in provider:
-                effective_key = cls.DEFAULT_GEMINI_API_KEY
-            elif "groq" in provider:
-                effective_key = cls.DEFAULT_GROQ_API_KEY
-            elif "openai" in provider:
-                effective_key = cls.DEFAULT_OPENAI_API_KEY
-
-        if provider != "offline" and effective_key:
-            try:
-                llm_reply = await cls._call_llm_synthesizer(
-                    user_message=req.message,
-                    deterministic_reply=deterministic_reply,
-                    evidence=evidence,
-                    provider=provider,
-                    api_key=effective_key,
-                )
-                if llm_reply and len(llm_reply.strip()) > 30:
-                    final_reply = llm_reply
-                    provider_name = f"SagarBot Decision Support ({provider.title()})"
-            except Exception as e:
-                logger.warning(f"LLM naturalizer failed ({provider}): {e}. Using deterministic response.")
 
         # Record conversational turn in bounded session history (clamped to MAX_HISTORY_TURNS)
         history_list = session_state.get("history", [])
@@ -1000,64 +978,7 @@ class SagarBotService:
         api_key: str,
     ) -> str:
         """
-        Calls external LLM to naturalize the deterministic response into fluent conversational prose.
-        The LLM is strictly constrained: it may NOT alter numbers, scores, thresholds, or assert causation.
+        LLM synthesis is disabled. Always returns the deterministic response.
+        Kept as a no-op stub so external callers remain compatible.
         """
-        system_instruction = (
-            "You are SagarBot, an oceanographic decision-support assistant for Sagar Drishti.\n"
-            "IMMUTABLE GROUNDING RULES:\n"
-            "1. You are provided with a VERIFIED DETERMINISTIC RESPONSE and AUDITABLE EVIDENCE OBJECT.\n"
-            "2. Preserve all numbers, scores, thresholds, and warning levels exactly as given.\n"
-            "3. NEVER invent predictions, probabilities, coordinates, dates, or historical events.\n"
-            "4. NEVER say that temperature or salinity 'caused' a cyclone. Use phrasing like 'associated with elevated model score'.\n"
-            "5. Clearly distinguish [OBSERVED] ocean state from [PREDICTED] model scores.\n"
-            "6. Keep the response well-structured with clear markdown headings (Risk, Horizon, Region, Why, Historical Context, What It Means, Limitations).\n"
-        )
-
-        prompt_text = (
-            f"User Question: {user_message}\n\n"
-            f"Verified Deterministic Grounding:\n{deterministic_reply}\n\n"
-            f"Verified Evidence JSON:\n{json.dumps(evidence or {}, indent=2)}\n\n"
-            "Rewrite this into clear, professional, natural-language oceanographic decision-support markdown."
-        )
-
-        if "gemini" in provider:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
-            payload = {
-                "contents": [
-                    {
-                        "role": "user",
-                        "parts": [{"text": f"{system_instruction}\n\n{prompt_text}"}],
-                    }
-                ],
-                "generationConfig": {"temperature": 0.2, "maxOutputTokens": 900},
-            }
-            async with httpx.AsyncClient(timeout=20.0) as client:
-                resp = await client.post(url, json=payload)
-                if resp.status_code == 200:
-                    data = resp.json()
-                    candidates = data.get("candidates", [])
-                    if candidates and "content" in candidates[0]:
-                        parts = candidates[0]["content"].get("parts", [])
-                        if parts and "text" in parts[0]:
-                            return parts[0]["text"].strip()
-
-        elif "groq" in provider:
-            url = "https://api.groq.com/openai/v1/chat/completions"
-            headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-            payload = {
-                "model": "llama-3.1-8b-instant",
-                "messages": [
-                    {"role": "system", "content": system_instruction},
-                    {"role": "user", "content": prompt_text},
-                ],
-                "temperature": 0.2,
-                "max_tokens": 800,
-            }
-            async with httpx.AsyncClient(timeout=15.0) as client:
-                resp = await client.post(url, headers=headers, json=payload)
-                if resp.status_code == 200:
-                    data = resp.json()
-                    return data["choices"][0]["message"]["content"].strip()
-
         return deterministic_reply

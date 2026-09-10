@@ -40,6 +40,14 @@ class TestHistoricalEventLabelingPipeline(unittest.TestCase):
         cls.test_dir = tempfile.mkdtemp(prefix="sagar_event_label_test_")
         cls.test_nc = os.path.join(cls.test_dir, "copernicus_phy_2yr_surface.nc")
 
+        with CopernicusService._ds_lock:
+            if CopernicusService._ds is not None:
+                try:
+                    CopernicusService._ds.close()
+                except Exception:
+                    pass
+                CopernicusService._ds = None
+
         # 60 days starting 2024-06-24 covers until late August 2024
         # We create a 135-day fixture to cover through Nov 2024 (including Asna, BOB 05, Dana, Fengal)
         cls.test_days = 165

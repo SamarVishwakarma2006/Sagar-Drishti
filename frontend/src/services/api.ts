@@ -1,4 +1,4 @@
-import { SitePhysics, IngestionMetadata, ViewportContext, ChatResponse, PredictionResponse, PredictionRequest } from '../types/ocean';
+import { SitePhysics, IngestionMetadata, ViewportContext, ChatResponse, PredictionResponse, PredictionRequest, CustomPredictionRequest } from '../types/ocean';
 import { ClientCsvParser } from './clientCsvParser';
 import { ClientNetcdfParser } from './clientNetcdfParser';
 import { Ocean } from './syntheticOcean';
@@ -49,6 +49,7 @@ export const OceanAPI = {
           variables: data.variables,
           float_count: data.float_count,
           site_record: data.site_record,
+          custom_observation: data.custom_observation,
         };
       }
     } catch (e) {
@@ -288,6 +289,34 @@ export const PredictionAPI = {
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: res.statusText }));
       throw new Error(err.detail || 'Prediction request failed');
+    }
+    return await res.json();
+  },
+
+  /**
+   * Generates live ML risk prediction for custom in-situ observation.
+   */
+  async predictCustom(params: CustomPredictionRequest): Promise<PredictionResponse> {
+    const res = await fetch(`${API_BASE}/prediction/predict-custom`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        date: params.date,
+        lat: params.lat,
+        lon: params.lon,
+        horizon_days: params.horizon_days ?? 3,
+        thetao: params.thetao,
+        so: params.so,
+        uo: params.uo,
+        vo: params.vo,
+        zos: params.zos,
+        mlotst: params.mlotst,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail || 'Custom prediction request failed');
     }
     return await res.json();
   },

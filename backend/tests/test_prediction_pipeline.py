@@ -37,6 +37,14 @@ class TestPredictionPipeline(unittest.TestCase):
         cls.test_nc = os.path.join(cls.test_dir, "copernicus_phy_2yr_surface.nc")
         cls.models_dir = os.path.join(cls.test_dir, "models")
 
+        with CopernicusService._ds_lock:
+            if CopernicusService._ds is not None:
+                try:
+                    CopernicusService._ds.close()
+                except Exception:
+                    pass
+                CopernicusService._ds = None
+
         # Create a test fixture with sufficient days (165 days)
         cls.test_days = 165
         CopernicusService.create_test_fixture(cls.test_nc, days=cls.test_days)

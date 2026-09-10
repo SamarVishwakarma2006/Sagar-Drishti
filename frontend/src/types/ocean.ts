@@ -2,7 +2,7 @@ export type VariableKey = 'temp' | 'sal' | 'cur' | 'oxy' | 'ssh' | 'mld';
 export type Provenance = 'observed' | 'interpolated' | 'modelled' | 'predicted' | 'historical';
 export type PaletteKey = 'thermal' | 'haline' | 'speed' | 'oxy' | 'viridis' | 'deep' | 'curl';
 export type Phase = 'boot' | 'globe' | 'diving' | 'underwater' | 'ascending';
-export type LLMProvider = 'offline' | 'gemini' | 'groq' | 'openai';
+export type LLMProvider = 'offline';
 
 export type Selection =
   | { kind: 'float'; id: string }
@@ -155,6 +155,18 @@ export interface ChatResponse {
 }
 
 
+export interface CustomObservation {
+  date: string;
+  lat: number;
+  lon: number;
+  thetao?: number;
+  so?: number;
+  uo?: number;
+  vo?: number;
+  zos?: number;
+  mlotst?: number;
+}
+
 export interface IngestionMetadata {
   site_id: string;
   name: string;
@@ -166,6 +178,7 @@ export interface IngestionMetadata {
   variables: string[];
   float_count: number;
   site_record: SitePhysics;
+  custom_observation?: CustomObservation | null;
 }
 
 export interface HistoricalStatus {
@@ -265,6 +278,8 @@ export interface AppState {
   historicalDate: string;
   historicalStatus: HistoricalStatus | null;
   activePrediction?: PredictionResponse | null;
+  customObservation?: CustomObservation | null;
+  activeHazardZone?: any | null;
 }
 
 export interface FeatureAttribution {
@@ -326,6 +341,15 @@ export interface HistoricalEventContext {
   distance_days?: number | null;
   is_active_date?: boolean;
   affected_region?: string;
+  severity?: string;
+  bbox?: BoundingBox | null;
+  centroid_lat?: number | null;
+  centroid_lon?: number | null;
+  track_coordinates?: Array<{ date: string; lat: number; lon: number; intensity_kts?: number }>;
+  similarity_score?: number | null;
+  matched_basin?: string;
+  parameter_comparison?: Record<string, { observed: number; historical: number; delta: number; unit: string; match_pct: number }>;
+  analog_assessment?: string;
   note?: string;
 }
 
@@ -383,5 +407,18 @@ export interface PredictionRequest {
   min_lon?: number;
   max_lon?: number;
   horizon_days?: number;
+}
+
+export interface CustomPredictionRequest {
+  date: string;
+  lat: number;
+  lon: number;
+  horizon_days?: number;
+  thetao?: number;
+  so?: number;
+  uo?: number;
+  vo?: number;
+  zos?: number;
+  mlotst?: number;
 }
 

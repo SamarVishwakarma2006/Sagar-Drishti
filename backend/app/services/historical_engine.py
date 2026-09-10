@@ -389,6 +389,292 @@ class HistoricalFeatureEngine:
             provenance="Copernicus Marine Global Ocean Physics Reanalysis (0.083° daily)",
         )
 
+    @classmethod
+    def compute_comparison_with_custom_current(
+        cls,
+        date_str: str,
+        custom_values: Dict[str, Any],
+        mode: str = "point",
+        lat: Optional[float] = None,
+        lon: Optional[float] = None,
+        site_id: Optional[str] = None,
+        min_lat: Optional[float] = None,
+        max_lat: Optional[float] = None,
+        min_lon: Optional[float] = None,
+        max_lon: Optional[float] = None,
+    ) -> HistoricalComparisonResponse:
+        """
+        Executes historical comparison for a custom observation:
+        1. Uses Copernicus dataset for rolling context (up to target_dt - 1 day or nearest eligible day).
+        2. Incorporates custom in-situ/model measurements for current day values:
+           - thetao / temp
+           - so / sal
+           - uo / cur_u
+           - vo / cur_v
+           - zos / ssh
+           - mlotst / mld
+           - cur (calculated or provided)
+        3. Integrates custom current values into rolling windows (7d, 14d, 30d).
+        4. Calculates anomalies and compiles 101-feature vector with provenance="Custom Observation + Copernicus Context".
+        """
+        ds = CopernicusService.get_dataset()
+
+        coord_time = next((c for c in ["time", "record"] if c in ds.coords or c in ds.dims), None)
+        coord_lat = next((c for c in ["latitude", "lat"] if c in ds.coords or c in ds.dims), None)
+        coord_lon = next((c for c in ["longitude", "lon"] if c in ds.coords or c in ds.dims), None)
+        coord_depth = next((c for c in ["depth", "lev"] if c in ds.coords or c in ds.dims), None)
+
+        if not coord_time or not coord_lat or not coord_lon:
+            raise ValueError("Dataset missing spatial/temporal coordinates.")
+
+        dataset_times = pd.to_datetime(ds[coord_time].values)
+        total_obs = len(dataset_times)
+        if total_obs == 0:
+            raise ValueError("Copernicus dataset time coordinate is empty.")
+
+        baseline_start = dataset_times[0].strftime("%Y-%m-%d")
+        baseline_end = dataset_times[-1].strftime("%Y-%m-%d")
+
+        baseline_metadata = BaselineMetadata(
+            baseline_type="full_period_climatology",
+            baseline_start=baseline_start,
+            baseline_end=baseline_end,
+            baseline_observations=total_obs,
+        )
+
+        try:
+            target_dt = pd.to_datetime(date_str)
+        except Exception:
+            raise ValueError(f"Invalid date format '{date_str}'. Please use ISO format YYYY-MM-DD.")
+
+        min_dt = dataset_times[0]
+        max_dt = dataset_times[-1]
+
+        # Determine latest Copernicus context observation index
+        # If target_dt is beyond max_dt, use max_dt as the latest context day
+        if target_dt > max_dt:
+            context_idx = total_obs - 1
+        elif target_dt <= min_dt + pd.Timedelta(days=29):
+            earliest_dt = (min_dt + pd.Timedelta(days=29)).strftime("%Y-%m-%d")
+            raise ValueError(
+                f"Custom observation date '{date_str}' requires at least 30 days of Copernicus history. "
+                f"Earliest eligible comparison date is {earliest_dt}."
+            )
+        else:
+            diffs = (dataset_times - target_dt).total_seconds()
+            # Context index is the day immediately prior to target_dt if exact match, or the latest day <= target_dt
+            preceding_indices = np.where(dataset_times < target_dt)[0]
+            if len(preceding_indices) > 0:
+                context_idx = int(preceding_indices[-1])
+            else:
+                context_idx = int(np.argmin(np.abs(diffs)))
+
+        if context_idx < 29:
+            earliest_dt = dataset_times[29].strftime("%Y-%m-%d")
+            raise ValueError(
+                f"Context day (index {context_idx}) requires at least 30 days of history for rolling features. "
+                f"Earliest eligible date is {earliest_dt}."
+            )
+
+        # Resolve spatial location & bounds
+        location_info: Dict[str, Any] = {}
+        bbox: Optional[BoundingBox] = None
+
+        if mode == "point":
+            if lat is None or lon is None:
+                raise ValueError("Point mode requires 'lat' and 'lon' query parameters.")
+            if not (DEFAULT_MIN_LAT - 1.0 <= lat <= DEFAULT_MAX_LAT + 1.0) or not (DEFAULT_MIN_LON - 1.0 <= lon <= DEFAULT_MAX_LON + 1.0):
+                raise ValueError(
+                    f"Coordinates ({lat}°, {lon}°) are outside regional bounds: "
+                    f"Lat [{DEFAULT_MIN_LAT}, {DEFAULT_MAX_LAT}], Lon [{DEFAULT_MIN_LON}, {DEFAULT_MAX_LON}]."
+                )
+            location_info = {"type": "point", "lat": round(lat, 4), "lon": round(lon, 4)}
+        elif mode == "region":
+            if site_id:
+                site = SiteRegistry.get_site(site_id)
+                if not site:
+                    raise ValueError(f"Study site '{site_id}' not found.")
+                if site.bbox:
+                    bbox = site.bbox
+                else:
+                    bbox = BoundingBox(
+                        min_lat=site.lat - 1.5,
+                        max_lat=site.lat + 1.5,
+                        min_lon=site.lon - 1.5,
+                        max_lon=site.lon + 1.5,
+                    )
+                location_info = {"type": "study_site", "site_id": site.id, "site_name": site.name, "bbox": bbox.model_dump()}
+            else:
+                if None in (min_lat, max_lat, min_lon, max_lon):
+                    raise ValueError("Region mode requires either 'site_id' or 'min_lat', 'max_lat', 'min_lon', 'max_lon'.")
+                if min_lat >= max_lat or min_lon >= max_lon:
+                    raise ValueError("Invalid bounding box: min coordinates must be strictly less than max coordinates.")
+                bbox = BoundingBox(
+                    min_lat=float(min_lat),
+                    max_lat=float(max_lat),
+                    min_lon=float(min_lon),
+                    max_lon=float(max_lon),
+                )
+                location_info = {"type": "bounding_box", "bbox": bbox.model_dump()}
+        else:
+            raise ValueError(f"Unknown mode '{mode}'. Supported modes are 'point' or 'region'.")
+
+        # Map custom input values to channels
+        val_map: Dict[str, float] = {}
+        for k, v in custom_values.items():
+            if v is not None:
+                try:
+                    fv = float(v)
+                    if not np.isnan(fv):
+                        val_map[str(k).lower().strip()] = fv
+                except (ValueError, TypeError):
+                    pass
+
+        custom_channel_map = {
+            "temp": val_map.get("thetao", val_map.get("temp", val_map.get("temperature"))),
+            "sal": val_map.get("so", val_map.get("sal", val_map.get("salinity"))),
+            "cur_u": val_map.get("uo", val_map.get("cur_u", val_map.get("u"))),
+            "cur_v": val_map.get("vo", val_map.get("cur_v", val_map.get("v"))),
+            "ssh": val_map.get("zos", val_map.get("ssh", val_map.get("sea_surface_height"))),
+            "mld": val_map.get("mlotst", val_map.get("mld", val_map.get("mixed_layer_depth"))),
+        }
+        cur_val = val_map.get("cur", val_map.get("cur_speed", val_map.get("current_speed")))
+        if cur_val is None:
+            uo_val = custom_channel_map["cur_u"]
+            vo_val = custom_channel_map["cur_v"]
+            if uo_val is not None and vo_val is not None:
+                cur_val = float(np.sqrt(uo_val**2 + vo_val**2))
+        custom_channel_map["cur"] = cur_val
+
+        variables_result: Dict[str, VariableAnomaly] = {}
+        feature_vector: Dict[str, float] = {}
+        valid_pixel_counts = []
+
+        window_specs = [
+            ("7d", 7),
+            ("14d", 14),
+            ("30d", 30),
+        ]
+
+        for ch in SUPPORTED_CHANNELS:
+            canonical_raw = ALIAS_MAP.get(ch, ch)
+            series_1d = cls._extract_1d_series(
+                ds=ds,
+                canonical_var=canonical_raw,
+                coord_time=coord_time,
+                coord_lat=coord_lat,
+                coord_lon=coord_lon,
+                coord_depth=coord_depth,
+                mode=mode,
+                lat=lat,
+                lon=lon,
+                bbox=bbox,
+            )
+
+            valid_mask = ~np.isnan(series_1d) & ~np.isinf(series_1d)
+            valid_pct = float(np.mean(valid_mask) * 100.0)
+            valid_pixel_counts.append(valid_pct)
+
+            valid_full = series_1d[valid_mask]
+            if len(valid_full) == 0:
+                raise ValueError(f"All values for variable '{ch}' in the selected region are NaN/masked.")
+
+            b_mean = float(np.mean(valid_full))
+            b_std = float(np.std(valid_full))
+            b_min = float(np.min(valid_full))
+            b_max = float(np.max(valid_full))
+
+            # Current value: user custom value if provided, else context day Copernicus value
+            if custom_channel_map.get(ch) is not None:
+                v_curr = float(custom_channel_map[ch])
+            else:
+                v_curr = float(series_1d[context_idx])
+                if np.isnan(v_curr) or np.isinf(v_curr):
+                    v_curr = b_mean
+
+            abs_anom = round(v_curr - b_mean, 4)
+            z_score = round((v_curr - b_mean) / b_std, 4) if b_std > 1e-6 else 0.0
+
+            pct_anom: Optional[float] = None
+            if abs(b_mean) > 1e-3 and ch in ("mld", "sal", "cur"):
+                pct_anom = round((abs_anom / abs(b_mean)) * 100.0, 2)
+
+            windows_dict: Dict[str, WindowMetrics] = {}
+            for w_key, w_days in window_specs:
+                # Preceding (w_days - 1) days from Copernicus history up to context_idx + custom current observation
+                cop_sub = series_1d[context_idx - (w_days - 2) : context_idx + 1]
+                w_sub = np.append(cop_sub, [v_curr])
+
+                w_start_str = dataset_times[context_idx - (w_days - 2)].strftime("%Y-%m-%d")
+                w_end_str = date_str
+
+                w_valid = w_sub[~np.isnan(w_sub) & ~np.isinf(w_sub)]
+                w_mean = float(np.mean(w_valid)) if len(w_valid) > 0 else v_curr
+                w_min = float(np.min(w_valid)) if len(w_valid) > 0 else v_curr
+                w_max = float(np.max(w_valid)) if len(w_valid) > 0 else v_curr
+
+                w_delta = round(float(w_sub[-1] - w_sub[0]), 4)
+                w_slope = cls._compute_linear_trend(w_sub)
+
+                windows_dict[w_key] = WindowMetrics(
+                    window_days=w_days,
+                    window_start=w_start_str,
+                    window_end=w_end_str,
+                    mean=round(w_mean, 4),
+                    delta=w_delta,
+                    trend_per_day=w_slope,
+                    min=round(w_min, 4),
+                    max=round(w_max, 4),
+                )
+
+                feature_vector[f"{ch}_{w_key}_mean"] = round(w_mean, 4)
+                feature_vector[f"{ch}_{w_key}_delta"] = w_delta
+                feature_vector[f"{ch}_{w_key}_trend"] = w_slope
+
+            feature_vector[f"{ch}_current"] = round(v_curr, 4)
+            feature_vector[f"{ch}_base_mean"] = round(b_mean, 4)
+            feature_vector[f"{ch}_base_std"] = round(b_std, 4)
+            feature_vector[f"{ch}_abs_anom"] = abs_anom
+            feature_vector[f"{ch}_zscore"] = z_score
+            if pct_anom is not None:
+                feature_vector[f"{ch}_pct_anom"] = pct_anom
+
+            unit_str = COPERNICUS_VAR_MAPPING.get(canonical_raw, {}).get("unit", "")
+            std_name = COPERNICUS_VAR_MAPPING.get(canonical_raw, {}).get("standard_name", ch)
+
+            variables_result[ch] = VariableAnomaly(
+                variable=ch,
+                standard_name=std_name,
+                unit=unit_str,
+                current_value=round(v_curr, 4),
+                baseline_mean=round(b_mean, 4),
+                baseline_std=round(b_std, 4),
+                baseline_min=round(b_min, 4),
+                baseline_max=round(b_max, 4),
+                absolute_anomaly=abs_anom,
+                z_score=z_score,
+                percentage_anomaly=pct_anom,
+                windows=windows_dict,
+            )
+
+        avg_valid = float(np.mean(valid_pixel_counts)) if valid_pixel_counts else 100.0
+
+        return HistoricalComparisonResponse(
+            dataset_id=COPERNICUS_DATASET_ID,
+            date=date_str,
+            mode=mode,
+            location=location_info,
+            baseline_metadata=baseline_metadata,
+            variables=variables_result,
+            feature_vector=feature_vector,
+            data_quality={
+                "valid_data_percent": round(avg_valid, 2),
+                "total_baseline_observations": total_obs,
+                "window_coverage": "Complete (7, 14, 30 days) with Custom In-situ Current",
+            },
+            provenance="Custom Observation + Copernicus Context",
+        )
+
     # ==========================================================================
     # ML DATASET EXPORTER (Parquet + Metadata JSON)
     # ==========================================================================
