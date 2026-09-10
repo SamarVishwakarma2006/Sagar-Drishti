@@ -1,6 +1,11 @@
+import os
+import tempfile
+import logging
 from typing import Dict, List, Optional, Any
 import numpy as np
 from ..models.schemas import SitePhysics, BoundingBox, FloatRecord, ProfileResult, ProfilePoint
+
+logger = logging.getLogger("sagar_drishti.site_registry")
 
 
 # Default baseline oceanographic study sites (INCOIS / Global)
@@ -251,15 +256,106 @@ class SiteRegistry:
             cls._float_registry[site_record.id] = site_record.floats
 
     @classmethod
+    def get_upload_dir(cls) -> str:
+        """Returns the designated application-owned directory for custom uploaded files."""
+        app_upload_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "uploads"))
+        os.makedirs(app_upload_dir, exist_ok=True)
+        return app_upload_dir
+
+    @classmethod
+    def _is_application_owned_file(cls, file_path: str) -> bool:
+        """
+        Verifies that file_path is an application-owned temporary/upload file and NOT
+        an arbitrary user-supplied path, built-in code/dataset, or Copernicus reanalysis.
+        """
+        if not file_path or not isinstance(file_path, str):
+            return False
+
+        try:
+            norm = os.path.abspath(os.path.normpath(file_path))
+        except Exception:
+            return False
+
+        # Strictly protect built-in codebase, ML models, sample datasets, and Copernicus reanalysis
+        norm_lower = norm.lower()
+        forbidden_substrings = [
+            "copernicus",
+            "models",
+            "sample_data",
+            "app\\services",
+            "app/services",
+            "app\\api",
+            "app/api",
+            "backend\\app",
+            "backend/app",
+            "backend\\tests",
+            "backend/tests",
+            "frontend",
+            "system32",
+            "windows",
+            "/etc",
+            "/usr",
+            "/bin",
+        ]
+        if any(forbidden in norm_lower for forbidden in forbidden_substrings):
+            return False
+
+        # Must reside strictly within application-owned upload/temp directories
+        backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+        allowed_roots = [
+            cls.get_upload_dir(),
+            os.path.abspath(os.path.join(backend_dir, "uploads")),
+            os.path.abspath(os.path.join(backend_dir, "backend", "uploads")),
+            os.path.abspath(os.path.join(backend_dir, "data", "uploads")),
+            os.path.abspath(os.path.join(tempfile.gettempdir(), "sagar_drishti_uploads")),
+            os.path.abspath(os.path.join(tempfile.gettempdir(), "sagar_drishti")),
+            os.path.abspath(tempfile.gettempdir()),
+        ]
+
+        for allowed in allowed_roots:
+            try:
+                # Must be strictly a descendant of the allowed root, never the root itself
+                if os.path.commonpath([norm, allowed]) == allowed and norm != allowed:
+                    return True
+            except (ValueError, Exception):
+                continue
+
+        return False
+
+    @classmethod
     def delete_uploaded_site(cls, site_id: str) -> bool:
         removed = False
+        site_record = cls._custom_sites.get(site_id)
         if site_id in cls._custom_sites:
             del cls._custom_sites[site_id]
             removed = True
+
+        # 1. Safely close/release dataset resource first
         if site_id in cls._custom_datasets:
-            del cls._custom_datasets[site_id]
+            ds = cls._custom_datasets.pop(site_id, None)
+            if ds is not None and hasattr(ds, "close"):
+                try:
+                    ds.close()
+                except Exception as e:
+                    logger.warning(f"Error closing dataset {site_id}: {e}")
+
+        # 2. If uploaded custom dataset has an associated customFilePath:
+        #    - verify it is a file path created/owned by the application
+        #    - safely close/release the dataset first (done above)
+        #    - then unlink/delete the temporary file if it exists
+        #    - handle missing files safely
+        if site_record is not None:
+            custom_path = getattr(site_record, "customFilePath", None)
+            if custom_path and cls._is_application_owned_file(custom_path):
+                try:
+                    if os.path.exists(custom_path):
+                        os.unlink(custom_path)
+                except Exception as e:
+                    logger.warning(f"Error unlinking temporary file {custom_path}: {e}")
+
         if site_id in cls._float_registry:
             del cls._float_registry[site_id]
+
         return removed
 
     @classmethod

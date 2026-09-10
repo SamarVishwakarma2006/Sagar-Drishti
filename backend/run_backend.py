@@ -1,5 +1,8 @@
-"""Script to run Sagar Drishti backend server."""
+import sys
 import uvicorn
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 if __name__ == "__main__":
     print("🌊 Starting Sagar Drishti Ocean Ingestion & Slicing Backend...")

@@ -1,4 +1,4 @@
-import { SitePhysics, IngestionMetadata, ViewportContext, ChatResponse } from '../types/ocean';
+import { SitePhysics, IngestionMetadata, ViewportContext, ChatResponse, PredictionResponse, PredictionRequest } from '../types/ocean';
 import { ClientCsvParser } from './clientCsvParser';
 import { ClientNetcdfParser } from './clientNetcdfParser';
 import { Ocean } from './syntheticOcean';
@@ -97,22 +97,27 @@ export const OceanAPI = {
     context: ViewportContext,
     apiKey?: string,
     provider?: string
-  ): Promise<{ reply: string; provider: string }> {
+  ): Promise<{ reply: string; provider: string; intent?: string; evidence?: Record<string, any> }> {
     try {
-      const res = await fetch(`${API_BASE}/chat`, {
+      const res = await fetch(`${API_BASE}/sagarbot/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message,
           context,
           api_key: apiKey || undefined,
-          provider: provider || 'gemini',
+          provider: provider || 'offline',
         }),
       });
 
       if (res.ok) {
         const data = await res.json();
-        return { reply: data.reply, provider: data.provider };
+        return {
+          reply: data.reply,
+          provider: data.provider,
+          intent: data.intent,
+          evidence: data.evidence,
+        };
       }
 
       if (res.status === 429) {
@@ -125,6 +130,7 @@ export const OceanAPI = {
       }
       console.warn('Backend chat unreachable, falling back to local ocean expert reasoning:', e);
     }
+
 
     // Client fallback expert engine
     const dStr = context.current_depth;
@@ -149,5 +155,140 @@ export const OceanAPI = {
       reply: fallbackReply,
       provider: 'SagarBot Oceanographic Physics Engine (Client Offline)',
     };
+  },
+};
+
+export const HistoricalAPI = {
+  /**
+   * Fetches Copernicus Marine historical dataset status and validation report.
+   */
+  async getStatus() {
+    const res = await fetch(`${API_BASE}/historical/status`);
+    if (!res.ok) {
+      throw new Error(`Failed to fetch historical status: ${res.statusText}`);
+    }
+    return await res.json();
+  },
+
+  /**
+   * Triggers background Copernicus Marine reanalysis ingestion.
+   */
+  async triggerIngest() {
+    const res = await fetch(`${API_BASE}/historical/ingest`, {
+      method: 'POST',
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to trigger ingestion: ${res.statusText}`);
+    }
+    return await res.json();
+  },
+
+  /**
+   * Slices 2D horizontal field from the Copernicus 2-year daily reanalysis.
+   */
+  async getSlice(date: string, variable: string = 'temp', resolution: number = 48) {
+    const params = new URLSearchParams({
+      date,
+      variable,
+      resolution: String(resolution),
+    });
+    const res = await fetch(`${API_BASE}/historical/slice?${params.toString()}`);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail || 'Failed to fetch historical slice');
+    }
+    return await res.json();
+  },
+
+  /**
+   * Queries point observation at specific geographic coordinate and date.
+   */
+  async getPoint(date: string, lat: number, lon: number, variable: string = 'temp') {
+    const params = new URLSearchParams({
+      date,
+      lat: String(lat),
+      lon: String(lon),
+      variable,
+    });
+    const res = await fetch(`${API_BASE}/historical/point?${params.toString()}`);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail || 'Failed to fetch historical point');
+    }
+    return await res.json();
+  },
+
+  /**
+   * Compares recent rolling window behavior (7d, 14d, 30d) against full 2-year climatological baseline.
+   */
+  async compare(params: {
+    date: string;
+    mode?: 'point' | 'region';
+    lat?: number;
+    lon?: number;
+    site_id?: string;
+    min_lat?: number;
+    max_lat?: number;
+    min_lon?: number;
+    max_lon?: number;
+    variable?: string;
+  }) {
+    const q = new URLSearchParams();
+    q.set('date', params.date);
+    if (params.mode) q.set('mode', params.mode);
+    if (params.lat !== undefined) q.set('lat', String(params.lat));
+    if (params.lon !== undefined) q.set('lon', String(params.lon));
+    if (params.site_id) q.set('site_id', params.site_id);
+    if (params.min_lat !== undefined) q.set('min_lat', String(params.min_lat));
+    if (params.max_lat !== undefined) q.set('max_lat', String(params.max_lat));
+    if (params.min_lon !== undefined) q.set('min_lon', String(params.min_lon));
+    if (params.max_lon !== undefined) q.set('max_lon', String(params.max_lon));
+    if (params.variable) q.set('variable', params.variable);
+
+    const res = await fetch(`${API_BASE}/historical/compare?${q.toString()}`);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail || 'Failed to fetch historical comparison');
+    }
+    return await res.json();
+  },
+};
+
+export const PredictionAPI = {
+  /**
+   * Fetches status of ML models and prediction engine.
+   */
+  async getStatus(): Promise<{ is_ready: boolean; metadata?: Record<string, any>; message?: string }> {
+    const res = await fetch(`${API_BASE}/prediction/status`);
+    if (!res.ok) throw new Error('Failed to fetch prediction status');
+    return await res.json();
+  },
+
+  /**
+   * Generates live ML risk prediction with multi-granularity explainability.
+   */
+  async predict(params: PredictionRequest): Promise<PredictionResponse> {
+    const res = await fetch(`${API_BASE}/prediction/predict`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        date: params.date,
+        mode: params.mode || (params.site_id || params.min_lat !== undefined ? 'region' : 'point'),
+        lat: params.lat,
+        lon: params.lon,
+        site_id: params.site_id,
+        min_lat: params.min_lat,
+        max_lat: params.max_lat,
+        min_lon: params.min_lon,
+        max_lon: params.max_lon,
+        horizon_days: params.horizon_days ?? 3,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail || 'Prediction request failed');
+    }
+    return await res.json();
   },
 };

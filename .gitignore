@@ -54,6 +54,7 @@ dist/
 dist-ssr/
 *.local
 .package-lock.json
+*.timestamp-*.mjs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -62,11 +63,16 @@ pnpm-debug.log*
 # Cesium generated / runtime assets if any
 cesium/
 
+# Runtime data storage (Copernicus NetCDF & Parquet feature exports)
+data/
+backend/data/
+
 # Temporary user upload storage
 backend/uploads/
 uploads/
 *.tmp
 *.temp
+
 
 # Operating System & IDE files
 .DS_Store

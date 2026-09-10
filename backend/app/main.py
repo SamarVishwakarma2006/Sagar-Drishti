@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,7 +10,15 @@ from .services.site_registry import SiteRegistry
 async def lifespan(app: FastAPI):
     # Initialize baseline data on startup
     SiteRegistry.initialize_baseline_floats()
+    # Validate ML model artifacts on startup (Phase 4.6.5)
+    try:
+        from .services.prediction_service import PredictionService
+        PredictionService.validate_model_artifacts()
+    except Exception as e:
+        import logging
+        logging.getLogger("sagar_drishti").warning(f"ML Model startup check: {e}")
     yield
+
 
 
 app = FastAPI(
@@ -19,10 +28,21 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS Configuration for frontend communication
+# CORS Configuration: allow local development origins and environment-configured origins
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "")
+if allowed_origins_env:
+    allowed_origins = [orig.strip() for orig in allowed_origins_env.split(",") if orig.strip()]
+else:
+    allowed_origins = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

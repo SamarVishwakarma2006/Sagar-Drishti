@@ -44,6 +44,10 @@ let state: AppState = {
   colorbar: initialColorbar,
   llmProvider: savedProvider,
   apiKey: savedApiKey,
+  historicalMode: false,
+  historicalDate: '2024-06-24',
+  historicalStatus: null,
+  activePrediction: null,
 };
 
 const listeners = new Set<() => void>();
@@ -110,6 +114,27 @@ export const store = {
       site: isCurrent ? (updated[0] || SITES[0]) : state.site,
       selection: null,
     };
+    listeners.forEach((listener) => listener());
+  },
+
+  // Historical Copernicus mode actions
+  setHistoricalMode(active: boolean) {
+    state = { ...state, historicalMode: active };
+    listeners.forEach((listener) => listener());
+  },
+
+  setHistoricalDate(date: string) {
+    state = { ...state, historicalDate: date };
+    listeners.forEach((listener) => listener());
+  },
+
+  setHistoricalStatus(status: any) {
+    state = { ...state, historicalStatus: status };
+    listeners.forEach((listener) => listener());
+  },
+
+  setActivePrediction(pred: any) {
+    state = { ...state, activePrediction: pred };
     listeners.forEach((listener) => listener());
   },
 };

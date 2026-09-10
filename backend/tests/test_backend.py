@@ -91,6 +91,37 @@ class TestSagarDrishtiBackend(unittest.TestCase):
         self.assertIn("Barrier", resp.reply)
         self.assertEqual(resp.provider, "SagarBot Oceanographic Physics Engine (Offline)")
 
+    def test_ocean_ai_prediction_grounding(self):
+        """Test SagarBot prediction and early-warning grounding."""
+        ctx = ChatContext(
+            active_site="Bay of Bengal — Fresh Plume",
+            coordinates={"lat": 17.8, "lon": 88.2},
+            current_depth="10 m",
+            variable="Temperature",
+            current_value="29.5 °C",
+            time_offset="+0h",
+            custom_data=False,
+            active_prediction={
+                "prediction": "alert",
+                "probability": 0.84,
+                "event_type": "tropical_cyclone",
+                "horizon_days": 3,
+                "is_calibrated": True,
+                "explainability": {
+                    "top_features": [
+                        {"feature": "cur_7d_delta", "importance": 0.5385},
+                        {"feature": "sal_14d_mean", "importance": 0.4615},
+                    ]
+                }
+            }
+        )
+        req = ChatRequest(message="Is there any cyclone early warning or storm risk?", context=ctx, provider="offline")
+        import asyncio
+        resp = asyncio.run(OceanAIService.process_chat(req))
+        self.assertIn("ALERT", resp.reply)
+        self.assertIn("Tropical Cyclone", resp.reply)
+        self.assertIn("84.0%", resp.reply)
+
     def test_default_gemini_api_key(self):
         """Verify LLM API key environment integration is configured."""
         self.assertTrue(hasattr(OceanAIService, "DEFAULT_GEMINI_API_KEY"))

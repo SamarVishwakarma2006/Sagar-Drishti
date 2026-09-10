@@ -43,6 +43,28 @@ CORE INSTRUCTIONS:
         lon = ctx.coordinates.get("lon", 0.0)
         data_mode = "User Uploaded Dataset" if ctx.custom_data else "INCOIS Baseline Model / Argo"
         nearby_str = ", ".join(ctx.nearby_floats) if ctx.nearby_floats else "None currently in range"
+        pred_summary = "None requested / normal background conditions."
+        if ctx.active_prediction:
+            p = ctx.active_prediction
+            h_days = p.get("horizon_days", 3)
+            tgt = p.get("target", f"event_within_{h_days}d")
+            score = p.get("model_estimated_probability", p.get("probability", 0.0))
+            th = p.get("alert_threshold", p.get("threshold", 0.27))
+            top_feats = [f.get("feature", "") for f in p.get("top_features", [])[:4]]
+            observed = p.get("observed_state", {})
+            historical = p.get("historical_context", {})
+            obs_summary = f"SST {observed.get('sea_surface_temperature_c', 'N/A')}°C, SSS {observed.get('sea_surface_salinity_psu', 'N/A')} PSU, Current {observed.get('surface_current_speed_ms', 'N/A')} m/s, MLD {observed.get('mixed_layer_depth_m', 'N/A')} m" if observed else "Observed conditions segregated"
+            hist_summary = f"Nearest: {historical.get('event_name', 'None')} ({historical.get('distance_days', 'N/A')} days away)" if historical.get("event_name") else "No nearby historical disaster"
+
+            pred_summary = (
+                f"Selected Horizon: {h_days}d (Target Model: {tgt}), "
+                f"Warning Level: {p.get('warning_level', 'NO_ALERT')}, "
+                f"Model-Estimated Risk Score: {score:.3f} (Operational Horizon Threshold: {th:.2f}), "
+                f"Event Type: {p.get('event_type', 'none')}, "
+                f"Top Associated Physical Drivers: {', '.join(top_feats) if top_feats else 'None'}, "
+                f"[OBSERVED]: {obs_summary}, "
+                "SCIENTIFIC GUARDRAILS: Each horizon has a distinct causal target definition, with logically nested labels. 0d and 1d models do not demonstrate useful discriminative ability and are statistically underpowered; 2d and especially 3d models show stronger preliminary discrimination. Risk scores are uncalibrated empirical associations. Do NOT assert causation."
+            )
 
         system_prompt = cls.SYSTEM_PROMPT_TEMPLATE.format(
             active_site=ctx.active_site,
@@ -54,7 +76,7 @@ CORE INSTRUCTIONS:
             time_offset=ctx.time_offset,
             nearby_floats=nearby_str,
             data_mode=data_mode
-        )
+        ) + f"\n- Extreme Event & Early Warning Telemetry: {pred_summary}\n"
 
         provider = (req.provider or "gemini").lower()
         effective_key = req.api_key
@@ -101,6 +123,8 @@ CORE INSTRUCTIONS:
             provider="SagarBot Oceanographic Physics Engine (Offline)",
             grounded_context=ctx.model_dump()
         )
+
+
 
     @classmethod
     async def _call_gemini(cls, message: str, system_prompt: str, api_key: str) -> str:
@@ -256,6 +280,48 @@ CORE INSTRUCTIONS:
                 f"• Argo Cycle Dynamics: APEX/PROVOR floats drift at a 1,000 m parking depth for 10 days, descend to 2,000 m, and profile "
                 f"CTD parameters to the surface, transmitting real-time data via Iridium satellite."
             )
+
+        if any(w in t for w in ["risk", "cyclone", "storm", "warning", "early warning", "predict", "forecast", "alert", "advisory", "extreme", "heatwave"]):
+            pred_info = None
+            if ctx.active_prediction:
+                pred_info = ctx.active_prediction
+            else:
+                try:
+                    from .prediction_service import PredictionService
+                    from ..models.schemas import PredictionRequest
+                    p_date = ctx.historical_date or "2024-08-01"
+                    req_p = PredictionRequest(
+                        date=p_date,
+                        lat=lat,
+                        lon=lon,
+                        mode="point",
+                        horizon_days=3,
+                    )
+                    pred_res = PredictionService.predict(req_p)
+                    pred_info = pred_res.model_dump()
+                except Exception:
+                    pred_info = None
+
+            if pred_info:
+                prob = pred_info.get("model_estimated_probability", pred_info.get("probability", 0.0))
+                thresh = pred_info.get("alert_threshold", pred_info.get("threshold", 0.27))
+                warning_lvl = pred_info.get("warning_level", "NO_ALERT")
+                ev_type = str(pred_info.get("event_type", "cyclone / severe weather")).replace("_", " ").title()
+                horizon = pred_info.get("horizon_days", 3)
+                target_name = pred_info.get("target", f"event_within_{horizon}d")
+                top_feats = [f"{f['feature']} ({round(f.get('importance', 0)*100, 1)}%)" for f in pred_info.get("top_features", pred_info.get("explainability", {}).get("top_features", []))[:3]]
+                top_str = ", ".join(top_feats) if top_feats else "current velocity change and SST anomalies"
+
+                return (
+                    f"AI Early Warning Assessment for {site_name}:\n"
+                    f"• Forecast Horizon: {horizon} Days (Model Target: {target_name})\n"
+                    f"• Warning Status: [{warning_lvl}] (Operational Threshold: {thresh:.2f})\n"
+                    f"• Model-Estimated Risk Score: {prob:.2f} ({prob*100:.1f}% uncalibrated RF score)\n"
+                    f"• Event Archetype: {ev_type}\n"
+                    f"• Top Associated Physical Indicators: {top_str}\n"
+                    f"• Data Source: Copernicus Marine 0.083° Physical Reanalysis\n"
+                    f"• Scientific Guardrails: Each horizon has a distinct causal target definition, with logically nested labels. The current 0-day and 1-day models do not demonstrate useful discriminative ability on the held-out test set and are statistically underpowered given the limited number of independent events; the 2-day and especially 3-day models show stronger preliminary discrimination in the current experiment. Risk scores are uncalibrated empirical associations. Feature importance does not prove physical causality. Research/decision-support baseline only, not an operational warning system."
+                )
 
         if any(w in t for w in ["data", "upload", "netcdf", "csv", "source", "provenance", "grid"]):
             return (
