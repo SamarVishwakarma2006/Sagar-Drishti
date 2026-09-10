@@ -213,10 +213,19 @@ class TabularParser:
         clean_id = f"custom_tab_{abs(hash(filename)) % 1000000}"
         clean_name = filename.replace(".csv", "").replace(".txt", "").replace("_", " ").title()
 
+        # Extract single-day or multi-variable custom observation if present
+        custom_obs = cls._extract_custom_observation(
+            df, time_col, lat_col, lon_col,
+            temp_col, sal_col, cur_u_col, cur_v_col, ssh_col, mld_col
+        )
+
         # Compute summary physics
-        t_mean = float(df[temp_col].mean()) if temp_col and not df[temp_col].isna().all() else 26.0
-        s_mean = float(df[sal_col].mean()) if sal_col and not df[sal_col].isna().all() else 34.8
+        t_mean = float(custom_obs["thetao"]) if (custom_obs and "thetao" in custom_obs) else (float(df[temp_col].mean()) if temp_col and not df[temp_col].isna().all() else 26.0)
+        s_mean = float(custom_obs["so"]) if (custom_obs and "so" in custom_obs) else (float(df[sal_col].mean()) if sal_col and not df[sal_col].isna().all() else 34.8)
         o_mean = float(df[oxy_col].mean()) if oxy_col and not df[oxy_col].isna().all() else 160.0
+        mld_val = float(custom_obs["mlotst"]) if (custom_obs and "mlotst" in custom_obs) else min(60.0, max(25.0, max_depth * 0.08))
+        u_val = float(custom_obs["uo"]) if (custom_obs and "uo" in custom_obs) else 0.15
+        v_val = float(custom_obs["vo"]) if (custom_obs and "vo" in custom_obs) else 0.08
 
         site_record = SitePhysics(
             id=clean_id,
@@ -226,18 +235,18 @@ class TabularParser:
             lon=round(center_lon, 4),
             maxDepth=max(50.0, round(max_depth, 1)),
             blurb=f"In-situ observation dataset '{filename}' parsed with {len(floats)} float/station profiles and {len(df)} depth measurements.",
-            ts=round(t_mean + 2.0, 1),
-            ss=round(s_mean - 0.5, 2),
+            ts=round(t_mean, 2),
+            ss=round(s_mean, 2),
             td=round(max(1.5, t_mean - 18.0), 1),
             sd=round(s_mean + 0.3, 2),
-            mld=min(60.0, max(25.0, max_depth * 0.08)),
+            mld=round(mld_val, 1),
             tw=40.0,
             salMaxAmp=0.3,
             salMaxZ=110.0,
             flow=0.4,
             eddy=200.0,
-            bgU=0.15,
-            bgV=0.08,
+            bgU=round(u_val, 2),
+            bgV=round(v_val, 2),
             o2s=round(o_mean + 20.0, 1),
             o2d=round(max(30.0, o_mean - 40.0), 1),
             o2z0=85.0,
@@ -248,7 +257,8 @@ class TabularParser:
             variables=["temp", "sal", "cur", "oxy"],
             isCustom=True,
             sourceType="TABULAR_OBSERVATION",
-            floats=floats
+            floats=floats,
+            custom_observation=custom_obs,
         )
 
         return {
@@ -259,10 +269,7 @@ class TabularParser:
             "float_count": len(floats),
             "floats": floats,
             "site_record": site_record,
-            "custom_observation": cls._extract_custom_observation(
-                df, time_col, lat_col, lon_col,
-                temp_col, sal_col, cur_u_col, cur_v_col, ssh_col, mld_col
-            ),
+            "custom_observation": custom_obs,
         }
 
     @classmethod

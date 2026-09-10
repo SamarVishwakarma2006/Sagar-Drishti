@@ -59,7 +59,7 @@ export const OceanAPI = {
     // Client-side fallback parsing
     if (ext === 'csv' || ext === 'txt') {
       const text = await file.text();
-      const { site, floats } = ClientCsvParser.parseCsv(text, file.name);
+      const { site, floats, customObservation } = ClientCsvParser.parseCsv(text, file.name);
       return {
         site_id: site.id,
         name: site.name,
@@ -71,6 +71,7 @@ export const OceanAPI = {
         variables: site.variables || ['temp', 'sal', 'cur', 'oxy'],
         float_count: floats.length,
         site_record: site,
+        custom_observation: customObservation || site.custom_observation || null,
       };
     } else {
       const buffer = await file.arrayBuffer();

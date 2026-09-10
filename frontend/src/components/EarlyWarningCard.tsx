@@ -26,6 +26,7 @@ interface EarlyWarningCardProps {
   regionName?: string;
   compact?: boolean;
   onClose?: () => void;
+  customObservation?: any;
 }
 
 export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
@@ -35,6 +36,7 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
   regionName,
   compact = false,
   onClose,
+  customObservation,
 }) => {
   const s = useApp();
   const [horizon, setHorizon] = useState<number>(3);
@@ -44,18 +46,42 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
   const [prediction, setPrediction] = useState<PredictionResponse | null>(null);
   const [showVariableBreakdown, setShowVariableBreakdown] = useState<boolean>(false);
 
+  // Robust resolution of custom observation
+  const activeCustomObs =
+    customObservation ||
+    s.customObservation ||
+    s.site?.custom_observation ||
+    s.activeUpload?.custom_observation ||
+    (s.site?.isCustom
+      ? {
+          date: s.site.custom_observation?.date || '2026-06-24',
+          lat: s.site.lat,
+          lon: s.site.lon,
+          thetao: s.site.ts,
+          so: s.site.ss,
+          uo: s.site.bgU,
+          vo: s.site.bgV,
+          zos: 0.24,
+          mlotst: s.site.mld,
+        }
+      : null);
+
+  const isCustomMode = Boolean(
+    activeCustomObs &&
+      (s.customDataMode || s.site?.isCustom || !siteId || siteId.startsWith('custom_'))
+  );
+
   // Target date for prediction:
-  // If custom observation exists in customDataMode, use its exact date!
+  // If custom observation exists in custom mode, always use its exact date!
   // Otherwise, use s.historicalDate if historicalMode is active, else default to '2024-10-24'
-  const isCustomMode = s.customDataMode && !!s.customObservation;
   const targetDate = isCustomMode
-    ? s.customObservation!.date
+    ? activeCustomObs!.date
     : (s.historicalMode ? s.historicalDate : (s.historicalDate || '2024-10-24'));
 
   // Resolve study site or coordinates
   const effectiveSiteId = isCustomMode ? undefined : (siteId || (s.site?.id === 'bob' || s.site?.id === 'aras' ? s.site.id : undefined));
-  const effectiveLat = isCustomMode ? s.customObservation?.lat : (lat !== undefined ? lat : s.site?.lat);
-  const effectiveLon = isCustomMode ? s.customObservation?.lon : (lon !== undefined ? lon : s.site?.lon);
+  const effectiveLat = isCustomMode ? activeCustomObs?.lat : (lat !== undefined ? lat : s.site?.lat);
+  const effectiveLon = isCustomMode ? activeCustomObs?.lon : (lon !== undefined ? lon : s.site?.lon);
   const effectiveRegion = isCustomMode
     ? `Custom Observation (${effectiveLat?.toFixed(2)}°N, ${effectiveLon?.toFixed(2)}°E)`
     : (regionName || s.site?.name || (effectiveSiteId === 'aras' ? 'Arabian Sea' : 'Bay of Bengal'));
@@ -70,18 +96,18 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
 
       try {
         let res: PredictionResponse;
-        if (isCustomMode && s.customObservation) {
+        if (isCustomMode && activeCustomObs) {
           const customReq: CustomPredictionRequest = {
-            date: s.customObservation.date,
-            lat: s.customObservation.lat,
-            lon: s.customObservation.lon,
+            date: activeCustomObs.date,
+            lat: activeCustomObs.lat,
+            lon: activeCustomObs.lon,
             horizon_days: horizon,
-            thetao: s.customObservation.thetao,
-            so: s.customObservation.so,
-            uo: s.customObservation.uo,
-            vo: s.customObservation.vo,
-            zos: s.customObservation.zos,
-            mlotst: s.customObservation.mlotst,
+            thetao: activeCustomObs.thetao,
+            so: activeCustomObs.so,
+            uo: activeCustomObs.uo,
+            vo: activeCustomObs.vo,
+            zos: activeCustomObs.zos,
+            mlotst: activeCustomObs.mlotst,
           };
           res = await PredictionAPI.predictCustom(customReq);
         } else {
@@ -127,7 +153,7 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
     return () => {
       isCancelled = true;
     };
-  }, [targetDate, horizon, effectiveSiteId, effectiveLat, effectiveLon, isCustomMode, s.customObservation]);
+  }, [targetDate, horizon, effectiveSiteId, effectiveLat, effectiveLon, isCustomMode, activeCustomObs?.date, activeCustomObs?.thetao]);
 
   const warningLevel = prediction?.warning_level || 'NO_ALERT';
   const prob = prediction ? Math.round((prediction.model_estimated_probability ?? prediction.probability) * 100) : 0;
@@ -412,7 +438,9 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
             {activeTab === 'observed' && (
               <div className="space-y-2 font-mono text-[9px] animate-fade-in">
                 <div className="p-2 rounded bg-cyan-950/20 border border-cyan-500/30 text-cyan-200">
-                  <div className="font-semibold text-[9.5px]">REAL MEASURED / REANALYSIS CONDITIONS</div>
+                  <div className="font-semibold text-[9.5px]">
+                    {isCustomMode ? 'CUSTOM INGESTED OBSERVATION STATE' : 'REAL MEASURED / REANALYSIS CONDITIONS'}
+                  </div>
                   <div className="text-[8.5px] text-cyan-300/80 mt-0.5">
                     Spatial sector: {prediction.observed_state?.spatial_coverage || effectiveRegion} · Date: {prediction.observed_state?.observation_date || targetDate}
                   </div>
@@ -422,37 +450,61 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
                   <div className="p-2 rounded bg-white/[0.02] border border-line/40">
                     <div className="text-[8px] text-dim uppercase">Sea Surface Temp (thetao)</div>
                     <div className="text-[13px] font-semibold text-mist mt-0.5">
-                      {prediction.observed_state?.surface_temperature_c?.toFixed(2) ?? '—'} <span className="text-[9px] text-dim">°C</span>
+                      {(
+                        prediction.observed_state?.surface_temperature_c ??
+                        prediction.observed_state?.sea_surface_temperature_c ??
+                        activeCustomObs?.thetao
+                      )?.toFixed(2) ?? '—'}{' '}
+                      <span className="text-[9px] text-dim">°C</span>
                     </div>
                   </div>
 
                   <div className="p-2 rounded bg-white/[0.02] border border-line/40">
                     <div className="text-[8px] text-dim uppercase">Salinity (so)</div>
                     <div className="text-[13px] font-semibold text-mist mt-0.5">
-                      {prediction.observed_state?.surface_salinity_psu?.toFixed(2) ?? '—'} <span className="text-[9px] text-dim">PSU</span>
+                      {(
+                        prediction.observed_state?.surface_salinity_psu ??
+                        prediction.observed_state?.sea_surface_salinity_psu ??
+                        activeCustomObs?.so
+                      )?.toFixed(2) ?? '—'}{' '}
+                      <span className="text-[9px] text-dim">PSU</span>
                     </div>
                   </div>
 
                   <div className="p-2 rounded bg-white/[0.02] border border-line/40">
                     <div className="text-[8px] text-dim uppercase">Current Speed</div>
                     <div className="text-[13px] font-semibold text-mist mt-0.5">
-                      {prediction.observed_state?.current_speed_mps?.toFixed(2) ?? '—'} <span className="text-[9px] text-dim">m/s</span>
+                      {(
+                        prediction.observed_state?.current_speed_mps ??
+                        prediction.observed_state?.surface_current_speed_ms ??
+                        (activeCustomObs?.uo !== undefined && activeCustomObs?.vo !== undefined
+                          ? Math.hypot(activeCustomObs.uo, activeCustomObs.vo)
+                          : undefined)
+                      )?.toFixed(2) ?? '—'}{' '}
+                      <span className="text-[9px] text-dim">m/s</span>
                     </div>
                   </div>
 
                   <div className="p-2 rounded bg-white/[0.02] border border-line/40">
                     <div className="text-[8px] text-dim uppercase">Sea Surface Height (zos)</div>
                     <div className="text-[13px] font-semibold text-mist mt-0.5">
-                      {prediction.observed_state?.sea_surface_height_m?.toFixed(3) ?? '—'} <span className="text-[9px] text-dim">m</span>
+                      {(
+                        prediction.observed_state?.sea_surface_height_m ?? activeCustomObs?.zos
+                      )?.toFixed(3) ?? '—'}{' '}
+                      <span className="text-[9px] text-dim">m</span>
                     </div>
                   </div>
                 </div>
 
-                {prediction.observed_state?.mixed_layer_depth_m !== undefined && (
+                {(prediction.observed_state?.mixed_layer_depth_m !== undefined ||
+                  activeCustomObs?.mlotst !== undefined) && (
                   <div className="p-2 rounded bg-white/[0.02] border border-line/40 flex justify-between items-center">
                     <span className="text-[8.5px] text-dim uppercase">Mixed Layer Depth (mlotst):</span>
                     <span className="text-[12px] font-semibold text-accent">
-                      {prediction.observed_state.mixed_layer_depth_m.toFixed(1)} m
+                      {(
+                        prediction.observed_state?.mixed_layer_depth_m ?? activeCustomObs?.mlotst
+                      )?.toFixed(1)}{' '}
+                      m
                     </span>
                   </div>
                 )}

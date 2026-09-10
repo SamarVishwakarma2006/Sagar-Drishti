@@ -78,11 +78,15 @@ export const SitePanel: React.FC<{ onDive: () => void }> = ({ onDive }) => {
           <span>AI EARLY WARNING (ML RISK)</span>
         </button>
 
-        {s.historicalMode && (
+        {site.isCustom ? (
+          <span className="ml-auto font-mono text-[8.5px] text-accent bg-accent/10 border border-accent/30 rounded px-1.5 py-0.5">
+            CUSTOM {site.custom_observation?.date || s.customObservation?.date || 'OBSERVATION'}
+          </span>
+        ) : s.historicalMode ? (
           <span className="ml-auto font-mono text-[8.5px] text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded px-1.5 py-0.5">
             COPERNICUS {s.historicalDate}
           </span>
-        )}
+        ) : null}
       </div>
 
       {viewMode === 'telemetry' ? (
@@ -135,6 +139,7 @@ export const SitePanel: React.FC<{ onDive: () => void }> = ({ onDive }) => {
             lon={site.lon}
             regionName={site.name}
             compact={true}
+            customObservation={site.custom_observation || s.customObservation || s.activeUpload?.custom_observation}
           />
         </div>
       )}

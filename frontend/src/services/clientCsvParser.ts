@@ -1,7 +1,7 @@
 import { SitePhysics, FloatRecord, ProfilePoint, ProfileResult, BoundingBox } from '../types/ocean';
 
 export class ClientCsvParser {
-  static parseCsv(text: string, filename: string): { site: SitePhysics; floats: FloatRecord[] } {
+  static parseCsv(text: string, filename: string): { site: SitePhysics; floats: FloatRecord[]; customObservation?: any } {
     const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
     if (lines.length < 2) {
       throw new Error('CSV file contains insufficient data');
@@ -20,15 +20,20 @@ export class ClientCsvParser {
     const findIdx = (patterns: RegExp[]) =>
       headers.findIndex((h) => patterns.some((p) => p.test(h)));
 
+    const timeIdx = findIdx([/^time/, /^date/, /^datetime/, /^timestamp/, /^juld/]);
     const latIdx = findIdx([/^lat/, /^latitude/, /^y$/]);
     const lonIdx = findIdx([/^lon/, /^long/, /^longitude/, /^x$/]);
     const depthIdx = findIdx([/^depth/, /^pres/, /^pressure/, /^z$/]);
-    const tempIdx = findIdx([/^temp/, /^temperature/, /^sst/]);
-    const salIdx = findIdx([/^sal/, /^salinity/, /^psal/, /^sss/]);
-    const oxyIdx = findIdx([/^oxy/, /^oxygen/, /^doxy/, /^o2/]);
+    const tempIdx = findIdx([/^thetao$/, /^temp/, /^temperature/, /^sst/]);
+    const salIdx = findIdx([/^so$/, /^sal/, /^salinity/, /^psal/, /^sss/]);
+    const uoIdx = findIdx([/^uo$/, /^cur_u/, /^u_velocity/, /^u$/]);
+    const voIdx = findIdx([/^vo$/, /^cur_v/, /^v_velocity/, /^v$/]);
     const spdIdx = findIdx([/^cur/, /^current/, /^speed/, /^velocity/]);
+    const sshIdx = findIdx([/^zos$/, /^ssh/, /^sea_surface_height/]);
+    const mldIdx = findIdx([/^mlotst$/, /^mld/, /^mixed_layer/]);
+    const oxyIdx = findIdx([/^oxy/, /^oxygen/, /^doxy/, /^o2/]);
     const dirIdx = findIdx([/^dir/, /^direction/, /^heading/]);
-    const idIdx = findIdx([/^platform/, /^float/, /^id/, /^wmo/]);
+    const idIdx = findIdx([/^platform/, /^float/, /^id/, /^wmo/, /^station/]);
     const cycleIdx = findIdx([/^cycle/, /^cast/, /^profile/]);
 
     if (latIdx === -1 || lonIdx === -1) {
@@ -36,6 +41,8 @@ export class ClientCsvParser {
     }
 
     const rows: any[] = [];
+    let firstDate: string | undefined = undefined;
+
     for (let i = headerIdx + 1; i < lines.length; i++) {
       const parts = lines[i].split(sep).map((p) => p.trim().replace(/['"]/g, ''));
       if (parts.length <= Math.max(latIdx, lonIdx)) continue;
@@ -44,16 +51,26 @@ export class ClientCsvParser {
       const lon = parseFloat(parts[lonIdx]);
       if (isNaN(lat) || isNaN(lon)) continue;
 
+      if (!firstDate && timeIdx !== -1 && parts[timeIdx]) {
+        firstDate = parts[timeIdx].split('T')[0].split(' ')[0];
+      }
+
       const depth = depthIdx !== -1 ? Math.abs(parseFloat(parts[depthIdx]) || 0) : 0;
-      const temp = tempIdx !== -1 ? parseFloat(parts[tempIdx]) : 24.0 - depth * 0.012;
-      const sal = salIdx !== -1 ? parseFloat(parts[salIdx]) : 34.5 + depth * 0.001;
-      const oxy = oxyIdx !== -1 ? parseFloat(parts[oxyIdx]) : Math.max(10, 180 - depth * 0.2);
-      const cur = spdIdx !== -1 ? parseFloat(parts[spdIdx]) : Math.max(0.05, 0.45 - depth * 0.0003);
-      const dir = dirIdx !== -1 ? parseFloat(parts[dirIdx]) : 45.0;
+      const temp = tempIdx !== -1 && !isNaN(parseFloat(parts[tempIdx])) ? parseFloat(parts[tempIdx]) : 24.0 - depth * 0.012;
+      const sal = salIdx !== -1 && !isNaN(parseFloat(parts[salIdx])) ? parseFloat(parts[salIdx]) : 34.5 + depth * 0.001;
+      const uo = uoIdx !== -1 && !isNaN(parseFloat(parts[uoIdx])) ? parseFloat(parts[uoIdx]) : undefined;
+      const vo = voIdx !== -1 && !isNaN(parseFloat(parts[voIdx])) ? parseFloat(parts[voIdx]) : undefined;
+      const cur = spdIdx !== -1 && !isNaN(parseFloat(parts[spdIdx]))
+        ? parseFloat(parts[spdIdx])
+        : (uo !== undefined && vo !== undefined ? Math.sqrt(uo * uo + vo * vo) : Math.max(0.05, 0.45 - depth * 0.0003));
+      const zos = sshIdx !== -1 && !isNaN(parseFloat(parts[sshIdx])) ? parseFloat(parts[sshIdx]) : undefined;
+      const mld = mldIdx !== -1 && !isNaN(parseFloat(parts[mldIdx])) ? parseFloat(parts[mldIdx]) : undefined;
+      const oxy = oxyIdx !== -1 && !isNaN(parseFloat(parts[oxyIdx])) ? parseFloat(parts[oxyIdx]) : Math.max(10, 180 - depth * 0.2);
+      const dir = dirIdx !== -1 && !isNaN(parseFloat(parts[dirIdx])) ? parseFloat(parts[dirIdx]) : 45.0;
       const id = idIdx !== -1 ? parts[idIdx] : `Float_${Math.floor(lat * 10)}_${Math.floor(lon * 10)}`;
       const cycle = cycleIdx !== -1 ? parseInt(parts[cycleIdx], 10) || 1 : 1;
 
-      rows.push({ lat, lon, depth, temp, sal, oxy, cur, dir, id, cycle });
+      rows.push({ lat, lon, depth, temp, sal, oxy, cur, dir, id, cycle, uo, vo, zos, mld });
     }
 
     if (rows.length === 0) {
@@ -120,6 +137,23 @@ export class ClientCsvParser {
       max_lon: maxLon,
     };
 
+    let customObs: any = null;
+    if (rows.length > 0 && (tempIdx !== -1 || salIdx !== -1 || uoIdx !== -1 || voIdx !== -1 || sshIdx !== -1 || mldIdx !== -1)) {
+      const r0 = rows[0];
+      const obsDate = firstDate || new Date().toISOString().split('T')[0];
+      customObs = {
+        date: obsDate,
+        lat: r0.lat,
+        lon: r0.lon,
+        thetao: tempIdx !== -1 ? r0.temp : undefined,
+        so: salIdx !== -1 ? r0.sal : undefined,
+        uo: r0.uo,
+        vo: r0.vo,
+        zos: r0.zos,
+        mlotst: r0.mld,
+      };
+    }
+
     const site: SitePhysics = {
       id: cleanId,
       name: `${cleanName} (Tabular Upload)`,
@@ -128,18 +162,18 @@ export class ClientCsvParser {
       lon: centerLon,
       maxDepth: siteMaxDepth,
       blurb: `User dataset '${filename}' parsed with ${floats.length} float stations and ${rows.length} depth observations.`,
-      ts: rows[0]?.temp || 28.0,
-      ss: rows[0]?.sal || 34.5,
+      ts: customObs?.thetao ?? (rows[0]?.temp || 28.0),
+      ss: customObs?.so ?? (rows[0]?.sal || 34.5),
       td: 2.8,
       sd: 34.8,
-      mld: 40.0,
+      mld: customObs?.mlotst ?? 40.0,
       tw: 45.0,
       salMaxAmp: 0.3,
       salMaxZ: 100.0,
       flow: 0.4,
       eddy: 200.0,
-      bgU: 0.15,
-      bgV: 0.08,
+      bgU: customObs?.uo ?? 0.15,
+      bgV: customObs?.vo ?? 0.08,
       o2s: rows[0]?.oxy || 180.0,
       o2d: 150.0,
       o2z0: 90.0,
@@ -151,8 +185,9 @@ export class ClientCsvParser {
       isCustom: true,
       sourceType: 'TABULAR_OBSERVATION',
       floats,
+      custom_observation: customObs,
     };
 
-    return { site, floats };
+    return { site, floats, customObservation: customObs };
   }
 }

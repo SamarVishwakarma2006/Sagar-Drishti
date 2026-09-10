@@ -256,6 +256,7 @@ export const Inspector: React.FC = () => {
           lon={pos.lon}
           regionName={site.name}
           compact={true}
+          customObservation={site.custom_observation || s.customObservation || s.activeUpload?.custom_observation}
         />
 
         {/* Physical readings */}

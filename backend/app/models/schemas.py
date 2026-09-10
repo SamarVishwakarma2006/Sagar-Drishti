@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List, Dict, Any, Optional, Union
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class BoundingBox(BaseModel):
@@ -79,6 +79,7 @@ class SitePhysics(BaseModel):
     sourceType: str = "INCOIS_BASELINE"
     floats: Optional[List[FloatRecord]] = None
     customFilePath: Optional[str] = None
+    custom_observation: Optional[Dict[str, Any]] = None
 
 
 class DataSliceRequest(BaseModel):
@@ -406,6 +407,37 @@ class CustomObservationRequest(BaseModel):
     vo: Optional[float] = Field(None, description="Northward sea water velocity (m/s)")
     zos: Optional[float] = Field(None, description="Sea surface height above geoid (m)")
     mlotst: Optional[float] = Field(None, description="Mixed layer thickness (m)")
+
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_field_aliases(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            # Coordinate aliases
+            if "lat" not in data and "latitude" in data:
+                data["lat"] = data["latitude"]
+            if "lon" not in data and "longitude" in data:
+                data["lon"] = data["longitude"]
+            # Physical variable aliases
+            if ("thetao" not in data or data["thetao"] is None):
+                if "surface_temperature_c" in data:
+                    data["thetao"] = data["surface_temperature_c"]
+                elif "sea_surface_temperature_c" in data:
+                    data["thetao"] = data["sea_surface_temperature_c"]
+            if ("so" not in data or data["so"] is None):
+                if "surface_salinity_psu" in data:
+                    data["so"] = data["surface_salinity_psu"]
+                elif "sea_surface_salinity_psu" in data:
+                    data["so"] = data["sea_surface_salinity_psu"]
+            if ("zos" not in data or data["zos"] is None):
+                if "sea_surface_height_m" in data:
+                    data["zos"] = data["sea_surface_height_m"]
+            if ("mlotst" not in data or data["mlotst"] is None):
+                if "mixed_layer_depth_m" in data:
+                    data["mlotst"] = data["mixed_layer_depth_m"]
+            if ("uo" not in data or data["uo"] is None) and "current_speed_mps" in data:
+                if "vo" not in data or data["vo"] is None:
+                    data["uo"] = data["current_speed_mps"]
+        return data
 
 
 

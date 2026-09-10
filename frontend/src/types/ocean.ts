@@ -109,6 +109,7 @@ export interface SitePhysics extends LatLon {
   isCustom?: boolean;
   sourceType?: string;
   floats?: FloatRecord[];
+  custom_observation?: CustomObservation | null;
 }
 
 export interface ColorbarSettings {

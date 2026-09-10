@@ -960,11 +960,16 @@ class PredictionService:
         )
 
         observed_payload = {
+            "surface_temperature_c": round(float(feature_vector.get("temp_current", 0.0)), 2),
             "sea_surface_temperature_c": round(float(feature_vector.get("temp_current", 0.0)), 2),
+            "surface_salinity_psu": round(float(feature_vector.get("sal_current", 0.0)), 2),
             "sea_surface_salinity_psu": round(float(feature_vector.get("sal_current", 0.0)), 2),
+            "current_speed_mps": round(float(feature_vector.get("cur_current", 0.0)), 3),
             "surface_current_speed_ms": round(float(feature_vector.get("cur_current", 0.0)), 3),
             "sea_surface_height_m": round(float(feature_vector.get("ssh_current", 0.0)), 3),
             "mixed_layer_depth_m": round(float(feature_vector.get("mld_current", 0.0)), 1),
+            "observation_date": req.date,
+            "spatial_coverage": f"Custom Observation ({req.lat:.2f}°N, {req.lon:.2f}°E)",
             "temp_30d_baseline_mean_c": round(float(feature_vector.get("temp_base_mean", 0.0)), 2),
             "mld_30d_baseline_mean_m": round(float(feature_vector.get("mld_base_mean", 0.0)), 1),
             "provenance": "Custom In-situ Observation (User Upload)",

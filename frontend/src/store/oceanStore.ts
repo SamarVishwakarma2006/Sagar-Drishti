@@ -87,20 +87,27 @@ export const store = {
 
   // Ingestion and study sites actions
   addUploadedSite(meta: IngestionMetadata) {
+    const obs = meta.custom_observation || meta.site_record.custom_observation || null;
     const exists = state.uploadedSites.some((s) => s.id === meta.site_id);
+    const updatedSite = {
+      ...meta.site_record,
+      custom_observation: obs,
+    };
     const updated = exists
-      ? state.uploadedSites.map((s) => (s.id === meta.site_id ? meta.site_record : s))
-      : [meta.site_record, ...state.uploadedSites];
+      ? state.uploadedSites.map((s) => (s.id === meta.site_id ? updatedSite : s))
+      : [updatedSite, ...state.uploadedSites];
 
     state = {
       ...state,
       uploadedSites: updated,
       activeUpload: meta,
       customDataMode: true,
-      customObservation: meta.custom_observation || null,
-      site: meta.site_record,
+      customObservation: obs,
+      historicalMode: false,
+      historicalDate: obs?.date || state.historicalDate,
+      site: updatedSite,
       selection: null,
-      depth: Math.min(60, meta.site_record.maxDepth * 0.2),
+      depth: Math.min(60, updatedSite.maxDepth * 0.2),
     };
     listeners.forEach((listener) => listener());
   },
