@@ -2,7 +2,7 @@ import React from 'react';
 import { useApp, store } from '../store/oceanStore';
 import { VARIABLES, timeUTC } from '../services/syntheticOcean';
 import { VariableKey } from '../types/ocean';
-import { Waves, Thermometer, Droplets, Wind, Sliders } from 'lucide-react';
+import { Waves, Thermometer, Droplets, Wind, Sliders, AlertTriangle } from 'lucide-react';
 
 const iconMap: Record<string, React.ReactNode> = {
   Thermometer: <Thermometer size={13} />,
@@ -14,9 +14,16 @@ const iconMap: Record<string, React.ReactNode> = {
 interface TopBarProps {
   onToggleColorbar?: () => void;
   showColorbar?: boolean;
+  onToggleDisasters?: () => void;
+  showDisasters?: boolean;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ onToggleColorbar, showColorbar }) => {
+export const TopBar: React.FC<TopBarProps> = ({
+  onToggleColorbar,
+  showColorbar,
+  onToggleDisasters,
+  showDisasters,
+}) => {
   const s = useApp();
   const uw = s.phase === 'underwater';
 
@@ -76,6 +83,54 @@ export const TopBar: React.FC<TopBarProps> = ({ onToggleColorbar, showColorbar }
             <span className="hidden sm:inline">COLORBAR</span>
           </button>
         )}
+
+        {/* Historical Disaster & Hazard Zone Marker */}
+        {onToggleDisasters && (
+          <button
+            onClick={onToggleDisasters}
+            title="Historical Disasters & 3D Globe Hazard Area Marker"
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded text-[10px] font-mono border transition-colors ${
+              showDisasters || s.activeHazardZone
+                ? 'border-rose-500/60 text-rose-200 bg-rose-500/20 font-semibold shadow-sm'
+                : 'border-line text-dim hover:text-amber-200 hover:border-amber-500/40 bg-white/[0.02]'
+            }`}
+          >
+            <AlertTriangle
+              size={12}
+              className={s.activeHazardZone ? 'text-rose-400 animate-pulse' : 'text-amber-400'}
+            />
+            <span className="hidden sm:inline">
+              {s.activeHazardZone ? 'HAZARD ZONE ACTIVE' : 'DISASTER HAZARDS'}
+            </span>
+          </button>
+        )}
+
+        {/* Copernicus Historical Mode Toggle */}
+        <div className="flex items-center gap-1.5 border border-line rounded px-2 py-0.5 bg-white/[0.02]">
+          <button
+            onClick={() => store.setHistoricalMode(!s.historicalMode)}
+            className={`text-[9px] font-mono tracking-wider px-1.5 py-0.5 rounded transition-colors ${
+              s.historicalMode
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold'
+                : 'text-dim hover:text-mist'
+            }`}
+            title="Toggle Copernicus Marine 2-Year Historical Reanalysis (2024–2026)"
+          >
+            {s.historicalMode ? 'HISTORICAL LIVE' : 'HISTORICAL'}
+          </button>
+
+          {s.historicalMode && (
+            <input
+              type="date"
+              min="2024-06-24"
+              max="2026-06-23"
+              value={s.historicalDate}
+              onChange={(e) => store.setHistoricalDate(e.target.value)}
+              className="bg-black/60 border border-line text-amber-200 text-[10px] font-mono px-1.5 py-0.5 rounded outline-none focus:border-amber-500/50"
+              title="Copernicus Historical Reanalysis Date (2024-06-24 to 2026-06-23)"
+            />
+          )}
+        </div>
 
         {uw && (
           <span className="font-mono text-[10px] text-dim hidden lg:inline border border-line rounded px-2.5 py-1">

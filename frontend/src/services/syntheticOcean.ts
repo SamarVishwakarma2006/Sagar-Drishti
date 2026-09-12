@@ -94,6 +94,8 @@ export const CMAPS: Record<VariableKey, { label: string; ref: string; stops: [nu
   sal: PALETTES.haline,
   cur: PALETTES.speed,
   oxy: PALETTES.oxy,
+  ssh: PALETTES.curl,
+  mld: PALETTES.deep,
 };
 
 export const VAR_COLORS: Record<VariableKey, string> = {
@@ -101,13 +103,17 @@ export const VAR_COLORS: Record<VariableKey, string> = {
   sal: '#7fd0d2',
   cur: '#a9c0d6',
   oxy: '#c9a7cd',
+  ssh: '#56d4e2',
+  mld: '#e2b45a',
 };
 
-export const FIELD: Record<VariableKey, 'temperature' | 'salinity' | 'currentSpeed' | 'oxygen'> = {
+export const FIELD: Record<VariableKey, 'temperature' | 'salinity' | 'currentSpeed' | 'oxygen' | 'ssh' | 'mld'> = {
   temp: 'temperature',
   sal: 'salinity',
   cur: 'currentSpeed',
   oxy: 'oxygen',
+  ssh: 'ssh',
+  mld: 'mld',
 };
 
 export const VARIABLES: { key: VariableKey; label: string; unit: string; icon: string; digits: number }[] = [
@@ -122,6 +128,7 @@ export const PROV: Record<Provenance, { label: string; color: string; dashed?: b
   interpolated: { label: 'Interpolated', color: '#9db0ba', dashed: true },
   modelled: { label: 'Modelled', color: '#8fb0c9' },
   predicted: { label: 'Predicted', color: '#e2b45a' },
+  historical: { label: 'Historical Reanalysis', color: '#f59e0b' },
 };
 
 export const PROV_SRC: Record<Provenance, string> = {
@@ -129,6 +136,7 @@ export const PROV_SRC: Record<Provenance, string> = {
   interpolated: 'analysis L4 · multi-mission altimetry (0.25°)',
   modelled: 'INDOMOD reanalysis · INCOIS / MoES',
   predicted: 'NCUM-O coupled forecast · 48 h horizon',
+  historical: 'Copernicus Marine Global Ocean Physics Reanalysis (0.083° daily)',
 };
 
 export function hex2rgb(h: string): [number, number, number] {

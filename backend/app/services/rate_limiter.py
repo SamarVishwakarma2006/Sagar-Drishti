@@ -43,6 +43,12 @@ class RateLimiter:
             while client_queue and client_queue[0] <= window_start:
                 client_queue.popleft()
 
+            # Periodic memory prune: clean up idle client entries if dictionary has grown
+            if len(self._client_history) > 1000:
+                idle_clients = [cid for cid, q in self._client_history.items() if not q or q[-1] <= window_start]
+                for cid in idle_clients:
+                    del self._client_history[cid]
+
             # Check client rate limit
             if len(client_queue) >= self.max_requests:
                 oldest = client_queue[0]

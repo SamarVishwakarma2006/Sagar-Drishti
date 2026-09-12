@@ -1,11 +1,9 @@
-import io
 import os
 import tempfile
 import numpy as np
-import pandas as pd
 from typing import Dict, Any, List, Optional, Tuple
 import xarray as xr
-from ..models.schemas import BoundingBox, VariableStats, SitePhysics, FloatRecord, ProfileResult, ProfilePoint
+from ..models.schemas import BoundingBox, VariableStats, SitePhysics
 
 
 class NetCDFParser:
@@ -26,7 +24,9 @@ class NetCDFParser:
         "cur_u": ["u", "uo", "vozocrtx", "u_current", "cur_u", "current_u", "eastward_sea_water_velocity", "u_east"],
         "cur_v": ["v", "vo", "vomecrty", "v_current", "cur_v", "current_v", "northward_sea_water_velocity", "v_north"],
         "oxy": ["oxygen", "o2", "doxy", "dissolved_oxygen", "DOX2", "moles_of_oxygen_per_unit_mass_in_sea_water", "o2_sat"],
-        "chl": ["chla", "chlorophyll", "chl", "CPHL", "mass_concentration_of_chlorophyll_a_in_sea_water"]
+        "chl": ["chla", "chlorophyll", "chl", "CPHL", "mass_concentration_of_chlorophyll_a_in_sea_water"],
+        "ssh": ["zos", "sea_surface_height", "ssh", "sea_surface_elevation", "zos_detrended"],
+        "mld": ["mlotst", "mixed_layer_depth", "mld", "ocean_mixed_layer_thickness"]
     }
 
     @classmethod

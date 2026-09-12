@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useApp, store, toast } from '../store/oceanStore';
 import {
   Ocean,
@@ -12,7 +12,8 @@ import {
   clamp,
 } from '../services/syntheticOcean';
 import { VariableKey, FloatRecord, ProfileResult, ProvInfo, LatLon } from '../types/ocean';
-import { Radio, Crosshair, X, Info, Copy, Check } from 'lucide-react';
+import { Radio, Crosshair, X, Info, Copy } from 'lucide-react';
+import { EarlyWarningCard } from './EarlyWarningCard';
 
 const ProfileChart: React.FC<{
   prof: ProfileResult;
@@ -57,7 +58,7 @@ const ProfileChart: React.FC<{
             (p, i) =>
               `${i ? 'L' : 'M'}${(
                 L +
-                clamp((p[FIELD[k]] - rg.min) / Math.max(1e-6, rg.max - rg.min), 0, 1) *
+                clamp(((p[FIELD[k]] ?? 0) - rg.min) / Math.max(1e-6, rg.max - rg.min), 0, 1) *
                   (W - L - R)
               ).toFixed(1)} ${y(p.depth).toFixed(1)}`
           )
@@ -152,13 +153,21 @@ export const Inspector: React.FC = () => {
         time: timeISO(tOff),
         position: { lat: +pos.lat.toFixed(4), lon: +pos.lon.toFixed(4) },
         depth_m: Math.round(depth),
-        provenance: prov.provenance,
-        source: prov.source,
+        provenance: isFloat ? 'observed' : s.historicalMode ? 'historical' : prov.provenance,
+        source: isFloat ? (f ? f.source : 'Argo GDAC') : s.historicalMode ? 'Copernicus Marine PHY Reanalysis' : prov.source,
         temperature_C: +sample.temperature.toFixed(3),
         salinity_PSU: +sample.salinity.toFixed(3),
         current_mps: +sample.currentSpeed.toFixed(3),
         current_dir_deg: +sample.currentDir.toFixed(1),
         oxygen_umolkg: +sample.oxygen.toFixed(2),
+        prediction: s.activePrediction
+          ? {
+              horizon_days: s.activePrediction.horizon_days,
+              risk_level: s.activePrediction.prediction,
+              event_type: s.activePrediction.event_type,
+              probability: s.activePrediction.probability,
+            }
+          : null,
       };
       navigator.clipboard.writeText(JSON.stringify(data, null, 2));
       toast('Inspector telemetry copied as JSON');
@@ -168,7 +177,7 @@ export const Inspector: React.FC = () => {
   };
 
   return (
-    <div className="absolute z-30 right-3 md:right-4 top-14 bottom-4 max-md:left-3 max-md:top-auto max-md:bottom-3 max-md:max-h-[54vh] w-[calc(100vw-24px)] md:w-[300px] glass flex flex-col overflow-hidden border border-line shadow-2xl">
+    <div className="absolute z-30 right-3 md:right-4 top-14 bottom-4 max-md:left-3 max-md:top-auto max-md:bottom-3 max-md:max-h-[58vh] w-[calc(100vw-24px)] md:w-[320px] glass flex flex-col overflow-hidden border border-line shadow-2xl">
       {/* Header */}
       <div className="flex items-center gap-2 px-3.5 py-3 border-b border-line bg-accent/[0.04]">
         <span className="text-accent">
@@ -179,7 +188,7 @@ export const Inspector: React.FC = () => {
             {isFloat ? `Argo ${f?.id}` : 'Virtual Water Probe'}
           </div>
           <div className="font-mono text-[8.5px] text-dim tracking-wider">
-            {isFloat ? 'IN-SITU OBSERVATION' : 'MODEL FIELD SAMPLER'}
+            {isFloat ? 'IN-SITU OBSERVATION' : s.historicalMode ? 'COPERNICUS HISTORICAL REANALYSIS' : 'MODEL FIELD SAMPLER'}
           </div>
         </div>
         <button
@@ -192,7 +201,31 @@ export const Inspector: React.FC = () => {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-3.5 py-3 space-y-3">
+        {/* Coordinate & Provenance Info */}
         <div className="space-y-1.5 font-mono text-[10px] bg-white/[0.02] p-2.5 rounded border border-line">
+          <div className="flex justify-between items-center pb-1 border-b border-line/40">
+            <span className="text-dim text-[8.5px]">DATA PROVENANCE:</span>
+            <div className="flex items-center gap-1.5">
+              {isFloat ? (
+                <span className="px-1.5 py-0.5 rounded text-[8px] font-mono tracking-wider font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                  OBSERVED
+                </span>
+              ) : s.historicalMode ? (
+                <span className="px-1.5 py-0.5 rounded text-[8px] font-mono tracking-wider font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                  HISTORICAL
+                </span>
+              ) : (
+                <span className="px-1.5 py-0.5 rounded text-[8px] font-mono tracking-wider font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                  MODELLED
+                </span>
+              )}
+              {s.activePrediction && (
+                <span className="px-1.5 py-0.5 rounded text-[8px] font-mono tracking-wider font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/40">
+                  PREDICTED
+                </span>
+              )}
+            </div>
+          </div>
           <div className="flex justify-between">
             <span className="text-dim">COORDINATES:</span>
             <span className="text-mist">
@@ -205,7 +238,7 @@ export const Inspector: React.FC = () => {
           </div>
           <div className="flex justify-between">
             <span className="text-dim">TIMESTAMP:</span>
-            <span className="text-mist">{timeISO(tOff)}</span>
+            <span className="text-mist">{s.historicalMode ? s.historicalDate : timeISO(tOff)}</span>
           </div>
           {isFloat && f && (
             <div className="flex justify-between">
@@ -216,6 +249,15 @@ export const Inspector: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Dedicated ML Early Warning Card */}
+        <EarlyWarningCard
+          lat={pos.lat}
+          lon={pos.lon}
+          regionName={site.name}
+          compact={true}
+          customObservation={site.custom_observation || s.customObservation || s.activeUpload?.custom_observation}
+        />
 
         {/* Physical readings */}
         <div className="grid grid-cols-2 gap-2">

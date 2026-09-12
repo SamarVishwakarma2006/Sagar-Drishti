@@ -25,10 +25,16 @@ export const SiteExplorer: React.FC = () => {
   }, [allSites, q]);
 
   const selectSite = (site: SitePhysics) => {
+    const isCustom = !!site.isCustom;
+    const obs = site.custom_observation || (isCustom ? s.customObservation : null);
+
     store.set({
       site,
       selection: null,
-      customDataMode: !!site.isCustom,
+      customDataMode: isCustom,
+      customObservation: obs,
+      historicalMode: isCustom ? false : s.historicalMode,
+      historicalDate: isCustom && obs?.date ? obs.date : s.historicalDate,
       depth: Math.min(60, site.maxDepth * 0.2),
     });
 

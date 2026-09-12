@@ -128,6 +128,65 @@ npm.cmd run dev
 - Seamless multi-LLM integration powered by Google Gemini, Groq, or OpenAI via environment variables.
 - Automatic graceful fallback to a deterministic oceanographic physics engine when offline.
 
+### 4. Copernicus Marine 2-Year Historical Data Pipeline
+Sagar Drishti natively integrates Copernicus Marine Global Ocean Physics Reanalysis (`cmems_mod_glo_phy_my_0.083deg_P1D-m`) as an authentic, first-class historical ocean data source.
+
+#### Key Specifications:
+- **Dataset ID**: `cmems_mod_glo_phy_my_0.083deg_P1D-m`
+- **Variables**: `mlotst`, `so`, `thetao`, `uo`, `vo`, `zos`
+- **Standardized Fields**:
+  - `thetao` $\to$ `temp` (Sea Water Temperature, °C)
+  - `so` $\to$ `sal` (Practical Salinity, PSU)
+  - `uo` $\to$ `cur_u` (Eastward velocity, m/s)
+  - `vo` $\to$ `cur_v` (Northward velocity, m/s)
+  - `zos` $\to$ `ssh` (Sea Surface Height, m)
+  - `mlotst` $\to$ `mld` (Mixed Layer Depth, m)
+  - Derived: `current_speed = sqrt(uo² + vo²)` (computed dynamically on the fly without duplicating disk storage)
+- **Spatial Coverage**: Longitude $50^\circ\text{E}$ to $100^\circ\text{E}$, Latitude $0^\circ\text{N}$ to $25^\circ\text{N}$ (Northern Indian Ocean, Arabian Sea, Bay of Bengal)
+- **Temporal Coverage**: Daily frequency ($2024\text{-}06\text{-}24$ to $2026\text{-}06\text{-}23$)
+- **Depth**: Surface layer ($0.494\text{ m}$)
+- **Storage Location**: `backend/data/copernicus/` (`copernicus_phy_2yr_surface.nc` and `metadata.json`)
+
+#### Configuration & Credentials:
+Register for a free Copernicus Marine account at [marine.copernicus.eu](https://marine.copernicus.eu).
+Set your credentials in `backend/.env` (or global environment):
+```bash
+COPERNICUSMARINE_SERVICE_USERNAME="your_copernicus_username"
+COPERNICUSMARINE_SERVICE_PASSWORD="your_copernicus_password"
+COPERNICUS_DATA_DIR="data/copernicus"
+```
+*(Alternatively, log in once via the official CLI: `copernicusmarine login`)*
+
+#### How to Trigger Ingestion:
+1. **Via CLI script (Recommended)**:
+   ```powershell
+   python backend/scripts/ingest_copernicus.py
+   ```
+2. **Via REST API (Non-blocking background worker)**:
+   ```bash
+   curl -X POST http://localhost:8000/api/historical/ingest
+   ```
+
+#### Verification & Slicing:
+- Check ingestion & validation status:
+  ```powershell
+  python backend/scripts/ingest_copernicus.py --status
+  # or
+  curl http://localhost:8000/api/historical/status
+  ```
+- Run mandatory post-download validation check:
+  ```powershell
+  python backend/scripts/ingest_copernicus.py --validate-only
+  ```
+- Query a historical 2D horizontal depth slice (lazy disk-backed access):
+  ```bash
+  curl "http://localhost:8000/api/historical/slice?date=2024-07-01&variable=temp&resolution=48"
+  ```
+- Query a point coordinate observation:
+  ```bash
+  curl "http://localhost:8000/api/historical/point?date=2024-07-01&lat=15.0&lon=85.0&variable=cur"
+  ```
+
 ---
 
 ## ⚖️ License

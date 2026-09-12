@@ -1,0 +1,901 @@
+{
+  "model_name": "RandomForestClassifier",
+  "version": "1.1.0",
+  "training_date": "2026-09-10T06:41:41.566084+00:00",
+  "feature_count": 101,
+  "feature_list": [
+    "temp_current",
+    "temp_base_mean",
+    "temp_base_std",
+    "temp_abs_anom",
+    "temp_zscore",
+    "temp_7d_mean",
+    "temp_7d_delta",
+    "temp_7d_trend",
+    "temp_14d_mean",
+    "temp_14d_delta",
+    "temp_14d_trend",
+    "temp_30d_mean",
+    "temp_30d_delta",
+    "temp_30d_trend",
+    "sal_current",
+    "sal_base_mean",
+    "sal_base_std",
+    "sal_abs_anom",
+    "sal_zscore",
+    "sal_pct_anom",
+    "sal_7d_mean",
+    "sal_7d_delta",
+    "sal_7d_trend",
+    "sal_14d_mean",
+    "sal_14d_delta",
+    "sal_14d_trend",
+    "sal_30d_mean",
+    "sal_30d_delta",
+    "sal_30d_trend",
+    "cur_u_current",
+    "cur_u_base_mean",
+    "cur_u_base_std",
+    "cur_u_abs_anom",
+    "cur_u_zscore",
+    "cur_u_7d_mean",
+    "cur_u_7d_delta",
+    "cur_u_7d_trend",
+    "cur_u_14d_mean",
+    "cur_u_14d_delta",
+    "cur_u_14d_trend",
+    "cur_u_30d_mean",
+    "cur_u_30d_delta",
+    "cur_u_30d_trend",
+    "cur_v_current",
+    "cur_v_base_mean",
+    "cur_v_base_std",
+    "cur_v_abs_anom",
+    "cur_v_zscore",
+    "cur_v_7d_mean",
+    "cur_v_7d_delta",
+    "cur_v_7d_trend",
+    "cur_v_14d_mean",
+    "cur_v_14d_delta",
+    "cur_v_14d_trend",
+    "cur_v_30d_mean",
+    "cur_v_30d_delta",
+    "cur_v_30d_trend",
+    "cur_current",
+    "cur_base_mean",
+    "cur_base_std",
+    "cur_abs_anom",
+    "cur_zscore",
+    "cur_pct_anom",
+    "cur_7d_mean",
+    "cur_7d_delta",
+    "cur_7d_trend",
+    "cur_14d_mean",
+    "cur_14d_delta",
+    "cur_14d_trend",
+    "cur_30d_mean",
+    "cur_30d_delta",
+    "cur_30d_trend",
+    "ssh_current",
+    "ssh_base_mean",
+    "ssh_base_std",
+    "ssh_abs_anom",
+    "ssh_zscore",
+    "ssh_7d_mean",
+    "ssh_7d_delta",
+    "ssh_7d_trend",
+    "ssh_14d_mean",
+    "ssh_14d_delta",
+    "ssh_14d_trend",
+    "ssh_30d_mean",
+    "ssh_30d_delta",
+    "ssh_30d_trend",
+    "mld_current",
+    "mld_base_mean",
+    "mld_base_std",
+    "mld_abs_anom",
+    "mld_zscore",
+    "mld_pct_anom",
+    "mld_7d_mean",
+    "mld_7d_delta",
+    "mld_7d_trend",
+    "mld_14d_mean",
+    "mld_14d_delta",
+    "mld_14d_trend",
+    "mld_30d_mean",
+    "mld_30d_delta",
+    "mld_30d_trend"
+  ],
+  "architecture": {
+    "family": "RandomForestClassifier",
+    "n_estimators": 200,
+    "max_depth": 5,
+    "min_samples_leaf": 2,
+    "class_weight": "balanced",
+    "random_state": 42
+  },
+  "horizons": {
+    "0d": {
+      "horizon_days": 0,
+      "target": "event_within_0d",
+      "description": "Active event occurring at observation timestamp T (lead = 0). Distinct causal target with logically nested labels.",
+      "artifact_file": "risk_model_0d.joblib",
+      "frozen_threshold": 0.15,
+      "train_counts": {
+        "positives": 13,
+        "total": 134,
+        "rate": 0.097
+      },
+      "val_counts": {
+        "positives": 7,
+        "total": 88,
+        "rate": 0.0795
+      },
+      "test_counts": {
+        "positives": 4,
+        "total": 152,
+        "rate": 0.0263
+      },
+      "validation_metrics": {
+        "precision": 0.0946,
+        "recall": 1.0,
+        "f1": 0.1728,
+        "roc_auc": 0.649,
+        "pr_auc": 0.2216,
+        "balanced_accuracy": 0.5864,
+        "confusion_matrix": [
+          [
+            14,
+            67
+          ],
+          [
+            0,
+            7
+          ]
+        ],
+        "true_positives": 7,
+        "false_positives": 67,
+        "true_negatives": 14,
+        "false_negatives": 0,
+        "false_positive_rate": 0.8272,
+        "specificity": 0.1728,
+        "total_samples": 88,
+        "positive_samples": 7
+      },
+      "test_metrics": {
+        "precision": 0.0288,
+        "recall": 1.0,
+        "f1": 0.0559,
+        "roc_auc": 0.2162,
+        "pr_auc": 0.0209,
+        "balanced_accuracy": 0.5439,
+        "confusion_matrix": [
+          [
+            13,
+            135
+          ],
+          [
+            0,
+            4
+          ]
+        ],
+        "true_positives": 4,
+        "false_positives": 135,
+        "true_negatives": 13,
+        "false_negatives": 0,
+        "false_positive_rate": 0.9122,
+        "specificity": 0.0878,
+        "total_samples": 152,
+        "positive_samples": 4
+      },
+      "event_detection": {
+        "event": "CS-FENGAL",
+        "detected": true,
+        "dates": [
+          "2024-11-25",
+          "2024-11-26",
+          "2024-11-27",
+          "2024-11-28",
+          "2024-11-29",
+          "2024-11-30",
+          "2024-12-01"
+        ]
+      },
+      "statistically_underpowered": true,
+      "underpowered_note": "The current 0-day model does not demonstrate useful discriminative ability on the held-out test set and is statistically underpowered given the limited number of independent events (only 4 positive observations in held-out test split, 2.6% prevalence)."
+    },
+    "1d": {
+      "horizon_days": 1,
+      "target": "event_within_1d",
+      "description": "Event is active OR begins within the next 1 day (t to t+1). Distinct causal target with logically nested labels.",
+      "artifact_file": "risk_model_1d.joblib",
+      "frozen_threshold": 0.15,
+      "train_counts": {
+        "positives": 16,
+        "total": 134,
+        "rate": 0.1194
+      },
+      "val_counts": {
+        "positives": 9,
+        "total": 88,
+        "rate": 0.1023
+      },
+      "test_counts": {
+        "positives": 5,
+        "total": 152,
+        "rate": 0.0329
+      },
+      "validation_metrics": {
+        "precision": 0.1228,
+        "recall": 0.7778,
+        "f1": 0.2121,
+        "roc_auc": 0.5781,
+        "pr_auc": 0.1632,
+        "balanced_accuracy": 0.5724,
+        "confusion_matrix": [
+          [
+            29,
+            50
+          ],
+          [
+            2,
+            7
+          ]
+        ],
+        "true_positives": 7,
+        "false_positives": 50,
+        "true_negatives": 29,
+        "false_negatives": 2,
+        "false_positive_rate": 0.6329,
+        "specificity": 0.3671,
+        "total_samples": 88,
+        "positive_samples": 9
+      },
+      "test_metrics": {
+        "precision": 0.0325,
+        "recall": 0.8,
+        "f1": 0.0625,
+        "roc_auc": 0.2653,
+        "pr_auc": 0.026,
+        "balanced_accuracy": 0.4952,
+        "confusion_matrix": [
+          [
+            28,
+            119
+          ],
+          [
+            1,
+            4
+          ]
+        ],
+        "true_positives": 4,
+        "false_positives": 119,
+        "true_negatives": 28,
+        "false_negatives": 1,
+        "false_positive_rate": 0.8095,
+        "specificity": 0.1905,
+        "total_samples": 152,
+        "positive_samples": 5
+      },
+      "event_detection": {
+        "event": "CS-FENGAL",
+        "detected": true,
+        "dates": [
+          "2024-11-27",
+          "2024-11-28",
+          "2024-11-29",
+          "2024-11-30"
+        ]
+      },
+      "statistically_underpowered": true,
+      "underpowered_note": "The current 1-day model does not demonstrate useful discriminative ability on the held-out test set and is statistically underpowered given the limited number of independent events (only 5 positive observations in held-out test split, 3.3% prevalence)."
+    },
+    "2d": {
+      "horizon_days": 2,
+      "target": "event_within_2d",
+      "description": "Event is active OR begins within the next 2 days (t to t+2). Distinct causal target with logically nested labels.",
+      "artifact_file": "risk_model_2d.joblib",
+      "frozen_threshold": 0.21,
+      "train_counts": {
+        "positives": 19,
+        "total": 134,
+        "rate": 0.1418
+      },
+      "val_counts": {
+        "positives": 11,
+        "total": 88,
+        "rate": 0.125
+      },
+      "test_counts": {
+        "positives": 6,
+        "total": 152,
+        "rate": 0.0395
+      },
+      "validation_metrics": {
+        "precision": 0.1111,
+        "recall": 0.3636,
+        "f1": 0.1702,
+        "roc_auc": 0.5136,
+        "pr_auc": 0.2895,
+        "balanced_accuracy": 0.474,
+        "confusion_matrix": [
+          [
+            45,
+            32
+          ],
+          [
+            7,
+            4
+          ]
+        ],
+        "true_positives": 4,
+        "false_positives": 32,
+        "true_negatives": 45,
+        "false_negatives": 7,
+        "false_positive_rate": 0.4156,
+        "specificity": 0.5844,
+        "total_samples": 88,
+        "positive_samples": 11
+      },
+      "test_metrics": {
+        "precision": 0.0588,
+        "recall": 1.0,
+        "f1": 0.1111,
+        "roc_auc": 0.6336,
+        "pr_auc": 0.058,
+        "balanced_accuracy": 0.6712,
+        "confusion_matrix": [
+          [
+            50,
+            96
+          ],
+          [
+            0,
+            6
+          ]
+        ],
+        "true_positives": 6,
+        "false_positives": 96,
+        "true_negatives": 50,
+        "false_negatives": 0,
+        "false_positive_rate": 0.6575,
+        "specificity": 0.3425,
+        "total_samples": 152,
+        "positive_samples": 6
+      },
+      "event_detection": {
+        "event": "CS-FENGAL",
+        "detected": true,
+        "dates": [
+          "2024-11-25",
+          "2024-11-26",
+          "2024-11-27",
+          "2024-11-28",
+          "2024-11-29",
+          "2024-11-30",
+          "2024-12-01"
+        ]
+      },
+      "statistically_underpowered": false,
+      "underpowered_note": null
+    },
+    "3d": {
+      "horizon_days": 3,
+      "target": "event_within_3d",
+      "description": "Event is active OR begins within the next 3 days (t to t+3). Distinct causal target with logically nested labels.",
+      "artifact_file": "risk_model_3d.joblib",
+      "frozen_threshold": 0.27,
+      "train_counts": {
+        "positives": 22,
+        "total": 134,
+        "rate": 0.1642
+      },
+      "val_counts": {
+        "positives": 13,
+        "total": 88,
+        "rate": 0.1477
+      },
+      "test_counts": {
+        "positives": 7,
+        "total": 152,
+        "rate": 0.0461
+      },
+      "validation_metrics": {
+        "precision": 0.3077,
+        "recall": 0.3077,
+        "f1": 0.3077,
+        "roc_auc": 0.5928,
+        "pr_auc": 0.3219,
+        "balanced_accuracy": 0.5938,
+        "confusion_matrix": [
+          [
+            66,
+            9
+          ],
+          [
+            9,
+            4
+          ]
+        ],
+        "true_positives": 4,
+        "false_positives": 9,
+        "true_negatives": 66,
+        "false_negatives": 9,
+        "false_positive_rate": 0.12,
+        "specificity": 0.88,
+        "total_samples": 88,
+        "positive_samples": 13
+      },
+      "test_metrics": {
+        "precision": 0.1148,
+        "recall": 1.0,
+        "f1": 0.2059,
+        "roc_auc": 0.8621,
+        "pr_auc": 0.1553,
+        "balanced_accuracy": 0.8138,
+        "confusion_matrix": [
+          [
+            91,
+            54
+          ],
+          [
+            0,
+            7
+          ]
+        ],
+        "true_positives": 7,
+        "false_positives": 54,
+        "true_negatives": 91,
+        "false_negatives": 0,
+        "false_positive_rate": 0.3724,
+        "specificity": 0.6276,
+        "total_samples": 152,
+        "positive_samples": 7
+      },
+      "event_detection": {
+        "event": "CS-FENGAL",
+        "detected": true,
+        "dates": [
+          "2024-11-25",
+          "2024-11-26",
+          "2024-11-27",
+          "2024-11-28",
+          "2024-11-29",
+          "2024-11-30",
+          "2024-12-01"
+        ]
+      },
+      "statistically_underpowered": false,
+      "underpowered_note": null
+    }
+  },
+  "train_date_range": [
+    "2024-07-24",
+    "2024-09-28"
+  ],
+  "validation_date_range": [
+    "2024-10-13",
+    "2024-11-25"
+  ],
+  "test_date_range": [
+    "2024-11-26",
+    "2025-02-09"
+  ],
+  "class_distribution": {
+    "overall": {
+      "total": 374,
+      "positives": 42,
+      "negatives": 332
+    },
+    "train": {
+      "total": 134,
+      "positives": 22,
+      "negatives": 112,
+      "date_range": [
+        "2024-07-24",
+        "2024-09-28"
+      ],
+      "events": [
+        "D-BOB04",
+        "SCS-ASNA",
+        "DD-BOB05"
+      ]
+    },
+    "validation": {
+      "total": 88,
+      "positives": 13,
+      "negatives": 75,
+      "date_range": [
+        "2024-10-13",
+        "2024-11-25"
+      ],
+      "events": [
+        "D-ARB01",
+        "SCS-DANA"
+      ]
+    },
+    "test": {
+      "total": 152,
+      "positives": 7,
+      "negatives": 145,
+      "date_range": [
+        "2024-11-26",
+        "2025-02-09"
+      ],
+      "events": [
+        "CS-FENGAL"
+      ]
+    }
+  },
+  "event_split": {
+    "train_events": [
+      "D-BOB04",
+      "SCS-ASNA",
+      "DD-BOB05"
+    ],
+    "validation_events": [
+      "D-ARB01",
+      "SCS-DANA"
+    ],
+    "test_events": [
+      "CS-FENGAL"
+    ]
+  },
+  "events_in_splits": {
+    "train_events": [
+      "D-BOB04",
+      "SCS-ASNA",
+      "DD-BOB05"
+    ],
+    "val_events": [
+      "D-ARB01",
+      "SCS-DANA"
+    ],
+    "test_events": [
+      "CS-FENGAL"
+    ]
+  },
+  "splits_row_counts": {
+    "train": 134,
+    "validation": 88,
+    "test": 152,
+    "total": 374
+  },
+  "candidate_models_validation": {
+    "RandomForest": {
+      "val_f1": 0.3077,
+      "val_pr_auc": 0.3219,
+      "val_roc_auc": 0.5928,
+      "val_recall": 0.3077
+    }
+  },
+  "selected_model": "RandomForestClassifier",
+  "selection_reason": "Random Forest provides the best trade-off between validation PR-AUC, high recall for genuine extreme events across both the Bay of Bengal and Arabian Sea, and non-linear feature interaction modeling without high-dimensional linear collapse.",
+  "threshold_selection_methodology": "Validation threshold sweep over [0.10, 0.50] in steps of 0.01. Evaluated independently for each forecast horizon. Selected horizon thresholds to maximize validation F1 and recall while minimizing false alarm days. Frozen prior to test set evaluation.",
+  "validation_metrics": {
+    "precision": 0.3077,
+    "recall": 0.3077,
+    "f1": 0.3077,
+    "roc_auc": 0.5928,
+    "pr_auc": 0.3219,
+    "balanced_accuracy": 0.5938,
+    "confusion_matrix": [
+      [
+        66,
+        9
+      ],
+      [
+        9,
+        4
+      ]
+    ],
+    "true_positives": 4,
+    "false_positives": 9,
+    "true_negatives": 66,
+    "false_negatives": 9,
+    "false_positive_rate": 0.12,
+    "specificity": 0.88,
+    "total_samples": 88,
+    "positive_samples": 13
+  },
+  "final_test_metrics": {
+    "precision": 0.1148,
+    "recall": 1.0,
+    "f1": 0.2059,
+    "roc_auc": 0.8621,
+    "pr_auc": 0.1553,
+    "balanced_accuracy": 0.8138,
+    "confusion_matrix": [
+      [
+        91,
+        54
+      ],
+      [
+        0,
+        7
+      ]
+    ],
+    "true_positives": 7,
+    "false_positives": 54,
+    "true_negatives": 91,
+    "false_negatives": 0,
+    "false_positive_rate": 0.3724,
+    "specificity": 0.6276,
+    "total_samples": 152,
+    "positive_samples": 7
+  },
+  "event_level_test_results": {
+    "event": "CS-FENGAL",
+    "detected": true,
+    "dates": [
+      "2024-11-25",
+      "2024-11-26",
+      "2024-11-27",
+      "2024-11-28",
+      "2024-11-29",
+      "2024-11-30",
+      "2024-12-01"
+    ]
+  },
+  "preprocessing": {
+    "scaling": "None required for tree models; StandardScaler applied ONLY to training data for Linear candidate",
+    "synthetic_oversampling": "Strictly avoided (no SMOTE, no synthetic row fabrication)",
+    "class_weight": "balanced"
+  },
+  "explainability": {
+    "top_features": [
+      {
+        "feature": "mld_14d_delta",
+        "importance": 0.0606
+      },
+      {
+        "feature": "mld_14d_trend",
+        "importance": 0.0518
+      },
+      {
+        "feature": "ssh_14d_delta",
+        "importance": 0.0464
+      },
+      {
+        "feature": "cur_v_30d_mean",
+        "importance": 0.0345
+      },
+      {
+        "feature": "cur_u_30d_mean",
+        "importance": 0.0339
+      },
+      {
+        "feature": "temp_30d_trend",
+        "importance": 0.0311
+      },
+      {
+        "feature": "sal_30d_trend",
+        "importance": 0.0257
+      },
+      {
+        "feature": "ssh_7d_trend",
+        "importance": 0.0253
+      },
+      {
+        "feature": "temp_30d_delta",
+        "importance": 0.025
+      },
+      {
+        "feature": "ssh_7d_delta",
+        "importance": 0.0245
+      }
+    ],
+    "top_15_features": [
+      {
+        "feature": "mld_14d_delta",
+        "importance": 0.0606
+      },
+      {
+        "feature": "mld_14d_trend",
+        "importance": 0.0518
+      },
+      {
+        "feature": "ssh_14d_delta",
+        "importance": 0.0464
+      },
+      {
+        "feature": "cur_v_30d_mean",
+        "importance": 0.0345
+      },
+      {
+        "feature": "cur_u_30d_mean",
+        "importance": 0.0339
+      },
+      {
+        "feature": "temp_30d_trend",
+        "importance": 0.0311
+      },
+      {
+        "feature": "sal_30d_trend",
+        "importance": 0.0257
+      },
+      {
+        "feature": "ssh_7d_trend",
+        "importance": 0.0253
+      },
+      {
+        "feature": "temp_30d_delta",
+        "importance": 0.025
+      },
+      {
+        "feature": "ssh_7d_delta",
+        "importance": 0.0245
+      },
+      {
+        "feature": "ssh_14d_trend",
+        "importance": 0.022
+      },
+      {
+        "feature": "mld_pct_anom",
+        "importance": 0.0211
+      },
+      {
+        "feature": "mld_30d_mean",
+        "importance": 0.0207
+      },
+      {
+        "feature": "cur_14d_trend",
+        "importance": 0.0195
+      },
+      {
+        "feature": "sal_7d_delta",
+        "importance": 0.0193
+      }
+    ],
+    "ocean_variable_importance": {
+      "temperature": 0.1257,
+      "salinity": 0.167,
+      "eastward_current": 0.0934,
+      "northward_current": 0.0949,
+      "current_speed": 0.0956,
+      "sea_surface_height": 0.1812,
+      "mixed_layer_depth": 0.242,
+      "currents": 0.2839,
+      "mixed_layer": 0.242
+    },
+    "time_window_importance": {
+      "current": 0.1888,
+      "7d": 0.1974,
+      "14d": 0.322,
+      "30d": 0.2918
+    },
+    "temporal_window_importance": {
+      "current": 0.1888,
+      "7d": 0.1974,
+      "14d": 0.322,
+      "30d": 0.2918
+    },
+    "all_feature_importances": {
+      "temp_current": 0.0086,
+      "temp_base_mean": 0.0001,
+      "temp_base_std": 0.0,
+      "temp_abs_anom": 0.0106,
+      "temp_zscore": 0.0134,
+      "temp_7d_mean": 0.0094,
+      "temp_7d_delta": 0.0029,
+      "temp_7d_trend": 0.0061,
+      "temp_14d_mean": 0.0017,
+      "temp_14d_delta": 0.002,
+      "temp_14d_trend": 0.0081,
+      "temp_30d_mean": 0.0067,
+      "temp_30d_delta": 0.025,
+      "temp_30d_trend": 0.0311,
+      "sal_current": 0.0131,
+      "sal_base_mean": 0.0,
+      "sal_base_std": 0.0,
+      "sal_abs_anom": 0.0068,
+      "sal_zscore": 0.0106,
+      "sal_pct_anom": 0.0094,
+      "sal_7d_mean": 0.0084,
+      "sal_7d_delta": 0.0193,
+      "sal_7d_trend": 0.0175,
+      "sal_14d_mean": 0.0121,
+      "sal_14d_delta": 0.0102,
+      "sal_14d_trend": 0.0131,
+      "sal_30d_mean": 0.0174,
+      "sal_30d_delta": 0.0034,
+      "sal_30d_trend": 0.0257,
+      "cur_u_current": 0.003,
+      "cur_u_base_mean": 0.0003,
+      "cur_u_base_std": 0.0,
+      "cur_u_abs_anom": 0.0041,
+      "cur_u_zscore": 0.0018,
+      "cur_u_7d_mean": 0.0064,
+      "cur_u_7d_delta": 0.0021,
+      "cur_u_7d_trend": 0.0015,
+      "cur_u_14d_mean": 0.0111,
+      "cur_u_14d_delta": 0.0109,
+      "cur_u_14d_trend": 0.0109,
+      "cur_u_30d_mean": 0.0339,
+      "cur_u_30d_delta": 0.0024,
+      "cur_u_30d_trend": 0.005,
+      "cur_v_current": 0.0029,
+      "cur_v_base_mean": 0.0,
+      "cur_v_base_std": 0.0,
+      "cur_v_abs_anom": 0.0051,
+      "cur_v_zscore": 0.0018,
+      "cur_v_7d_mean": 0.0048,
+      "cur_v_7d_delta": 0.0092,
+      "cur_v_7d_trend": 0.0106,
+      "cur_v_14d_mean": 0.0012,
+      "cur_v_14d_delta": 0.0033,
+      "cur_v_14d_trend": 0.0034,
+      "cur_v_30d_mean": 0.0345,
+      "cur_v_30d_delta": 0.0039,
+      "cur_v_30d_trend": 0.0142,
+      "cur_current": 0.0024,
+      "cur_base_mean": 0.0,
+      "cur_base_std": 0.0,
+      "cur_abs_anom": 0.0034,
+      "cur_zscore": 0.0023,
+      "cur_pct_anom": 0.0019,
+      "cur_7d_mean": 0.0093,
+      "cur_7d_delta": 0.0022,
+      "cur_7d_trend": 0.002,
+      "cur_14d_mean": 0.0094,
+      "cur_14d_delta": 0.0122,
+      "cur_14d_trend": 0.0195,
+      "cur_30d_mean": 0.0109,
+      "cur_30d_delta": 0.0028,
+      "cur_30d_trend": 0.0173,
+      "ssh_current": 0.0035,
+      "ssh_base_mean": 0.0,
+      "ssh_base_std": 0.0,
+      "ssh_abs_anom": 0.0113,
+      "ssh_zscore": 0.011,
+      "ssh_7d_mean": 0.0041,
+      "ssh_7d_delta": 0.0245,
+      "ssh_7d_trend": 0.0253,
+      "ssh_14d_mean": 0.0076,
+      "ssh_14d_delta": 0.0464,
+      "ssh_14d_trend": 0.022,
+      "ssh_30d_mean": 0.0119,
+      "ssh_30d_delta": 0.005,
+      "ssh_30d_trend": 0.0086,
+      "mld_current": 0.0059,
+      "mld_base_mean": 0.0,
+      "mld_base_std": 0.0,
+      "mld_abs_anom": 0.0187,
+      "mld_zscore": 0.0157,
+      "mld_pct_anom": 0.0211,
+      "mld_7d_mean": 0.0056,
+      "mld_7d_delta": 0.0125,
+      "mld_7d_trend": 0.0137,
+      "mld_14d_mean": 0.0044,
+      "mld_14d_delta": 0.0606,
+      "mld_14d_trend": 0.0518,
+      "mld_30d_mean": 0.0207,
+      "mld_30d_delta": 0.0042,
+      "mld_30d_trend": 0.0071
+    }
+  },
+  "limitations": [
+    "Small sample size with 6 authoritative historical events across 2024-2025.",
+    "Elevated false alarm rate during winter transition months due to persistent surface thermal and MLD anomalies.",
+    "Model operates on 0.083\u00b0 Copernicus surface reanalysis; sub-surface thermocline structure and atmospheric pressure gradients are not yet directly coupled.",
+    "Predictions outside validated Copernicus coverage (2024-07-23 to 2026-06-23) cannot be guaranteed and are explicitly rejected."
+  ],
+  "artifact_paths": {
+    "risk_model": "C:\\Users\\krishna\\OneDrive\\Desktop\\Sagar-Drishti\\backend\\models\\risk_model.joblib",
+    "risk_model_0d": "C:\\Users\\krishna\\OneDrive\\Desktop\\Sagar-Drishti\\backend\\models\\risk_model_0d.joblib",
+    "risk_model_1d": "C:\\Users\\krishna\\OneDrive\\Desktop\\Sagar-Drishti\\backend\\models\\risk_model_1d.joblib",
+    "risk_model_2d": "C:\\Users\\krishna\\OneDrive\\Desktop\\Sagar-Drishti\\backend\\models\\risk_model_2d.joblib",
+    "risk_model_3d": "C:\\Users\\krishna\\OneDrive\\Desktop\\Sagar-Drishti\\backend\\models\\risk_model_3d.joblib",
+    "model_metadata": "C:\\Users\\krishna\\OneDrive\\Desktop\\Sagar-Drishti\\backend\\models\\model_metadata.json"
+  },
+  "scientific_interpretation": {
+    "system_status": "research/decision-support baseline",
+    "event_proximity_finding": "87.5% of test false alarms occurred within 14 days of documented disturbances. This temporal proximity suggests that some false alarms may be associated with pre-event ocean-state changes or post-event recovery, but this remains a hypothesis requiring additional events and independent validation.",
+    "generalization_statement": "Preliminary event-level generalization was demonstrated on the held-out event. Additional historical events and independent future-period validation are required before making stronger generalization claims.",
+    "physical_preconditioning_finding": "The 3-day model shows the strongest predictive discrimination in this experiment. Its feature explanations identify ocean-state changes associated with elevated model scores; the physical preconditioning interpretation remains a hypothesis requiring additional events and independent ocean-atmosphere validation.",
+    "horizon_performance_finding": "The current 0-day and 1-day models do not demonstrate useful discriminative ability on the held-out test set and are statistically underpowered given the limited number of independent events. The 2-day and especially 3-day models show stronger preliminary discrimination in the current experiment.",
+    "probability_semantics": "Random Forest outputs are uncalibrated risk scores (model-estimated probability scores) evaluated against horizon-specific frozen decision thresholds. They do not represent frequentist probabilities."
+  },
+  "target": "event_within_3d",
+  "frozen_threshold": 0.27
+}

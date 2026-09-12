@@ -61,10 +61,15 @@ export const SagarBot: React.FC = () => {
     time_offset: `${s.timeOffset >= 0 ? '+' : ''}${s.timeOffset}h (${timeUTC(s.timeOffset)})`,
     nearby_floats: nearbyFloats,
     custom_data: s.customDataMode,
+    historical_date: s.historicalDate,
+    historical_mode: s.historicalMode,
+    active_prediction: s.activePrediction,
+    history: messages.slice(-6).map((m) => ({ role: m.role, text: m.text })),
+    session_id: `client_${site.id}`,
   });
 
-  const handleSend = async () => {
-    const text = input.trim();
+  const handleSend = async (overrideText?: string) => {
+    const text = (overrideText || input).trim();
     if (!text || typing || cooldown > 0) return;
 
     const userMsg: ChatMessage = {
@@ -91,6 +96,8 @@ export const SagarBot: React.FC = () => {
           text: resp.reply,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           provider: resp.provider,
+          intent: resp.intent,
+          evidence: resp.evidence,
         },
       ]);
     } catch (e: any) {
@@ -129,7 +136,7 @@ export const SagarBot: React.FC = () => {
   }
 
   return (
-    <div className="absolute right-3 md:right-4 top-14 bottom-4 z-40 w-[320px] max-md:w-[calc(100vw-24px)] glass flex flex-col overflow-hidden border border-line shadow-2xl">
+    <div className="absolute right-3 md:right-4 top-14 bottom-4 z-40 w-[340px] max-md:w-[calc(100vw-24px)] glass flex flex-col overflow-hidden border border-line shadow-2xl">
       {/* Header */}
       <div className="flex items-center gap-2 px-3 py-2.5 border-b border-line bg-accent/[0.04]">
         <Sparkles size={15} className="text-accent" />
@@ -141,7 +148,7 @@ export const SagarBot: React.FC = () => {
             </span>
           </div>
           <div className="font-mono text-[8px] text-dim tracking-wider">
-            LIVE OCEANOGRAPHIC CO-PILOT
+            DECISION-SUPPORT INTELLIGENCE
           </div>
         </div>
 
@@ -194,13 +201,41 @@ export const SagarBot: React.FC = () => {
             className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
           >
             <div
-              className={`max-w-[88%] px-2.5 py-1.5 rounded text-[11px] leading-relaxed ${
+              className={`max-w-[92%] px-2.5 py-1.5 rounded text-[11px] leading-relaxed ${
                 m.role === 'user'
                   ? 'bg-accent/15 text-mist border border-accent/30'
                   : 'bg-white/[0.04] text-mist/95 border border-line'
               }`}
             >
-              {m.text}
+              <div className="whitespace-pre-wrap font-sans text-[10.5px] leading-relaxed">
+                {m.text}
+              </div>
+
+              {/* Lightweight Evidence Badges (Requirement 27) */}
+              {m.evidence && (
+                <div className="mt-2 pt-1.5 border-t border-line/40 flex flex-wrap items-center gap-1 font-mono text-[7.5px]">
+                  {m.evidence.observed_sources && (
+                    <span className="px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 border border-blue-500/30">
+                      ✓ Copernicus Marine Reanalysis
+                    </span>
+                  )}
+                  {m.evidence.prediction_source?.model && (
+                    <span className="px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 border border-purple-500/30">
+                      ✓ ML Prediction ({m.evidence.prediction_source.target || 'Model'})
+                    </span>
+                  )}
+                  {m.evidence.historical_sources && (
+                    <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                      ✓ Historical Archive
+                    </span>
+                  )}
+                  {m.evidence.feature_explanations?.length > 0 && (
+                    <span className="px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                      ✓ Model Drivers ({m.evidence.feature_explanations.length})
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
             {m.provider && (
               <span className="text-[7.5px] font-mono text-dim/70 mt-0.5 px-1">
@@ -218,24 +253,26 @@ export const SagarBot: React.FC = () => {
         )}
       </div>
 
-      {/* Quick Prompt Chips */}
+      {/* Suggested Prompt Chips (Requirement 26) */}
       <div className="px-3 pt-1.5 pb-1 flex gap-1 flex-wrap border-t border-line">
         {[
-          'Thermocline',
-          'Halocline Barrier Layer',
-          'OMZ Core',
-          'Currents & Eddies',
-          'Argo Floats',
-        ].map((p) => (
+          { label: '🚨 Cyclone Risk in BOB?', text: 'Is there cyclone risk in the Bay of Bengal?' },
+          { label: '🔍 Why Risk Elevated?', text: 'Why is the risk elevated?' },
+          { label: '📜 Compare with Fengal', text: 'Compare this with Fengal' },
+          { label: '⏱️ Next 1 Day?', text: 'What about the next 1 day?' },
+          { label: '⚖️ BOB vs Arabian Sea', text: 'Compare Bay of Bengal vs Arabian Sea' },
+          { label: '🌡️ Temperature Here', text: 'What is the temperature here?' },
+        ].map((item) => (
           <button
-            key={p}
-            onClick={() => setInput(`Explain the ${p} at this depth and region.`)}
+            key={item.label}
+            onClick={() => handleSend(item.text)}
             className="text-[8px] font-mono text-dim hover:text-accent border border-line hover:border-accent/40 rounded px-1.5 py-0.5 transition-colors"
           >
-            {p}
+            {item.label}
           </button>
         ))}
       </div>
+
 
       {/* Message Input */}
       <div className="px-2.5 py-2 border-t border-line bg-black/20">
@@ -255,12 +292,13 @@ export const SagarBot: React.FC = () => {
             </span>
           ) : (
             <button
-              onClick={handleSend}
+              onClick={() => handleSend()}
               disabled={!input.trim() || typing || cooldown > 0}
               className="text-accent hover:text-mist disabled:opacity-30 disabled:cursor-not-allowed p-0.5"
             >
               <Send size={13} />
             </button>
+
           )}
         </div>
       </div>
