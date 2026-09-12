@@ -193,6 +193,8 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
     },
   }[warningLevel];
 
+  const c2 = prediction?.candidate_v2;
+
   return (
     <div className={`rounded-lg glass border ${statusConfig.border} overflow-hidden shadow-2xl transition-all duration-300 ${compact ? 'p-3 text-[11px]' : 'p-4 text-[12px]'}`}>
       {/* Header */}
@@ -270,11 +272,12 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
         </div>
       )}
 
-      {/* Model Probability Meter */}
-      <div className="mt-3 p-2.5 rounded bg-black/30 border border-line/40 space-y-2">
+      {/* Model Risk & Calibration Meters */}
+      <div className="mt-3 p-2.5 rounded bg-black/30 border border-line/40 space-y-2.5">
+        {/* Model confidence/risk score (Uncalibrated baseline) */}
         <div className="flex items-baseline justify-between">
           <span className="text-[10px] font-mono text-dim">
-            Model-estimated risk score:
+            Model confidence/risk score (v1.1.0):
           </span>
           <div className="text-right">
             <span className={`font-mono text-[16px] font-bold ${statusConfig.color}`}>
@@ -306,13 +309,74 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
           />
         </div>
 
+        {/* Post-Hoc Calibrated Probability & Operational Alert Engine V2 (Shadow Pipeline) */}
+        {c2 && (
+          <div className="pt-2 border-t border-line/30 space-y-2">
+            <div className="flex items-center justify-between text-[9px] font-mono">
+              <span className="text-accent font-semibold flex items-center gap-1">
+                <span>OPERATIONAL ALERT ENGINE V2</span>
+                <span className="px-1 py-0.2 text-[8px] rounded bg-accent/20 border border-accent/40 text-accent">SHADOW</span>
+              </span>
+              <span className="text-dim">
+                BASIN: <span className="text-mist font-semibold">{c2.basin}</span> ({c2.horizon}d)
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 bg-black/40 p-2 rounded border border-line/30">
+              <div>
+                <div className="text-[8.5px] font-mono text-dim uppercase">Calibrated Probability</div>
+                <div className="font-mono text-[14px] font-bold text-mist mt-0.5">
+                  {(c2.calibrated_probability * 100).toFixed(1)}%
+                </div>
+                <div className="text-[7.5px] font-mono text-dim flex items-center gap-1 mt-0.5">
+                  <span>Policy threshold:</span>
+                  <span className="text-mist font-semibold">{((c2.policy_threshold ?? c2.operational_threshold ?? 0.20) * 100).toFixed(0)}%</span>
+                </div>
+              </div>
+
+              <div>
+                <div className="text-[8.5px] font-mono text-dim uppercase">Risk Tier & Decision</div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold border ${
+                    c2.risk_tier === 'HIGH'
+                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                      : c2.risk_tier === 'MODERATE'
+                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                      : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                  }`}>
+                    {c2.risk_tier} TIER
+                  </span>
+                  <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold border ${
+                    (c2.alert_decision ?? c2.alert) === 'ALERT'
+                      ? 'bg-rose-500/20 text-rose-400 border-rose-500/50 animate-pulse'
+                      : (c2.alert_decision ?? c2.alert) === 'WATCH'
+                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
+                      : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                  }`}>
+                    {c2.alert_decision ?? c2.alert ?? 'NO_ALERT'}
+                  </span>
+                </div>
+                <div className="text-[7.5px] font-mono text-dim mt-1">
+                  Reason: <span className="text-accent/90">{c2.alert_reason || 'BELOW_THRESHOLD'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Persistence Status Bar */}
+            <div className="px-2 py-1 rounded bg-black/50 border border-line/30 flex items-center justify-between text-[8px] font-mono">
+              <span className="text-dim">PERSISTENCE STATUS:</span>
+              <span className="text-mist font-semibold">{c2.persistence_state || 'NO_PERSISTENCE'}</span>
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-between items-center text-[8.5px] font-mono text-dim">
           <span>0% BASELINE</span>
           <span className="text-accent/90">▲ ALERT THRESHOLD ({threshold}%)</span>
           <span>100% EXTREME</span>
         </div>
         <div className="text-[8px] font-mono text-dim/75 pt-1 border-t border-line/20">
-          Policy: Alert trigger &ge; {threshold}% (validation-frozen); High Alert &ge; 50% (presentation severity policy, not calibrated probability).
+          Policy: Raw tree score indicates model confidence/risk score. Only calibrated value represents statistical probability.
         </div>
       </div>
 

@@ -1,0 +1,609 @@
+{
+  "metadata_version": "1.0.0",
+  "created_at": "2026-09-11T14:24:20.507988+00:00",
+  "model_version": "2.0.0-10yr-candidate",
+  "calibration_method": "IsotonicRegression",
+  "training_split": "val",
+  "training_date_range": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "horizons": {
+    "0d": {
+      "artifact_file": "calibrator_0d.joblib",
+      "samples": 720,
+      "actual_positives": 38,
+      "before_calibration": {
+        "brier_score": 0.1183,
+        "ece": 0.1917,
+        "reliability_bins": [
+          {
+            "bin": 0,
+            "range": [
+              0.0,
+              0.2
+            ],
+            "count": 394,
+            "obs_freq": 0.0305,
+            "pred_conf": 0.0579,
+            "diff": 0.0274
+          },
+          {
+            "bin": 1,
+            "range": [
+              0.2,
+              0.4
+            ],
+            "count": 129,
+            "obs_freq": 0.0543,
+            "pred_conf": 0.3103,
+            "diff": 0.256
+          },
+          {
+            "bin": 2,
+            "range": [
+              0.4,
+              0.6
+            ],
+            "count": 130,
+            "obs_freq": 0.0462,
+            "pred_conf": 0.5093,
+            "diff": 0.4631
+          },
+          {
+            "bin": 3,
+            "range": [
+              0.6,
+              0.8
+            ],
+            "count": 64,
+            "obs_freq": 0.1562,
+            "pred_conf": 0.6785,
+            "diff": 0.5223
+          },
+          {
+            "bin": 4,
+            "range": [
+              0.8,
+              1.0
+            ],
+            "count": 3,
+            "obs_freq": 1.0,
+            "pred_conf": 0.811,
+            "diff": 0.189
+          }
+        ]
+      },
+      "after_calibration": {
+        "brier_score": 0.0374,
+        "ece": 0.0,
+        "reliability_bins": [
+          {
+            "bin": 0,
+            "range": [
+              0.0,
+              0.2
+            ],
+            "count": 695,
+            "obs_freq": 0.036,
+            "pred_conf": 0.036,
+            "diff": 0.0
+          },
+          {
+            "bin": 1,
+            "range": [
+              0.2,
+              0.4
+            ],
+            "count": 13,
+            "obs_freq": 0.2308,
+            "pred_conf": 0.2308,
+            "diff": 0.0
+          },
+          {
+            "bin": 2,
+            "range": [
+              0.4,
+              0.6
+            ],
+            "count": 2,
+            "obs_freq": 0.5,
+            "pred_conf": 0.5,
+            "diff": 0.0
+          },
+          {
+            "bin": 4,
+            "range": [
+              0.8,
+              1.0
+            ],
+            "count": 10,
+            "obs_freq": 0.9,
+            "pred_conf": 0.9,
+            "diff": 0.0
+          }
+        ]
+      }
+    },
+    "1d": {
+      "artifact_file": "calibrator_1d.joblib",
+      "samples": 720,
+      "actual_positives": 44,
+      "before_calibration": {
+        "brier_score": 0.1365,
+        "ece": 0.2035,
+        "reliability_bins": [
+          {
+            "bin": 0,
+            "range": [
+              0.0,
+              0.2
+            ],
+            "count": 383,
+            "obs_freq": 0.0339,
+            "pred_conf": 0.0566,
+            "diff": 0.0226
+          },
+          {
+            "bin": 1,
+            "range": [
+              0.2,
+              0.4
+            ],
+            "count": 109,
+            "obs_freq": 0.0459,
+            "pred_conf": 0.3051,
+            "diff": 0.2592
+          },
+          {
+            "bin": 2,
+            "range": [
+              0.4,
+              0.6
+            ],
+            "count": 102,
+            "obs_freq": 0.098,
+            "pred_conf": 0.4939,
+            "diff": 0.3958
+          },
+          {
+            "bin": 3,
+            "range": [
+              0.6,
+              0.8
+            ],
+            "count": 124,
+            "obs_freq": 0.1129,
+            "pred_conf": 0.6679,
+            "diff": 0.555
+          },
+          {
+            "bin": 4,
+            "range": [
+              0.8,
+              1.0
+            ],
+            "count": 2,
+            "obs_freq": 1.0,
+            "pred_conf": 0.8082,
+            "diff": 0.1918
+          }
+        ]
+      },
+      "after_calibration": {
+        "brier_score": 0.0462,
+        "ece": 0.0,
+        "reliability_bins": [
+          {
+            "bin": 0,
+            "range": [
+              0.0,
+              0.2
+            ],
+            "count": 698,
+            "obs_freq": 0.0458,
+            "pred_conf": 0.0458,
+            "diff": 0.0
+          },
+          {
+            "bin": 1,
+            "range": [
+              0.2,
+              0.4
+            ],
+            "count": 12,
+            "obs_freq": 0.3333,
+            "pred_conf": 0.3333,
+            "diff": 0.0
+          },
+          {
+            "bin": 3,
+            "range": [
+              0.6,
+              0.8
+            ],
+            "count": 6,
+            "obs_freq": 0.6667,
+            "pred_conf": 0.6667,
+            "diff": 0.0
+          },
+          {
+            "bin": 4,
+            "range": [
+              0.8,
+              1.0
+            ],
+            "count": 4,
+            "obs_freq": 1.0,
+            "pred_conf": 1.0,
+            "diff": 0.0
+          }
+        ]
+      }
+    },
+    "2d": {
+      "artifact_file": "calibrator_2d.joblib",
+      "samples": 720,
+      "actual_positives": 50,
+      "before_calibration": {
+        "brier_score": 0.1412,
+        "ece": 0.2042,
+        "reliability_bins": [
+          {
+            "bin": 0,
+            "range": [
+              0.0,
+              0.2
+            ],
+            "count": 370,
+            "obs_freq": 0.0243,
+            "pred_conf": 0.0594,
+            "diff": 0.0351
+          },
+          {
+            "bin": 1,
+            "range": [
+              0.2,
+              0.4
+            ],
+            "count": 123,
+            "obs_freq": 0.0976,
+            "pred_conf": 0.3077,
+            "diff": 0.2102
+          },
+          {
+            "bin": 2,
+            "range": [
+              0.4,
+              0.6
+            ],
+            "count": 90,
+            "obs_freq": 0.1111,
+            "pred_conf": 0.4876,
+            "diff": 0.3765
+          },
+          {
+            "bin": 3,
+            "range": [
+              0.6,
+              0.8
+            ],
+            "count": 136,
+            "obs_freq": 0.1324,
+            "pred_conf": 0.6771,
+            "diff": 0.5448
+          },
+          {
+            "bin": 4,
+            "range": [
+              0.8,
+              1.0
+            ],
+            "count": 1,
+            "obs_freq": 1.0,
+            "pred_conf": 0.8029,
+            "diff": 0.1971
+          }
+        ]
+      },
+      "after_calibration": {
+        "brier_score": 0.049,
+        "ece": 0.0,
+        "reliability_bins": [
+          {
+            "bin": 0,
+            "range": [
+              0.0,
+              0.2
+            ],
+            "count": 698,
+            "obs_freq": 0.0501,
+            "pred_conf": 0.0501,
+            "diff": 0.0
+          },
+          {
+            "bin": 2,
+            "range": [
+              0.4,
+              0.6
+            ],
+            "count": 14,
+            "obs_freq": 0.5,
+            "pred_conf": 0.5,
+            "diff": 0.0
+          },
+          {
+            "bin": 4,
+            "range": [
+              0.8,
+              1.0
+            ],
+            "count": 8,
+            "obs_freq": 1.0,
+            "pred_conf": 1.0,
+            "diff": 0.0
+          }
+        ]
+      }
+    },
+    "3d": {
+      "artifact_file": "calibrator_3d.joblib",
+      "samples": 720,
+      "actual_positives": 56,
+      "before_calibration": {
+        "brier_score": 0.1524,
+        "ece": 0.2073,
+        "reliability_bins": [
+          {
+            "bin": 0,
+            "range": [
+              0.0,
+              0.2
+            ],
+            "count": 369,
+            "obs_freq": 0.0325,
+            "pred_conf": 0.0624,
+            "diff": 0.0298
+          },
+          {
+            "bin": 1,
+            "range": [
+              0.2,
+              0.4
+            ],
+            "count": 121,
+            "obs_freq": 0.0909,
+            "pred_conf": 0.3239,
+            "diff": 0.233
+          },
+          {
+            "bin": 2,
+            "range": [
+              0.4,
+              0.6
+            ],
+            "count": 83,
+            "obs_freq": 0.1325,
+            "pred_conf": 0.4934,
+            "diff": 0.3609
+          },
+          {
+            "bin": 3,
+            "range": [
+              0.6,
+              0.8
+            ],
+            "count": 147,
+            "obs_freq": 0.1497,
+            "pred_conf": 0.6943,
+            "diff": 0.5447
+          }
+        ]
+      },
+      "after_calibration": {
+        "brier_score": 0.0606,
+        "ece": 0.0,
+        "reliability_bins": [
+          {
+            "bin": 0,
+            "range": [
+              0.0,
+              0.2
+            ],
+            "count": 658,
+            "obs_freq": 0.0547,
+            "pred_conf": 0.0547,
+            "diff": 0.0
+          },
+          {
+            "bin": 1,
+            "range": [
+              0.2,
+              0.4
+            ],
+            "count": 53,
+            "obs_freq": 0.2453,
+            "pred_conf": 0.2453,
+            "diff": 0.0
+          },
+          {
+            "bin": 3,
+            "range": [
+              0.6,
+              0.8
+            ],
+            "count": 9,
+            "obs_freq": 0.7778,
+            "pred_conf": 0.7778,
+            "diff": 0.0
+          }
+        ]
+      }
+    }
+  },
+  "basin_thresholds": {
+    "0d": {
+      "bob": 0.44,
+      "aras": 0.15
+    },
+    "1d": {
+      "bob": 0.44,
+      "aras": 0.15
+    },
+    "2d": {
+      "bob": 0.44,
+      "aras": 0.15
+    },
+    "3d": {
+      "bob": 0.44,
+      "aras": 0.15
+    }
+  },
+  "risk_tiers": {
+    "LOW": {
+      "min": 0.0,
+      "max": 0.3,
+      "label": "Low Risk / Normal Ocean State"
+    },
+    "MODERATE": {
+      "min": 0.3,
+      "max": 0.6,
+      "label": "Moderate Risk / Advisory"
+    },
+    "HIGH": {
+      "min": 0.6,
+      "max": 1.0,
+      "label": "High Risk / Warning Alert"
+    }
+  },
+  "basin_evaluation": {
+    "0d": {
+      "bob": {
+        "basin_name": "Bay of Bengal",
+        "threshold": 0.44,
+        "samples": 358,
+        "actual_positives": 22,
+        "predicted_positives": 182,
+        "precision": 0.1044,
+        "recall": 0.8636,
+        "f1": 0.1863,
+        "fpr": 0.4851,
+        "tp": 19,
+        "fp": 163,
+        "fn": 3,
+        "tn": 173
+      },
+      "aras": {
+        "basin_name": "Arabian Sea",
+        "threshold": 0.15,
+        "samples": 362,
+        "actual_positives": 16,
+        "predicted_positives": 95,
+        "precision": 0.1053,
+        "recall": 0.625,
+        "f1": 0.1802,
+        "fpr": 0.2457,
+        "tp": 10,
+        "fp": 85,
+        "fn": 6,
+        "tn": 261
+      }
+    },
+    "1d": {
+      "bob": {
+        "basin_name": "Bay of Bengal",
+        "threshold": 0.44,
+        "samples": 358,
+        "actual_positives": 26,
+        "predicted_positives": 199,
+        "precision": 0.1256,
+        "recall": 0.9615,
+        "f1": 0.2222,
+        "fpr": 0.5241,
+        "tp": 25,
+        "fp": 174,
+        "fn": 1,
+        "tn": 158
+      },
+      "aras": {
+        "basin_name": "Arabian Sea",
+        "threshold": 0.15,
+        "samples": 362,
+        "actual_positives": 18,
+        "predicted_positives": 96,
+        "precision": 0.125,
+        "recall": 0.6667,
+        "f1": 0.2105,
+        "fpr": 0.2442,
+        "tp": 12,
+        "fp": 84,
+        "fn": 6,
+        "tn": 260
+      }
+    },
+    "2d": {
+      "bob": {
+        "basin_name": "Bay of Bengal",
+        "threshold": 0.44,
+        "samples": 358,
+        "actual_positives": 30,
+        "predicted_positives": 200,
+        "precision": 0.14,
+        "recall": 0.9333,
+        "f1": 0.2435,
+        "fpr": 0.5244,
+        "tp": 28,
+        "fp": 172,
+        "fn": 2,
+        "tn": 156
+      },
+      "aras": {
+        "basin_name": "Arabian Sea",
+        "threshold": 0.15,
+        "samples": 362,
+        "actual_positives": 20,
+        "predicted_positives": 100,
+        "precision": 0.15,
+        "recall": 0.75,
+        "f1": 0.25,
+        "fpr": 0.2485,
+        "tp": 15,
+        "fp": 85,
+        "fn": 5,
+        "tn": 257
+      }
+    },
+    "3d": {
+      "bob": {
+        "basin_name": "Bay of Bengal",
+        "threshold": 0.44,
+        "samples": 358,
+        "actual_positives": 34,
+        "predicted_positives": 201,
+        "precision": 0.1592,
+        "recall": 0.9412,
+        "f1": 0.2723,
+        "fpr": 0.5216,
+        "tp": 32,
+        "fp": 169,
+        "fn": 2,
+        "tn": 155
+      },
+      "aras": {
+        "basin_name": "Arabian Sea",
+        "threshold": 0.15,
+        "samples": 362,
+        "actual_positives": 22,
+        "predicted_positives": 101,
+        "precision": 0.1485,
+        "recall": 0.6818,
+        "f1": 0.2439,
+        "fpr": 0.2529,
+        "tp": 15,
+        "fp": 86,
+        "fn": 7,
+        "tn": 254
+      }
+    }
+  }
+}

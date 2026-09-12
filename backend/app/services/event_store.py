@@ -318,8 +318,8 @@ AUTHORITATIVE_COVERAGE = {
     "max_lat": 25.0,
     "min_lon": 50.0,
     "max_lon": 100.0,
-    "coverage_start": "2024-05-01",
-    "coverage_end": "2025-01-31",
+    "coverage_start": "2016-05-01",
+    "coverage_end": "2026-06-23",
 }
 
 
@@ -470,6 +470,98 @@ class HistoricalEventStore:
             cls.register_event(event)
             count += 1
         return count
+
+    @classmethod
+    def load_imd_best_tracks(
+        cls,
+        workbook_path: Optional[str] = None,
+        start_year: int = 2016,
+        end_year: int = 2026,
+    ) -> int:
+        """Loads and integrates normalized 10-year IMD Best Track events into EventStore."""
+        with cls._lock:
+            if not cls._initialized:
+                cls.reset_to_seeds()
+                cls._initialized = True
+        if workbook_path is None:
+            possible = [
+                os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "78b4b0_Best_Tracks__Data__1982-2026_.xlsx")),
+                os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "78b4b0_Best_Tracks__Data__1982-2026_.xlsx")),
+            ]
+            for p in possible:
+                if os.path.exists(p):
+                    workbook_path = p
+                    break
+
+        if not workbook_path or not os.path.exists(workbook_path):
+            logger.warning("IMD Best-Track workbook not found; keeping seed events.")
+            return 0
+
+        from ..parsers.imd_best_track_parser import IMDBestTrackParser
+        res = IMDBestTrackParser.get_cached_or_parse(workbook_path, start_year=start_year, end_year=end_year)
+        track_df = res["track_dataframe"]
+        systems = res["systems"]
+
+        added = 0
+        with cls._lock:
+            for s in systems:
+                sid = s["system_id"]
+                if sid in cls._events:
+                    continue
+
+                sub_df = track_df[track_df["system_id"] == sid]
+                track_coords = []
+                for _, r in sub_df.iterrows():
+                    track_coords.append({
+                        "date": r["date"],
+                        "lat": float(r["latitude"]),
+                        "lon": float(r["longitude"]),
+                        "intensity_kts": float(r["max_wind_kts"]) if pd.notna(r["max_wind_kts"]) else 0.0,
+                    })
+
+                max_g = str(s["max_grade"]).upper()
+                if max_g in ("D", "DD") or "DEPRESSION" in max_g:
+                    ev_type = EventType.DEPRESSION
+                else:
+                    ev_type = EventType.TROPICAL_CYCLONE
+
+                bbox_dict = dict(s["bbox"])
+                if bbox_dict["min_lat"] == bbox_dict["max_lat"]:
+                    bbox_dict["min_lat"] -= 0.2
+                    bbox_dict["max_lat"] += 0.2
+                if bbox_dict["min_lon"] == bbox_dict["max_lon"]:
+                    bbox_dict["min_lon"] -= 0.2
+                    bbox_dict["max_lon"] += 0.2
+
+                event = HistoricalEvent(
+                    event_id=sid,
+                    event_type=ev_type,
+                    name=s["name"],
+                    start_date=s["start_date"],
+                    end_date=s["end_date"],
+                    affected_region=f"{s['basin']}, North Indian Ocean",
+                    spatial_representation=SpatialRepresentation.TRACK_ENVELOPE,
+                    bbox=BoundingBox(**bbox_dict),
+                    track_coordinates=track_coords if track_coords else None,
+                    centroid_lat=s["centroid_lat"],
+                    centroid_lon=s["centroid_lon"],
+                    severity=f"{s['max_grade']} (Peak: {s['peak_intensity_kts']:.0f} kts)",
+                    source="IMD RSMC New Delhi",
+                    source_reference=f"IMD Best Track Archive ({s['year']})",
+                    confidence="tentative_record" if s.get("is_tentative_2026") else "verified_authoritative",
+                    metadata={
+                        "basin": s["basin"],
+                        "year": s["year"],
+                        "is_tentative_2026": s.get("is_tentative_2026", False),
+                        "track_points_count": s["track_points_count"],
+                        "peak_intensity_kts": s["peak_intensity_kts"],
+                    },
+                )
+                cls._events[sid] = event
+                added += 1
+
+        logger.info(f"Loaded and registered {added} IMD Best Track systems into HistoricalEventStore (Total: {len(cls._events)}).")
+        return added
 
     # ==========================================================================
     # QUERIES & COVERAGE CHECKING

@@ -117,6 +117,7 @@ class CopernicusService:
     """
 
     _ds: Optional[xr.Dataset] = None
+    _ds_cache: Dict[str, xr.Dataset] = {}
     _ds_lock = threading.Lock()
     _ingestion_lock = threading.Lock()
     _status: str = "idle"  # "idle" | "in_progress" | "ready" | "failed"
@@ -140,13 +141,46 @@ class CopernicusService:
         return os.path.abspath(base_dir)
 
     @classmethod
-    def get_netcdf_path(cls) -> str:
+    def get_2yr_netcdf_path(cls) -> str:
         """Returns target path for the 2-year Copernicus physics dataset NetCDF."""
         return os.path.join(cls.get_data_dir(), "copernicus_phy_2yr_surface.nc")
 
     @classmethod
-    def get_metadata_path(cls) -> str:
+    def get_10yr_netcdf_path(cls) -> str:
+        """Returns target path for the 10-year Copernicus physics dataset NetCDF."""
+        return os.path.join(cls.get_data_dir(), "copernicus_phy_10yr_surface.nc")
+
+    @classmethod
+    def get_netcdf_path(cls, version: Optional[str] = None) -> str:
+        """
+        Returns path for the Copernicus physics dataset NetCDF.
+        Supports version='10yr', version='2yr', or environment variable COPERNICUS_NETCDF_PATH.
+        Defaults to 2-year baseline file unless 10-year is requested or configured.
+        """
+        env_override = os.environ.get("COPERNICUS_NETCDF_PATH") or os.environ.get("COPERNICUS_NETCDF_FILE")
+        if env_override:
+            if os.path.isabs(env_override):
+                return env_override
+            return os.path.join(cls.get_data_dir(), env_override)
+
+        env_version = os.environ.get("COPERNICUS_DATASET_VERSION", "").lower()
+        target_version = (version or env_version).lower()
+
+        if target_version in ("10yr", "10y", "10-year", "10_year", "v2"):
+            path_10 = cls.get_10yr_netcdf_path()
+            if os.path.exists(path_10):
+                return path_10
+            # If explicitly requested but not yet present, return path_10 for downloads/checks
+            return path_10
+
+        return cls.get_2yr_netcdf_path()
+
+    @classmethod
+    def get_metadata_path(cls, version: Optional[str] = None) -> str:
         """Returns path to metadata/provenance JSON record."""
+        target_version = (version or os.environ.get("COPERNICUS_DATASET_VERSION", "")).lower()
+        if target_version in ("10yr", "10y", "10-year", "10_year", "v2"):
+            return os.path.join(cls.get_data_dir(), "metadata_10yr.json")
         return os.path.join(cls.get_data_dir(), "metadata.json")
 
     # ==========================================================================
@@ -407,23 +441,24 @@ class CopernicusService:
     # DATA ACCESS & LAZY XARRAY SLICING
     # ==========================================================================
     @classmethod
-    def get_dataset(cls) -> xr.Dataset:
+    def get_dataset(cls, version: Optional[str] = None, filepath: Optional[str] = None) -> xr.Dataset:
         """
         Lazily opens the NetCDF dataset using disk-backed access.
-        Never loads the entire 2-year volume into memory.
+        Never loads the entire multi-year volume into memory.
         """
-        nc_path = cls.get_netcdf_path()
+        nc_path = filepath or cls.get_netcdf_path(version=version)
         if not os.path.exists(nc_path):
             raise FileNotFoundError(
-                "Copernicus Marine historical dataset is not available. "
+                f"Copernicus Marine historical dataset is not available at '{nc_path}'. "
                 "Please run ingestion first using POST /api/historical/ingest or python backend/scripts/ingest_copernicus.py."
             )
 
         with cls._ds_lock:
-            if cls._ds is None:
-                # Open lazily without loading arrays into memory
-                cls._ds = xr.open_dataset(nc_path, engine="netcdf4")
-            return cls._ds
+            if nc_path not in cls._ds_cache:
+                cls._ds_cache[nc_path] = xr.open_dataset(nc_path, engine="netcdf4")
+            # Maintain backward compatibility with _ds
+            cls._ds = cls._ds_cache[nc_path]
+            return cls._ds_cache[nc_path]
 
     @classmethod
     def get_status(cls) -> HistoricalStatusResponse:

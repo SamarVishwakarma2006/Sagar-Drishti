@@ -1,0 +1,845 @@
+{
+  "model_name": "RandomForestClassifier",
+  "version": "2.0.0-10yr-candidate",
+  "training_date": "2026-09-11T11:50:57.605954+00:00",
+  "feature_count": 101,
+  "feature_list": [
+    "temp_current",
+    "temp_base_mean",
+    "temp_base_std",
+    "temp_abs_anom",
+    "temp_zscore",
+    "temp_7d_mean",
+    "temp_7d_delta",
+    "temp_7d_trend",
+    "temp_14d_mean",
+    "temp_14d_delta",
+    "temp_14d_trend",
+    "temp_30d_mean",
+    "temp_30d_delta",
+    "temp_30d_trend",
+    "sal_current",
+    "sal_base_mean",
+    "sal_base_std",
+    "sal_abs_anom",
+    "sal_zscore",
+    "sal_pct_anom",
+    "sal_7d_mean",
+    "sal_7d_delta",
+    "sal_7d_trend",
+    "sal_14d_mean",
+    "sal_14d_delta",
+    "sal_14d_trend",
+    "sal_30d_mean",
+    "sal_30d_delta",
+    "sal_30d_trend",
+    "cur_u_current",
+    "cur_u_base_mean",
+    "cur_u_base_std",
+    "cur_u_abs_anom",
+    "cur_u_zscore",
+    "cur_u_7d_mean",
+    "cur_u_7d_delta",
+    "cur_u_7d_trend",
+    "cur_u_14d_mean",
+    "cur_u_14d_delta",
+    "cur_u_14d_trend",
+    "cur_u_30d_mean",
+    "cur_u_30d_delta",
+    "cur_u_30d_trend",
+    "cur_v_current",
+    "cur_v_base_mean",
+    "cur_v_base_std",
+    "cur_v_abs_anom",
+    "cur_v_zscore",
+    "cur_v_7d_mean",
+    "cur_v_7d_delta",
+    "cur_v_7d_trend",
+    "cur_v_14d_mean",
+    "cur_v_14d_delta",
+    "cur_v_14d_trend",
+    "cur_v_30d_mean",
+    "cur_v_30d_delta",
+    "cur_v_30d_trend",
+    "cur_current",
+    "cur_base_mean",
+    "cur_base_std",
+    "cur_abs_anom",
+    "cur_zscore",
+    "cur_pct_anom",
+    "cur_7d_mean",
+    "cur_7d_delta",
+    "cur_7d_trend",
+    "cur_14d_mean",
+    "cur_14d_delta",
+    "cur_14d_trend",
+    "cur_30d_mean",
+    "cur_30d_delta",
+    "cur_30d_trend",
+    "ssh_current",
+    "ssh_base_mean",
+    "ssh_base_std",
+    "ssh_abs_anom",
+    "ssh_zscore",
+    "ssh_7d_mean",
+    "ssh_7d_delta",
+    "ssh_7d_trend",
+    "ssh_14d_mean",
+    "ssh_14d_delta",
+    "ssh_14d_trend",
+    "ssh_30d_mean",
+    "ssh_30d_delta",
+    "ssh_30d_trend",
+    "mld_current",
+    "mld_base_mean",
+    "mld_base_std",
+    "mld_abs_anom",
+    "mld_zscore",
+    "mld_pct_anom",
+    "mld_7d_mean",
+    "mld_7d_delta",
+    "mld_7d_trend",
+    "mld_14d_mean",
+    "mld_14d_delta",
+    "mld_14d_trend",
+    "mld_30d_mean",
+    "mld_30d_delta",
+    "mld_30d_trend"
+  ],
+  "authoritative_ground_truth": "IMD Best-Tracks 1982-2026 (78b4b0_Best_Tracks__Data__1982-2026_.xlsx)",
+  "architecture": {
+    "family": "RandomForestClassifier",
+    "n_estimators": 200,
+    "max_depth": 5,
+    "min_samples_leaf": 2,
+    "class_weight": "balanced",
+    "random_state": 42
+  },
+  "horizons": {
+    "0d": {
+      "target": "event_within_0d",
+      "description": "Active hazard condition (lead 0 days)",
+      "frozen_decision_threshold": 0.11,
+      "training_samples": 5384,
+      "training_positives": 238,
+      "validation_metrics": {
+        "threshold": 0.11,
+        "precision": 0.0964,
+        "recall": 0.9737,
+        "f1": 0.1754,
+        "pr_auc": 0.3514,
+        "roc_auc": 0.7524,
+        "confusion_matrix": {
+          "tn": 335,
+          "fp": 347,
+          "fn": 1,
+          "tp": 37
+        }
+      },
+      "test_metrics": {
+        "precision": 0.0258,
+        "recall": 0.8667,
+        "f1": 0.0501,
+        "pr_auc": 0.1396,
+        "roc_auc": 0.7483,
+        "brier_score": 0.0705,
+        "confusion_matrix": {
+          "tn": 568,
+          "fp": 491,
+          "fn": 2,
+          "tp": 13
+        }
+      },
+      "event_detection": {
+        "IMD-2025-12-UNNAMED12": {
+          "split": "test",
+          "detected": true,
+          "detected_days": 8,
+          "total_days": 13,
+          "max_probability": 0.3227
+        },
+        "IMD-2025-13-MONTHA": {
+          "split": "test",
+          "detected": true,
+          "detected_days": 8,
+          "total_days": 8,
+          "max_probability": 0.689
+        }
+      },
+      "explainability": {
+        "top_features": [
+          {
+            "feature": "temp_30d_mean",
+            "importance": 0.0687
+          },
+          {
+            "feature": "temp_14d_mean",
+            "importance": 0.0624
+          },
+          {
+            "feature": "temp_7d_mean",
+            "importance": 0.0521
+          },
+          {
+            "feature": "ssh_30d_mean",
+            "importance": 0.0487
+          },
+          {
+            "feature": "temp_abs_anom",
+            "importance": 0.034
+          },
+          {
+            "feature": "mld_30d_mean",
+            "importance": 0.0329
+          },
+          {
+            "feature": "temp_current",
+            "importance": 0.0319
+          },
+          {
+            "feature": "ssh_14d_mean",
+            "importance": 0.0318
+          },
+          {
+            "feature": "temp_7d_delta",
+            "importance": 0.0293
+          },
+          {
+            "feature": "ssh_7d_mean",
+            "importance": 0.0273
+          },
+          {
+            "feature": "temp_zscore",
+            "importance": 0.0265
+          },
+          {
+            "feature": "temp_7d_trend",
+            "importance": 0.026
+          },
+          {
+            "feature": "mld_30d_trend",
+            "importance": 0.0183
+          },
+          {
+            "feature": "cur_v_zscore",
+            "importance": 0.0154
+          },
+          {
+            "feature": "cur_u_30d_mean",
+            "importance": 0.0151
+          }
+        ],
+        "variable_channels": {
+          "temperature": 0.3717,
+          "salinity": 0.1152,
+          "eastward_current": 0.0554,
+          "northward_current": 0.0965,
+          "current_speed": 0.0447,
+          "sea_surface_height": 0.1649,
+          "mixed_layer_depth": 0.1517,
+          "currents": 0.1966,
+          "mixed_layer": 0.1517
+        }
+      },
+      "artifact_file": "risk_model_0d.joblib"
+    },
+    "1d": {
+      "target": "event_within_1d",
+      "description": "Hazard within 24h (lead <= 1 day)",
+      "frozen_decision_threshold": 0.44,
+      "training_samples": 5384,
+      "training_positives": 264,
+      "validation_metrics": {
+        "threshold": 0.44,
+        "precision": 0.1244,
+        "recall": 0.5682,
+        "f1": 0.2041,
+        "pr_auc": 0.314,
+        "roc_auc": 0.7525,
+        "confusion_matrix": {
+          "tn": 500,
+          "fp": 176,
+          "fn": 19,
+          "tp": 25
+        }
+      },
+      "test_metrics": {
+        "precision": 0.0314,
+        "recall": 0.3529,
+        "f1": 0.0577,
+        "pr_auc": 0.0703,
+        "roc_auc": 0.728,
+        "brier_score": 0.0833,
+        "confusion_matrix": {
+          "tn": 872,
+          "fp": 185,
+          "fn": 11,
+          "tp": 6
+        }
+      },
+      "event_detection": {
+        "IMD-2025-12-UNNAMED12": {
+          "split": "test",
+          "detected": false,
+          "detected_days": 0,
+          "total_days": 13,
+          "max_probability": 0.3367
+        },
+        "IMD-2025-13-MONTHA": {
+          "split": "test",
+          "detected": true,
+          "detected_days": 8,
+          "total_days": 8,
+          "max_probability": 0.6929
+        }
+      },
+      "explainability": {
+        "top_features": [
+          {
+            "feature": "temp_14d_mean",
+            "importance": 0.0682
+          },
+          {
+            "feature": "temp_30d_mean",
+            "importance": 0.0624
+          },
+          {
+            "feature": "temp_7d_mean",
+            "importance": 0.0561
+          },
+          {
+            "feature": "ssh_30d_mean",
+            "importance": 0.047
+          },
+          {
+            "feature": "mld_30d_mean",
+            "importance": 0.0379
+          },
+          {
+            "feature": "temp_abs_anom",
+            "importance": 0.036
+          },
+          {
+            "feature": "ssh_14d_mean",
+            "importance": 0.0355
+          },
+          {
+            "feature": "temp_zscore",
+            "importance": 0.0327
+          },
+          {
+            "feature": "temp_current",
+            "importance": 0.0306
+          },
+          {
+            "feature": "temp_7d_trend",
+            "importance": 0.0236
+          },
+          {
+            "feature": "ssh_7d_mean",
+            "importance": 0.0234
+          },
+          {
+            "feature": "mld_30d_trend",
+            "importance": 0.0206
+          },
+          {
+            "feature": "temp_7d_delta",
+            "importance": 0.0197
+          },
+          {
+            "feature": "sal_current",
+            "importance": 0.0191
+          },
+          {
+            "feature": "cur_30d_mean",
+            "importance": 0.0182
+          }
+        ],
+        "variable_channels": {
+          "temperature": 0.3776,
+          "salinity": 0.1066,
+          "eastward_current": 0.0543,
+          "northward_current": 0.0956,
+          "current_speed": 0.0543,
+          "sea_surface_height": 0.1596,
+          "mixed_layer_depth": 0.1522,
+          "currents": 0.2042,
+          "mixed_layer": 0.1522
+        }
+      },
+      "artifact_file": "risk_model_1d.joblib"
+    },
+    "2d": {
+      "target": "event_within_2d",
+      "description": "Hazard within 48h (lead <= 2 days)",
+      "frozen_decision_threshold": 0.45,
+      "training_samples": 5384,
+      "training_positives": 290,
+      "validation_metrics": {
+        "threshold": 0.45,
+        "precision": 0.14,
+        "recall": 0.56,
+        "f1": 0.224,
+        "pr_auc": 0.3681,
+        "roc_auc": 0.7599,
+        "confusion_matrix": {
+          "tn": 498,
+          "fp": 172,
+          "fn": 22,
+          "tp": 28
+        }
+      },
+      "test_metrics": {
+        "precision": 0.0343,
+        "recall": 0.3684,
+        "f1": 0.0628,
+        "pr_auc": 0.0588,
+        "roc_auc": 0.7323,
+        "brier_score": 0.0891,
+        "confusion_matrix": {
+          "tn": 858,
+          "fp": 197,
+          "fn": 12,
+          "tp": 7
+        }
+      },
+      "event_detection": {
+        "IMD-2025-12-UNNAMED12": {
+          "split": "test",
+          "detected": false,
+          "detected_days": 0,
+          "total_days": 13,
+          "max_probability": 0.3683
+        },
+        "IMD-2025-13-MONTHA": {
+          "split": "test",
+          "detected": true,
+          "detected_days": 8,
+          "total_days": 8,
+          "max_probability": 0.6802
+        }
+      },
+      "explainability": {
+        "top_features": [
+          {
+            "feature": "temp_14d_mean",
+            "importance": 0.0709
+          },
+          {
+            "feature": "temp_30d_mean",
+            "importance": 0.0686
+          },
+          {
+            "feature": "temp_7d_mean",
+            "importance": 0.0586
+          },
+          {
+            "feature": "ssh_30d_mean",
+            "importance": 0.0496
+          },
+          {
+            "feature": "mld_30d_mean",
+            "importance": 0.038
+          },
+          {
+            "feature": "temp_abs_anom",
+            "importance": 0.037
+          },
+          {
+            "feature": "temp_current",
+            "importance": 0.0333
+          },
+          {
+            "feature": "ssh_14d_mean",
+            "importance": 0.028
+          },
+          {
+            "feature": "ssh_7d_mean",
+            "importance": 0.0279
+          },
+          {
+            "feature": "temp_zscore",
+            "importance": 0.0278
+          },
+          {
+            "feature": "temp_7d_trend",
+            "importance": 0.0261
+          },
+          {
+            "feature": "mld_30d_trend",
+            "importance": 0.023
+          },
+          {
+            "feature": "sal_current",
+            "importance": 0.0182
+          },
+          {
+            "feature": "temp_7d_delta",
+            "importance": 0.0161
+          },
+          {
+            "feature": "cur_30d_mean",
+            "importance": 0.0157
+          }
+        ],
+        "variable_channels": {
+          "temperature": 0.3842,
+          "salinity": 0.1158,
+          "eastward_current": 0.0601,
+          "northward_current": 0.0762,
+          "current_speed": 0.0501,
+          "sea_surface_height": 0.164,
+          "mixed_layer_depth": 0.1497,
+          "currents": 0.1864,
+          "mixed_layer": 0.1497
+        }
+      },
+      "artifact_file": "risk_model_2d.joblib"
+    },
+    "3d": {
+      "target": "event_within_3d",
+      "description": "Hazard within 72h (lead <= 3 days)",
+      "frozen_decision_threshold": 0.45,
+      "training_samples": 5384,
+      "training_positives": 316,
+      "validation_metrics": {
+        "threshold": 0.45,
+        "precision": 0.1592,
+        "recall": 0.5714,
+        "f1": 0.249,
+        "pr_auc": 0.2581,
+        "roc_auc": 0.7451,
+        "confusion_matrix": {
+          "tn": 495,
+          "fp": 169,
+          "fn": 24,
+          "tp": 32
+        }
+      },
+      "test_metrics": {
+        "precision": 0.0379,
+        "recall": 0.381,
+        "f1": 0.069,
+        "pr_auc": 0.0645,
+        "roc_auc": 0.726,
+        "brier_score": 0.0963,
+        "confusion_matrix": {
+          "tn": 850,
+          "fp": 203,
+          "fn": 13,
+          "tp": 8
+        }
+      },
+      "event_detection": {
+        "IMD-2025-12-UNNAMED12": {
+          "split": "test",
+          "detected": false,
+          "detected_days": 0,
+          "total_days": 13,
+          "max_probability": 0.384
+        },
+        "IMD-2025-13-MONTHA": {
+          "split": "test",
+          "detected": true,
+          "detected_days": 8,
+          "total_days": 8,
+          "max_probability": 0.6924
+        }
+      },
+      "explainability": {
+        "top_features": [
+          {
+            "feature": "temp_14d_mean",
+            "importance": 0.0701
+          },
+          {
+            "feature": "temp_30d_mean",
+            "importance": 0.0632
+          },
+          {
+            "feature": "temp_7d_mean",
+            "importance": 0.0603
+          },
+          {
+            "feature": "ssh_30d_mean",
+            "importance": 0.0417
+          },
+          {
+            "feature": "mld_30d_mean",
+            "importance": 0.0401
+          },
+          {
+            "feature": "temp_abs_anom",
+            "importance": 0.0366
+          },
+          {
+            "feature": "temp_current",
+            "importance": 0.0348
+          },
+          {
+            "feature": "ssh_14d_mean",
+            "importance": 0.0345
+          },
+          {
+            "feature": "temp_zscore",
+            "importance": 0.0293
+          },
+          {
+            "feature": "ssh_7d_mean",
+            "importance": 0.0255
+          },
+          {
+            "feature": "mld_30d_trend",
+            "importance": 0.021
+          },
+          {
+            "feature": "temp_7d_delta",
+            "importance": 0.0209
+          },
+          {
+            "feature": "sal_current",
+            "importance": 0.0207
+          },
+          {
+            "feature": "temp_7d_trend",
+            "importance": 0.0204
+          },
+          {
+            "feature": "cur_30d_mean",
+            "importance": 0.0201
+          }
+        ],
+        "variable_channels": {
+          "temperature": 0.3757,
+          "salinity": 0.1111,
+          "eastward_current": 0.0628,
+          "northward_current": 0.0756,
+          "current_speed": 0.0549,
+          "sea_surface_height": 0.1622,
+          "mixed_layer_depth": 0.1577,
+          "currents": 0.1933,
+          "mixed_layer": 0.1577
+        }
+      },
+      "artifact_file": "risk_model_3d.joblib"
+    }
+  },
+  "train_date_range": [
+    "2016-07-23",
+    "2023-12-31"
+  ],
+  "validation_date_range": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "test_date_range": [
+    "2025-01-01",
+    "2026-06-23"
+  ],
+  "splits_row_counts": {
+    "train": 5384,
+    "validation": 720,
+    "test": 1074,
+    "total": 7178
+  },
+  "validation_metrics": {
+    "threshold": 0.45,
+    "precision": 0.1592,
+    "recall": 0.5714,
+    "f1": 0.249,
+    "pr_auc": 0.2581,
+    "roc_auc": 0.7451,
+    "confusion_matrix": {
+      "tn": 495,
+      "fp": 169,
+      "fn": 24,
+      "tp": 32
+    }
+  },
+  "final_test_metrics": {
+    "precision": 0.0379,
+    "recall": 0.381,
+    "f1": 0.069,
+    "pr_auc": 0.0645,
+    "roc_auc": 0.726,
+    "brier_score": 0.0963,
+    "confusion_matrix": {
+      "tn": 850,
+      "fp": 203,
+      "fn": 13,
+      "tp": 8
+    }
+  },
+  "explainability": {
+    "top_features": [
+      {
+        "feature": "temp_14d_mean",
+        "importance": 0.0701
+      },
+      {
+        "feature": "temp_30d_mean",
+        "importance": 0.0632
+      },
+      {
+        "feature": "temp_7d_mean",
+        "importance": 0.0603
+      },
+      {
+        "feature": "ssh_30d_mean",
+        "importance": 0.0417
+      },
+      {
+        "feature": "mld_30d_mean",
+        "importance": 0.0401
+      },
+      {
+        "feature": "temp_abs_anom",
+        "importance": 0.0366
+      },
+      {
+        "feature": "temp_current",
+        "importance": 0.0348
+      },
+      {
+        "feature": "ssh_14d_mean",
+        "importance": 0.0345
+      },
+      {
+        "feature": "temp_zscore",
+        "importance": 0.0293
+      },
+      {
+        "feature": "ssh_7d_mean",
+        "importance": 0.0255
+      },
+      {
+        "feature": "mld_30d_trend",
+        "importance": 0.021
+      },
+      {
+        "feature": "temp_7d_delta",
+        "importance": 0.0209
+      },
+      {
+        "feature": "sal_current",
+        "importance": 0.0207
+      },
+      {
+        "feature": "temp_7d_trend",
+        "importance": 0.0204
+      },
+      {
+        "feature": "cur_30d_mean",
+        "importance": 0.0201
+      }
+    ],
+    "variable_channels": {
+      "temperature": 0.3757,
+      "salinity": 0.1111,
+      "eastward_current": 0.0628,
+      "northward_current": 0.0756,
+      "current_speed": 0.0549,
+      "sea_surface_height": 0.1622,
+      "mixed_layer_depth": 0.1577,
+      "currents": 0.1933,
+      "mixed_layer": 0.1577
+    }
+  },
+  "target": "event_within_3d",
+  "frozen_threshold": 0.45,
+  "baseline_comparison": {
+    "0d": {
+      "baseline": {
+        "threshold": null,
+        "precision": 0.0288,
+        "recall": 1.0,
+        "f1": 0.0559,
+        "pr_auc": 0.0209,
+        "roc_auc": 0.2162
+      },
+      "candidate_10yr": {
+        "threshold": 0.11,
+        "precision": 0.0258,
+        "recall": 0.8667,
+        "f1": 0.0501,
+        "pr_auc": 0.1396,
+        "roc_auc": 0.7483
+      },
+      "delta": {
+        "f1_delta": -0.0058,
+        "roc_auc_delta": 0.5321,
+        "pr_auc_delta": 0.1187
+      }
+    },
+    "1d": {
+      "baseline": {
+        "threshold": null,
+        "precision": 0.0325,
+        "recall": 0.8,
+        "f1": 0.0625,
+        "pr_auc": 0.026,
+        "roc_auc": 0.2653
+      },
+      "candidate_10yr": {
+        "threshold": 0.44,
+        "precision": 0.0314,
+        "recall": 0.3529,
+        "f1": 0.0577,
+        "pr_auc": 0.0703,
+        "roc_auc": 0.728
+      },
+      "delta": {
+        "f1_delta": -0.0048,
+        "roc_auc_delta": 0.4627,
+        "pr_auc_delta": 0.0443
+      }
+    },
+    "2d": {
+      "baseline": {
+        "threshold": null,
+        "precision": 0.0588,
+        "recall": 1.0,
+        "f1": 0.1111,
+        "pr_auc": 0.058,
+        "roc_auc": 0.6336
+      },
+      "candidate_10yr": {
+        "threshold": 0.45,
+        "precision": 0.0343,
+        "recall": 0.3684,
+        "f1": 0.0628,
+        "pr_auc": 0.0588,
+        "roc_auc": 0.7323
+      },
+      "delta": {
+        "f1_delta": -0.0483,
+        "roc_auc_delta": 0.0987,
+        "pr_auc_delta": 0.0008
+      }
+    },
+    "3d": {
+      "baseline": {
+        "threshold": null,
+        "precision": 0.1148,
+        "recall": 1.0,
+        "f1": 0.2059,
+        "pr_auc": 0.1553,
+        "roc_auc": 0.8621
+      },
+      "candidate_10yr": {
+        "threshold": 0.45,
+        "precision": 0.0379,
+        "recall": 0.381,
+        "f1": 0.069,
+        "pr_auc": 0.0645,
+        "roc_auc": 0.726
+      },
+      "delta": {
+        "f1_delta": -0.1369,
+        "roc_auc_delta": -0.1361,
+        "pr_auc_delta": -0.0908
+      }
+    }
+  }
+}

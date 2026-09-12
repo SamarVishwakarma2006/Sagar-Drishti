@@ -6,6 +6,7 @@ Produces an ML-ready labeled dataset with verified causality and explicit negati
 """
 import os
 import json
+import math
 import logging
 from typing import List, Dict, Any, Optional, Tuple
 import pandas as pd
@@ -32,6 +33,17 @@ class SpatialTemporalMatcher:
     Evaluates spatial and temporal intersection between ocean observations and
     authoritative historical disaster records.
     """
+
+    @staticmethod
+    def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+        """Computes great-circle distance between two coordinates in kilometers."""
+        r = 6371.0
+        p1, p2 = math.radians(lat1), math.radians(lat2)
+        dp = math.radians(lat2 - lat1)
+        dl = math.radians(lon2 - lon1)
+        a = math.sin(dp / 2)**2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2)**2
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        return r * c
 
     @staticmethod
     def _point_in_bbox(lat: float, lon: float, bbox: BoundingBox) -> bool:
@@ -88,7 +100,16 @@ class SpatialTemporalMatcher:
         for ev in events:
             spatial_hit = False
             if mode == "point" and lat is not None and lon is not None:
-                spatial_hit = cls._point_in_bbox(lat, lon, ev.bbox)
+                if cls._point_in_bbox(lat, lon, ev.bbox):
+                    spatial_hit = True
+                elif ev.track_coordinates:
+                    for tp in ev.track_coordinates:
+                        t_lat = tp.get("lat")
+                        t_lon = tp.get("lon")
+                        if t_lat is not None and t_lon is not None:
+                            if cls._haversine_km(lat, lon, float(t_lat), float(t_lon)) <= 350.0:
+                                spatial_hit = True
+                                break
             elif mode == "region" and obs_bbox is not None:
                 spatial_hit = cls._bboxes_overlap(obs_bbox, ev.bbox)
 

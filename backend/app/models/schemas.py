@@ -468,6 +468,22 @@ class PredictionExplainability(BaseModel):
     human_readable: HumanReadableExplanation = Field(default_factory=HumanReadableExplanation)
 
 
+class CandidateV2Decision(BaseModel):
+    basin: str
+    horizon: int
+    raw_score: float
+    calibrated_probability: float
+    risk_tier: str
+    policy_threshold: float
+    persistence_state: str
+    alert_decision: str
+    alert_reason: str
+    model_version: str = "v2.0.0-10yr-candidate"
+    operational_threshold: Optional[float] = None
+    alert: Optional[str] = None
+
+
+
 class PredictionResponse(BaseModel):
     status: str  # "success" | "insufficient_data" | "error"
     date: str
@@ -496,6 +512,8 @@ class PredictionResponse(BaseModel):
     data_quality: Dict[str, Any] = Field(default_factory=dict)
     limitations: List[str] = Field(default_factory=list)
     message: str = ""
+    candidate_v2: Optional[CandidateV2Decision] = None
+
 
 
 

@@ -676,6 +676,40 @@ class PredictionService:
         if is_underpowered:
             limitations.insert(0, f"HORIZON {horizon_days}d NOTICE: {underpowered_note or 'Statistically underpowered horizon; limited positive historical observations in held-out test split.'}")
 
+        # Non-blocking, isolated Shadow Inference for candidate v2_10yr
+        candidate_v2_payload = None
+        try:
+            from .shadow_service import ShadowInferenceService
+            shadow_rec = ShadowInferenceService.run_shadow_evaluation(
+                feature_vector=x_raw[0],
+                site_id=loc_info.get("site_id", "bob"),
+                horizon_days=horizon_days,
+                date_str=date_str,
+                v1_result={
+                    "risk_score": prob_positive,
+                    "alert_level": warning_level,
+                    "threshold": frozen_threshold,
+                }
+            )
+            if shadow_rec and "candidate_v2" in shadow_rec:
+                c2 = shadow_rec["candidate_v2"]
+                candidate_v2_payload = {
+                    "basin": c2.get("basin", shadow_rec.get("basin", loc_info.get("region", "Bay of Bengal"))),
+                    "horizon": shadow_rec.get("horizon", horizon_days),
+                    "raw_score": c2.get("raw_score", 0.0),
+                    "calibrated_probability": c2.get("calibrated_probability", 0.0),
+                    "risk_tier": c2.get("risk_tier", "LOW"),
+                    "policy_threshold": c2.get("policy_threshold", c2.get("operational_threshold", 0.20)),
+                    "persistence_state": c2.get("persistence_state", "NO_PERSISTENCE"),
+                    "alert_decision": c2.get("alert_decision", c2.get("operational_alert", "NO_ALERT")),
+                    "alert_reason": c2.get("alert_reason", "BELOW_THRESHOLD"),
+                    "model_version": c2.get("model_version", "v2.0.0-10yr-candidate"),
+                    "operational_threshold": c2.get("policy_threshold", c2.get("operational_threshold", 0.20)),
+                    "alert": c2.get("alert_decision", c2.get("operational_alert", "NO_ALERT")),
+                }
+        except Exception as _shadow_err:
+            logger.debug("Shadow evaluation exception: %s", _shadow_err)
+
         return PredictionResponse(
             status="success",
             date=date_str,
@@ -707,6 +741,7 @@ class PredictionService:
             data_quality=data_quality_payload,
             limitations=limitations,
             message=f"Risk prediction for horizon {horizon_txt} ({target_name}): {warning_level} ({prob_display}, threshold {frozen_threshold:.2f}).",
+            candidate_v2=candidate_v2_payload,
         )
 
     @classmethod
@@ -1014,6 +1049,40 @@ class PredictionService:
         if is_underpowered:
             limitations.insert(0, f"HORIZON {horizon_days}d NOTICE: {underpowered_note or 'Statistically underpowered horizon; limited positive historical observations in held-out test split.'}")
 
+        # Non-blocking, isolated Shadow Inference for candidate v2_10yr
+        candidate_v2_payload = None
+        try:
+            from .shadow_service import ShadowInferenceService
+            shadow_rec = ShadowInferenceService.run_shadow_evaluation(
+                feature_vector=x_raw[0],
+                site_id=loc_info.get("site_id", "bob"),
+                horizon_days=horizon_days,
+                date_str=date_str,
+                v1_result={
+                    "risk_score": prob_positive,
+                    "alert_level": warning_level,
+                    "threshold": frozen_threshold,
+                }
+            )
+            if shadow_rec and "candidate_v2" in shadow_rec:
+                c2 = shadow_rec["candidate_v2"]
+                candidate_v2_payload = {
+                    "basin": c2.get("basin", shadow_rec.get("basin", loc_info.get("region", "Bay of Bengal"))),
+                    "horizon": shadow_rec.get("horizon", horizon_days),
+                    "raw_score": c2.get("raw_score", 0.0),
+                    "calibrated_probability": c2.get("calibrated_probability", 0.0),
+                    "risk_tier": c2.get("risk_tier", "LOW"),
+                    "policy_threshold": c2.get("policy_threshold", c2.get("operational_threshold", 0.20)),
+                    "persistence_state": c2.get("persistence_state", "NO_PERSISTENCE"),
+                    "alert_decision": c2.get("alert_decision", c2.get("operational_alert", "NO_ALERT")),
+                    "alert_reason": c2.get("alert_reason", "BELOW_THRESHOLD"),
+                    "model_version": c2.get("model_version", "v2.0.0-10yr-candidate"),
+                    "operational_threshold": c2.get("policy_threshold", c2.get("operational_threshold", 0.20)),
+                    "alert": c2.get("alert_decision", c2.get("operational_alert", "NO_ALERT")),
+                }
+        except Exception as _shadow_err:
+            logger.debug("Shadow evaluation exception: %s", _shadow_err)
+
         return PredictionResponse(
             status="success",
             date=date_str,
@@ -1045,6 +1114,7 @@ class PredictionService:
             data_quality=data_quality_payload,
             limitations=limitations,
             message=f"Risk prediction for horizon {horizon_txt} ({target_name}): {warning_level} ({prob_display}, threshold {frozen_threshold:.2f}).",
+            candidate_v2=candidate_v2_payload,
         )
 
     @classmethod

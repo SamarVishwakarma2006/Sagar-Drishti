@@ -66,12 +66,15 @@ cesium/
 # Runtime data storage (Copernicus NetCDF & Parquet feature exports)
 data/
 backend/data/
+*.nc
 
-# Temporary user upload storage
+# Temporary user upload storage & scratch directories
 backend/uploads/
 uploads/
 *.tmp
 *.temp
+scratch/
+backend/scratch/
 
 
 # Operating System & IDE files

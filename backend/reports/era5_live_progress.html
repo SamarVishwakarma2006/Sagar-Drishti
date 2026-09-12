@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sagar-Drishti V2.1 — Live ERA5 Ingestion Telemetry</title>
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-card: rgba(18, 24, 39, 0.75);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --accent-cyan: #06b6d4;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.12) 0px, transparent 50%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1.25rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #fff;
+      font-size: 1.2rem;
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-green);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+    }
+
+    .main-progress-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 1rem;
+    }
+
+    .progress-title {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .progress-percentage {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .progress-track {
+      background: rgba(255, 255, 255, 0.06);
+      height: 24px;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #06b6d4, #3b82f6, #6366f1);
+      border-radius: 12px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .stat-subtext {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .matrix-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .matrix-card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .legend {
+      display: flex;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .legend-box {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    .years-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .year-row {
+      display: grid;
+      grid-template-columns: 80px 1fr 140px;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .year-row:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .year-label {
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .months-container {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 0.35rem;
+    }
+
+    .month-badge {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      user-select: none;
+    }
+
+    .month-verified {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: rgba(16, 185, 129, 0.5);
+      color: #34d399;
+    }
+
+    .month-active {
+      background: rgba(245, 158, 11, 0.3);
+      border-color: rgba(245, 158, 11, 0.8);
+      color: #fbbf24;
+      animation: pulse 1.5s infinite;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+    }
+
+    .month-pending {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+    }
+
+    .month-out {
+      background: transparent;
+      border-color: transparent;
+      color: rgba(255, 255, 255, 0.1);
+    }
+
+    .year-badge {
+      text-align: right;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
+    }
+
+    .year-badge.assembled {
+      background: rgba(6, 182, 212, 0.2);
+      color: #38bdf8;
+      border: 1px solid rgba(6, 182, 212, 0.4);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo-badge">SD</div>
+        <div>
+          <h1>Sagar-Drishti V2.1 — ERA5 Atmospheric Ingestion</h1>
+          <p style="color: var(--text-secondary); font-size: 0.875rem;">ECMWF Reanalysis (2016-06-24 → 2026-06-23)</p>
+        </div>
+      </div>
+      <div class="status-pill">
+        <div class="status-dot"></div>
+        <span id="daemon-status">DAEMON ACTIVE</span>
+      </div>
+    </header>
+
+    <!-- Main Progress Bar -->
+    <div class="main-progress-card">
+      <div class="progress-header">
+        <div>
+          <div class="progress-title">10-Year Ingestion Progress</div>
+          <div style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.25rem;">
+            <span id="chunks-stat">70</span> of 109 monthly chunks validated & committed
+          </div>
+        </div>
+        <div class="progress-percentage" id="percent-display">64.2%</div>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-bar" style="width: 64.2%;"></div>
+      </div>
+    </div>
+
+    <!-- Telemetry Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Verified Observations</div>
+        <div class="stat-value" id="timesteps-val">8,432</div>
+        <div class="stat-subtext">of 14,608 6-hourly steps (6,176 left)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Assembled Yearly Files</div>
+        <div class="stat-value" id="years-val">5 / 11</div>
+        <div class="stat-subtext">2016, 2017, 2018, 2019, 2020</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Estimated Time Remaining</div>
+        <div class="stat-value" id="eta-val">~3h 30m</div>
+        <div class="stat-subtext">Average ~5.5 min / chunk</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Production Hash Guardrail</div>
+        <div class="stat-value" style="color: var(--accent-green);">100% INVARIANT</div>
+        <div class="stat-subtext">7/7 baseline models byte-identical</div>
+      </div>
+    </div>
+
+    <!-- Monthly Grid Matrix -->
+    <div class="matrix-card">
+      <h2>
+        <span>Year-by-Year Chunk Matrix</span>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-box" style="background: #10b981;"></div> Complete</div>
+          <div class="legend-item"><div class="legend-box" style="background: #f59e0b;"></div> Active</div>
+          <div class="legend-item"><div class="legend-box" style="background: rgba(255,255,255,0.1);"></div> Queued</div>
+        </div>
+      </h2>
+      <div class="years-list" id="years-grid"></div>
+    </div>
+
+    <footer>
+      Auto-refreshing every 3 seconds from local telemetry file: <code>backend/reports/era5_ingestion_progress.json</code>
+    </footer>
+  </div>
+
+  <script>
+    const TOTAL_CHUNKS = 121;
+    const TOTAL_TIMESTEPS = 14608;
+    const MONTHS = ['J','F','M','A','M','J','J','A','S','O','N','D'];
+    const YEAR_BOUNDS = {
+      2016: [6, 12],
+      2017: [1, 12],
+      2018: [1, 12],
+      2019: [1, 12],
+      2020: [1, 12],
+      2021: [1, 12],
+      2022: [1, 12],
+      2023: [1, 12],
+      2024: [1, 12],
+      2025: [1, 12],
+      2026: [1, 6]
+    };
+
+    async function fetchProgress() {
+      try {
+        const resp = await fetch('era5_ingestion_progress.json?t=' + Date.now());
+        if (!resp.ok) return;
+        const data = await resp.json();
+        updateUI(data);
+      } catch (err) {
+        console.warn("Telemetry polling:", err);
+      }
+    }
+
+    function updateUI(data) {
+      const verifiedChunks = new Set(data.verified_chunks || []);
+      const assembledYears = new Set(data.assembled_years || []);
+      const completed = verifiedChunks.size;
+      const pct = ((completed / TOTAL_CHUNKS) * 100).toFixed(1);
+
+      document.getElementById('percent-display').innerText = pct + '%';
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('chunks-stat').innerText = completed;
+      document.getElementById('years-val').innerText = `${assembledYears.size} / 11`;
+
+      const remainingChunks = TOTAL_CHUNKS - completed;
+      const minsLeftTotal = remainingChunks * 5.5;
+      const hrsLeft = Math.floor(minsLeftTotal / 60);
+      const minsLeft = Math.round(minsLeftTotal % 60);
+      document.getElementById('eta-val').innerText = `~${hrsLeft}h ${minsLeft}m`;
+
+      // Build grid
+      const grid = document.getElementById('years-grid');
+      grid.innerHTML = '';
+
+      for (let y = 2016; y <= 2026; y++) {
+        const [startM, endM] = YEAR_BOUNDS[y];
+        const isAssembled = assembledYears.has(y);
+        const row = document.createElement('div');
+        row.className = 'year-row';
+
+        let monthsHtml = '';
+        for (let m = 1; m <= 12; m++) {
+          const fname = `era5_${y}_${String(m).padStart(2, '0')}.nc`;
+          let cls = 'month-pending';
+          if (m < startM || m > endM) {
+            cls = 'month-out';
+          } else if (isAssembled || verifiedChunks.has(fname)) {
+            cls = 'month-verified';
+          } else if (y === data.current_year && m === data.current_month) {
+            cls = 'month-active';
+          }
+          monthsHtml += `<div class="month-badge ${cls}" title="${y}-${String(m).padStart(2, '0')}">${MONTHS[m - 1]}</div>`;
+        }
+
+        const badgeText = isAssembled ? `ASSEMBLED` : (y === data.current_year ? `DOWNLOADING` : `QUEUED`);
+        const badgeCls = isAssembled ? 'year-badge assembled' : 'year-badge';
+
+        row.innerHTML = `
+          <div class="year-label">${y}</div>
+          <div class="months-container">${monthsHtml}</div>
+          <div class="${badgeCls}">${badgeText}</div>
+        `;
+        grid.appendChild(row);
+      }
+    }
+
+    // Initial fetch and loop
+    fetchProgress();
+    setInterval(fetchProgress, 3000);
+  </script>
+</body>
+</html>

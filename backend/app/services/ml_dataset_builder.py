@@ -120,6 +120,30 @@ class MLDatasetBuilder:
         train_idx = max(1, train_idx)
         val_idx = max(train_idx + 1, min(val_idx, total_unique - 1)) if total_unique > 2 else total_unique - 1
 
+        # Event-aware boundary adjustment: ensure physical storms are never split across train/val/test
+        if "event_id" in df.columns:
+            # Adjust train/val boundary
+            split_date_tv = unique_dates.iloc[train_idx]
+            crossing_tv = df[(df["parsed_date"] <= split_date_tv) & (df["event_id"].notna())]["event_id"].unique()
+            for eid in crossing_tv:
+                ev_dates = df[df["event_id"] == eid]["parsed_date"]
+                if ev_dates.max() > split_date_tv:
+                    # Storm spans across boundary; push boundary past storm end
+                    new_dates = unique_dates[unique_dates > ev_dates.max()]
+                    if len(new_dates) > 0:
+                        train_idx = unique_dates[unique_dates <= ev_dates.max()].index[-1] + 1
+
+            # Adjust val/test boundary
+            if val_idx < total_unique - 1:
+                split_date_vt = unique_dates.iloc[val_idx]
+                crossing_vt = df[(df["parsed_date"] <= split_date_vt) & (df["event_id"].notna())]["event_id"].unique()
+                for eid in crossing_vt:
+                    ev_dates = df[df["event_id"] == eid]["parsed_date"]
+                    if ev_dates.max() > split_date_vt:
+                        new_dates = unique_dates[unique_dates > ev_dates.max()]
+                        if len(new_dates) > 0:
+                            val_idx = unique_dates[unique_dates <= ev_dates.max()].index[-1] + 1
+
         train_dates = set(unique_dates.iloc[:train_idx])
         val_dates = set(unique_dates.iloc[train_idx:val_idx])
         test_dates = set(unique_dates.iloc[val_idx:])

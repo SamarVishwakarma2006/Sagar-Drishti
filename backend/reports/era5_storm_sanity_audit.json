@@ -1,0 +1,1674 @@
+{
+  "asna_2024": {
+    "event_name": "Cyclone Asna (2024)",
+    "window_start": "2024-08-22",
+    "window_end": "2024-09-04",
+    "basins_analyzed": [
+      "NAS",
+      "CAS"
+    ],
+    "observations_count": 28,
+    "basin_daily_observations": {
+      "NAS": {
+        "daily_records": [
+          {
+            "date": "2024-08-22",
+            "max_vorticity": 10.629,
+            "mean_vorticity": 0.137,
+            "weighted_exceedance_fraction": 0.0378,
+            "gridcell_exceedance_fraction": 0.0379,
+            "max_vorticity_loc": [
+              22.25,
+              60.0
+            ],
+            "min_vws": 0.07,
+            "mean_vws": 11.49,
+            "mean_rh700": 52.33,
+            "mean_rh500": 55.2,
+            "max_vorticity_change_24h": -0.853,
+            "min_vws_change_24h": -0.3
+          },
+          {
+            "date": "2024-08-23",
+            "max_vorticity": 10.227,
+            "mean_vorticity": 0.635,
+            "weighted_exceedance_fraction": 0.0547,
+            "gridcell_exceedance_fraction": 0.0544,
+            "max_vorticity_loc": [
+              20.75,
+              60.0
+            ],
+            "min_vws": 0.77,
+            "mean_vws": 10.58,
+            "mean_rh700": 47.21,
+            "mean_rh500": 45.4,
+            "max_vorticity_change_24h": -0.403,
+            "min_vws_change_24h": 0.69
+          },
+          {
+            "date": "2024-08-24",
+            "max_vorticity": 16.972,
+            "mean_vorticity": 1.455,
+            "weighted_exceedance_fraction": 0.1057,
+            "gridcell_exceedance_fraction": 0.1057,
+            "max_vorticity_loc": [
+              23.75,
+              72.0
+            ],
+            "min_vws": 0.63,
+            "mean_vws": 14.8,
+            "mean_rh700": 48.84,
+            "mean_rh500": 33.51,
+            "max_vorticity_change_24h": 6.746,
+            "min_vws_change_24h": -0.14
+          },
+          {
+            "date": "2024-08-25",
+            "max_vorticity": 17.934,
+            "mean_vorticity": 1.529,
+            "weighted_exceedance_fraction": 0.0552,
+            "gridcell_exceedance_fraction": 0.0554,
+            "max_vorticity_loc": [
+              22.5,
+              72.0
+            ],
+            "min_vws": 0.3,
+            "mean_vws": 17.06,
+            "mean_rh700": 46.78,
+            "mean_rh500": 41.22,
+            "max_vorticity_change_24h": 0.962,
+            "min_vws_change_24h": -0.33
+          },
+          {
+            "date": "2024-08-26",
+            "max_vorticity": 39.697,
+            "mean_vorticity": 2.046,
+            "weighted_exceedance_fraction": 0.1336,
+            "gridcell_exceedance_fraction": 0.1344,
+            "max_vorticity_loc": [
+              22.75,
+              71.25
+            ],
+            "min_vws": 0.15,
+            "mean_vws": 13.55,
+            "mean_rh700": 47.96,
+            "mean_rh500": 50.61,
+            "max_vorticity_change_24h": 21.763,
+            "min_vws_change_24h": -0.15
+          },
+          {
+            "date": "2024-08-27",
+            "max_vorticity": 59.885,
+            "mean_vorticity": 3.644,
+            "weighted_exceedance_fraction": 0.2515,
+            "gridcell_exceedance_fraction": 0.2527,
+            "max_vorticity_loc": [
+              22.75,
+              71.5
+            ],
+            "min_vws": 0.22,
+            "mean_vws": 14.1,
+            "mean_rh700": 57.56,
+            "mean_rh500": 70.99,
+            "max_vorticity_change_24h": 20.188,
+            "min_vws_change_24h": 0.07
+          },
+          {
+            "date": "2024-08-28",
+            "max_vorticity": 64.303,
+            "mean_vorticity": 4.03,
+            "weighted_exceedance_fraction": 0.2761,
+            "gridcell_exceedance_fraction": 0.2777,
+            "max_vorticity_loc": [
+              22.5,
+              69.75
+            ],
+            "min_vws": 0.94,
+            "mean_vws": 15.54,
+            "mean_rh700": 55.17,
+            "mean_rh500": 81.92,
+            "max_vorticity_change_24h": 4.418,
+            "min_vws_change_24h": 0.72
+          },
+          {
+            "date": "2024-08-29",
+            "max_vorticity": 67.386,
+            "mean_vorticity": 4.095,
+            "weighted_exceedance_fraction": 0.2555,
+            "gridcell_exceedance_fraction": 0.2568,
+            "max_vorticity_loc": [
+              23.0,
+              69.75
+            ],
+            "min_vws": 0.15,
+            "mean_vws": 17.49,
+            "mean_rh700": 52.6,
+            "mean_rh500": 71.53,
+            "max_vorticity_change_24h": 3.083,
+            "min_vws_change_24h": -0.78
+          },
+          {
+            "date": "2024-08-30",
+            "max_vorticity": 73.521,
+            "mean_vorticity": 3.773,
+            "weighted_exceedance_fraction": 0.277,
+            "gridcell_exceedance_fraction": 0.2779,
+            "max_vorticity_loc": [
+              23.5,
+              67.25
+            ],
+            "min_vws": 0.18,
+            "mean_vws": 13.82,
+            "mean_rh700": 56.41,
+            "mean_rh500": 56.88,
+            "max_vorticity_change_24h": 6.135,
+            "min_vws_change_24h": 0.03
+          },
+          {
+            "date": "2024-08-31",
+            "max_vorticity": 54.577,
+            "mean_vorticity": 3.451,
+            "weighted_exceedance_fraction": 0.2425,
+            "gridcell_exceedance_fraction": 0.2425,
+            "max_vorticity_loc": [
+              23.0,
+              63.0
+            ],
+            "min_vws": 0.08,
+            "mean_vws": 11.04,
+            "mean_rh700": 59.15,
+            "mean_rh500": 57.48,
+            "max_vorticity_change_24h": -18.944,
+            "min_vws_change_24h": -0.1
+          },
+          {
+            "date": "2024-09-01",
+            "max_vorticity": 58.549,
+            "mean_vorticity": 3.089,
+            "weighted_exceedance_fraction": 0.1569,
+            "gridcell_exceedance_fraction": 0.1565,
+            "max_vorticity_loc": [
+              22.5,
+              61.5
+            ],
+            "min_vws": 0.11,
+            "mean_vws": 13.72,
+            "mean_rh700": 61.06,
+            "mean_rh500": 45.65,
+            "max_vorticity_change_24h": 3.972,
+            "min_vws_change_24h": 0.03
+          },
+          {
+            "date": "2024-09-02",
+            "max_vorticity": 31.467,
+            "mean_vorticity": 1.845,
+            "weighted_exceedance_fraction": 0.0815,
+            "gridcell_exceedance_fraction": 0.0807,
+            "max_vorticity_loc": [
+              21.25,
+              61.5
+            ],
+            "min_vws": 0.52,
+            "mean_vws": 11.39,
+            "mean_rh700": 52.09,
+            "mean_rh500": 52.43,
+            "max_vorticity_change_24h": -27.082,
+            "min_vws_change_24h": 0.41
+          },
+          {
+            "date": "2024-09-03",
+            "max_vorticity": 17.236,
+            "mean_vorticity": 1.302,
+            "weighted_exceedance_fraction": 0.0523,
+            "gridcell_exceedance_fraction": 0.052,
+            "max_vorticity_loc": [
+              20.0,
+              60.75
+            ],
+            "min_vws": 0.23,
+            "mean_vws": 10.61,
+            "mean_rh700": 56.88,
+            "mean_rh500": 69.6,
+            "max_vorticity_change_24h": -14.23,
+            "min_vws_change_24h": -0.29
+          },
+          {
+            "date": "2024-09-04",
+            "max_vorticity": 18.859,
+            "mean_vorticity": 1.394,
+            "weighted_exceedance_fraction": 0.057,
+            "gridcell_exceedance_fraction": 0.0573,
+            "max_vorticity_loc": [
+              24.75,
+              70.25
+            ],
+            "min_vws": 0.05,
+            "mean_vws": 11.36,
+            "mean_rh700": 66.96,
+            "mean_rh500": 65.09,
+            "max_vorticity_change_24h": 1.623,
+            "min_vws_change_24h": -0.18
+          }
+        ],
+        "empirical_highlights": {
+          "peak_max_vorticity": 73.52116394042969,
+          "peak_max_vorticity_date": "2024-08-30",
+          "minimum_vws": 0.052631087601184845,
+          "minimum_vws_date": "2024-09-04",
+          "max_weighted_exceedance_fraction": 0.27704368610296504,
+          "max_weighted_exceedance_date": "2024-08-30"
+        }
+      },
+      "CAS": {
+        "daily_records": [
+          {
+            "date": "2024-08-22",
+            "max_vorticity": 70.708,
+            "mean_vorticity": 1.659,
+            "weighted_exceedance_fraction": 0.1402,
+            "gridcell_exceedance_fraction": 0.139,
+            "max_vorticity_loc": [
+              15.0,
+              69.25
+            ],
+            "min_vws": 1.45,
+            "mean_vws": 22.51,
+            "mean_rh700": 77.79,
+            "mean_rh500": 76.83,
+            "max_vorticity_change_24h": 18.611,
+            "min_vws_change_24h": -5.09
+          },
+          {
+            "date": "2024-08-23",
+            "max_vorticity": 37.904,
+            "mean_vorticity": 0.639,
+            "weighted_exceedance_fraction": 0.0814,
+            "gridcell_exceedance_fraction": 0.0815,
+            "max_vorticity_loc": [
+              16.0,
+              69.75
+            ],
+            "min_vws": 2.58,
+            "mean_vws": 25.67,
+            "mean_rh700": 79.73,
+            "mean_rh500": 71.99,
+            "max_vorticity_change_24h": -32.804,
+            "min_vws_change_24h": 1.13
+          },
+          {
+            "date": "2024-08-24",
+            "max_vorticity": 21.889,
+            "mean_vorticity": 0.189,
+            "weighted_exceedance_fraction": 0.0156,
+            "gridcell_exceedance_fraction": 0.0157,
+            "max_vorticity_loc": [
+              19.0,
+              74.0
+            ],
+            "min_vws": 0.57,
+            "mean_vws": 26.88,
+            "mean_rh700": 79.41,
+            "mean_rh500": 75.27,
+            "max_vorticity_change_24h": -16.015,
+            "min_vws_change_24h": -2.01
+          },
+          {
+            "date": "2024-08-25",
+            "max_vorticity": 13.534,
+            "mean_vorticity": 0.306,
+            "weighted_exceedance_fraction": 0.0344,
+            "gridcell_exceedance_fraction": 0.0348,
+            "max_vorticity_loc": [
+              18.25,
+              60.0
+            ],
+            "min_vws": 10.74,
+            "mean_vws": 33.57,
+            "mean_rh700": 62.1,
+            "mean_rh500": 63.77,
+            "max_vorticity_change_24h": -8.354,
+            "min_vws_change_24h": 10.18
+          },
+          {
+            "date": "2024-08-26",
+            "max_vorticity": 13.442,
+            "mean_vorticity": 1.173,
+            "weighted_exceedance_fraction": 0.1007,
+            "gridcell_exceedance_fraction": 0.1011,
+            "max_vorticity_loc": [
+              17.75,
+              60.0
+            ],
+            "min_vws": 10.73,
+            "mean_vws": 31.51,
+            "mean_rh700": 54.46,
+            "mean_rh500": 38.7,
+            "max_vorticity_change_24h": -0.092,
+            "min_vws_change_24h": -0.01
+          },
+          {
+            "date": "2024-08-27",
+            "max_vorticity": 9.312,
+            "mean_vorticity": 1.445,
+            "weighted_exceedance_fraction": 0.0429,
+            "gridcell_exceedance_fraction": 0.043,
+            "max_vorticity_loc": [
+              20.0,
+              67.0
+            ],
+            "min_vws": 10.68,
+            "mean_vws": 32.42,
+            "mean_rh700": 46.86,
+            "mean_rh500": 30.95,
+            "max_vorticity_change_24h": -4.13,
+            "min_vws_change_24h": -0.05
+          },
+          {
+            "date": "2024-08-28",
+            "max_vorticity": 8.54,
+            "mean_vorticity": 1.229,
+            "weighted_exceedance_fraction": 0.0219,
+            "gridcell_exceedance_fraction": 0.022,
+            "max_vorticity_loc": [
+              17.25,
+              60.0
+            ],
+            "min_vws": 13.49,
+            "mean_vws": 33.69,
+            "mean_rh700": 40.42,
+            "mean_rh500": 30.12,
+            "max_vorticity_change_24h": -0.773,
+            "min_vws_change_24h": 2.81
+          },
+          {
+            "date": "2024-08-29",
+            "max_vorticity": 10.024,
+            "mean_vorticity": 0.936,
+            "weighted_exceedance_fraction": 0.0274,
+            "gridcell_exceedance_fraction": 0.0274,
+            "max_vorticity_loc": [
+              17.0,
+              60.0
+            ],
+            "min_vws": 15.56,
+            "mean_vws": 29.63,
+            "mean_rh700": 36.37,
+            "mean_rh500": 37.97,
+            "max_vorticity_change_24h": 1.484,
+            "min_vws_change_24h": 2.07
+          },
+          {
+            "date": "2024-08-30",
+            "max_vorticity": 7.999,
+            "mean_vorticity": 1.3,
+            "weighted_exceedance_fraction": 0.0138,
+            "gridcell_exceedance_fraction": 0.0139,
+            "max_vorticity_loc": [
+              20.0,
+              67.25
+            ],
+            "min_vws": 9.92,
+            "mean_vws": 29.56,
+            "mean_rh700": 41.28,
+            "mean_rh500": 38.08,
+            "max_vorticity_change_24h": -2.025,
+            "min_vws_change_24h": -5.64
+          },
+          {
+            "date": "2024-08-31",
+            "max_vorticity": 16.297,
+            "mean_vorticity": 1.244,
+            "weighted_exceedance_fraction": 0.0654,
+            "gridcell_exceedance_fraction": 0.0662,
+            "max_vorticity_loc": [
+              19.75,
+              61.75
+            ],
+            "min_vws": 11.94,
+            "mean_vws": 31.09,
+            "mean_rh700": 46.41,
+            "mean_rh500": 43.61,
+            "max_vorticity_change_24h": 8.298,
+            "min_vws_change_24h": 2.02
+          },
+          {
+            "date": "2024-09-01",
+            "max_vorticity": 12.732,
+            "mean_vorticity": 1.0,
+            "weighted_exceedance_fraction": 0.0777,
+            "gridcell_exceedance_fraction": 0.0784,
+            "max_vorticity_loc": [
+              19.25,
+              60.75
+            ],
+            "min_vws": 14.43,
+            "mean_vws": 31.38,
+            "mean_rh700": 47.61,
+            "mean_rh500": 45.33,
+            "max_vorticity_change_24h": -3.565,
+            "min_vws_change_24h": 2.49
+          },
+          {
+            "date": "2024-09-02",
+            "max_vorticity": 27.188,
+            "mean_vorticity": 1.262,
+            "weighted_exceedance_fraction": 0.0903,
+            "gridcell_exceedance_fraction": 0.0908,
+            "max_vorticity_loc": [
+              20.0,
+              60.75
+            ],
+            "min_vws": 12.08,
+            "mean_vws": 28.73,
+            "mean_rh700": 57.93,
+            "mean_rh500": 55.74,
+            "max_vorticity_change_24h": 14.456,
+            "min_vws_change_24h": -2.35
+          },
+          {
+            "date": "2024-09-03",
+            "max_vorticity": 19.165,
+            "mean_vorticity": 1.185,
+            "weighted_exceedance_fraction": 0.0511,
+            "gridcell_exceedance_fraction": 0.0515,
+            "max_vorticity_loc": [
+              19.75,
+              60.75
+            ],
+            "min_vws": 6.99,
+            "mean_vws": 27.89,
+            "mean_rh700": 67.99,
+            "mean_rh500": 55.67,
+            "max_vorticity_change_24h": -8.023,
+            "min_vws_change_24h": -5.09
+          },
+          {
+            "date": "2024-09-04",
+            "max_vorticity": 7.092,
+            "mean_vorticity": 0.56,
+            "weighted_exceedance_fraction": 0.002,
+            "gridcell_exceedance_fraction": 0.002,
+            "max_vorticity_loc": [
+              17.5,
+              74.5
+            ],
+            "min_vws": 13.14,
+            "mean_vws": 27.18,
+            "mean_rh700": 72.08,
+            "mean_rh500": 46.04,
+            "max_vorticity_change_24h": -12.073,
+            "min_vws_change_24h": 6.14
+          }
+        ],
+        "empirical_highlights": {
+          "peak_max_vorticity": 70.70791625976562,
+          "peak_max_vorticity_date": "2024-08-22",
+          "minimum_vws": 0.5666021108627319,
+          "minimum_vws_date": "2024-08-24",
+          "max_weighted_exceedance_fraction": 0.14023342379315926,
+          "max_weighted_exceedance_date": "2024-08-22"
+        }
+      }
+    }
+  },
+  "remal_2024": {
+    "event_name": "Cyclone Remal (2024)",
+    "window_start": "2024-05-18",
+    "window_end": "2024-05-29",
+    "basins_analyzed": [
+      "NBOB",
+      "CBOB"
+    ],
+    "observations_count": 24,
+    "basin_daily_observations": {
+      "NBOB": {
+        "daily_records": [
+          {
+            "date": "2024-05-18",
+            "max_vorticity": 20.769,
+            "mean_vorticity": -0.11,
+            "weighted_exceedance_fraction": 0.0518,
+            "gridcell_exceedance_fraction": 0.052,
+            "max_vorticity_loc": [
+              21.25,
+              93.5
+            ],
+            "min_vws": 1.67,
+            "mean_vws": 11.95,
+            "mean_rh700": 55.15,
+            "mean_rh500": 52.64,
+            "max_vorticity_change_24h": -12.258,
+            "min_vws_change_24h": 1.4
+          },
+          {
+            "date": "2024-05-19",
+            "max_vorticity": 20.791,
+            "mean_vorticity": -0.082,
+            "weighted_exceedance_fraction": 0.0417,
+            "gridcell_exceedance_fraction": 0.0418,
+            "max_vorticity_loc": [
+              20.75,
+              93.75
+            ],
+            "min_vws": 0.95,
+            "mean_vws": 10.85,
+            "mean_rh700": 58.57,
+            "mean_rh500": 60.2,
+            "max_vorticity_change_24h": 0.022,
+            "min_vws_change_24h": -0.71
+          },
+          {
+            "date": "2024-05-20",
+            "max_vorticity": 22.623,
+            "mean_vorticity": -0.145,
+            "weighted_exceedance_fraction": 0.0362,
+            "gridcell_exceedance_fraction": 0.0363,
+            "max_vorticity_loc": [
+              21.25,
+              93.5
+            ],
+            "min_vws": 1.04,
+            "mean_vws": 9.3,
+            "mean_rh700": 60.87,
+            "mean_rh500": 59.72,
+            "max_vorticity_change_24h": 1.831,
+            "min_vws_change_24h": 0.08
+          },
+          {
+            "date": "2024-05-21",
+            "max_vorticity": 19.967,
+            "mean_vorticity": -0.281,
+            "weighted_exceedance_fraction": 0.0356,
+            "gridcell_exceedance_fraction": 0.0357,
+            "max_vorticity_loc": [
+              18.5,
+              95.0
+            ],
+            "min_vws": 0.07,
+            "mean_vws": 6.5,
+            "mean_rh700": 60.74,
+            "mean_rh500": 56.35,
+            "max_vorticity_change_24h": -2.656,
+            "min_vws_change_24h": -0.97
+          },
+          {
+            "date": "2024-05-22",
+            "max_vorticity": 18.689,
+            "mean_vorticity": -0.7,
+            "weighted_exceedance_fraction": 0.0307,
+            "gridcell_exceedance_fraction": 0.0308,
+            "max_vorticity_loc": [
+              23.0,
+              85.25
+            ],
+            "min_vws": 0.16,
+            "mean_vws": 9.66,
+            "mean_rh700": 62.77,
+            "mean_rh500": 53.38,
+            "max_vorticity_change_24h": -1.278,
+            "min_vws_change_24h": 0.09
+          },
+          {
+            "date": "2024-05-23",
+            "max_vorticity": 21.498,
+            "mean_vorticity": -0.454,
+            "weighted_exceedance_fraction": 0.0315,
+            "gridcell_exceedance_fraction": 0.0316,
+            "max_vorticity_loc": [
+              21.25,
+              94.0
+            ],
+            "min_vws": 0.26,
+            "mean_vws": 12.02,
+            "mean_rh700": 69.16,
+            "mean_rh500": 60.74,
+            "max_vorticity_change_24h": 2.809,
+            "min_vws_change_24h": 0.1
+          },
+          {
+            "date": "2024-05-24",
+            "max_vorticity": 21.221,
+            "mean_vorticity": 0.162,
+            "weighted_exceedance_fraction": 0.0971,
+            "gridcell_exceedance_fraction": 0.0964,
+            "max_vorticity_loc": [
+              21.5,
+              94.0
+            ],
+            "min_vws": 0.16,
+            "mean_vws": 9.62,
+            "mean_rh700": 77.05,
+            "mean_rh500": 70.12,
+            "max_vorticity_change_24h": -0.277,
+            "min_vws_change_24h": -0.09
+          },
+          {
+            "date": "2024-05-25",
+            "max_vorticity": 56.702,
+            "mean_vorticity": 2.722,
+            "weighted_exceedance_fraction": 0.2861,
+            "gridcell_exceedance_fraction": 0.2848,
+            "max_vorticity_loc": [
+              21.5,
+              94.0
+            ],
+            "min_vws": 0.21,
+            "mean_vws": 12.64,
+            "mean_rh700": 83.04,
+            "mean_rh500": 76.82,
+            "max_vorticity_change_24h": 35.481,
+            "min_vws_change_24h": 0.04
+          },
+          {
+            "date": "2024-05-26",
+            "max_vorticity": 80.185,
+            "mean_vorticity": 6.022,
+            "weighted_exceedance_fraction": 0.3532,
+            "gridcell_exceedance_fraction": 0.3537,
+            "max_vorticity_loc": [
+              22.0,
+              89.0
+            ],
+            "min_vws": 0.22,
+            "mean_vws": 16.35,
+            "mean_rh700": 85.43,
+            "mean_rh500": 86.44,
+            "max_vorticity_change_24h": 23.484,
+            "min_vws_change_24h": 0.02
+          },
+          {
+            "date": "2024-05-27",
+            "max_vorticity": 107.28,
+            "mean_vorticity": 3.433,
+            "weighted_exceedance_fraction": 0.2342,
+            "gridcell_exceedance_fraction": 0.2358,
+            "max_vorticity_loc": [
+              22.25,
+              89.5
+            ],
+            "min_vws": 0.33,
+            "mean_vws": 14.66,
+            "mean_rh700": 77.92,
+            "mean_rh500": 63.3,
+            "max_vorticity_change_24h": 27.095,
+            "min_vws_change_24h": 0.11
+          },
+          {
+            "date": "2024-05-28",
+            "max_vorticity": 48.401,
+            "mean_vorticity": 0.634,
+            "weighted_exceedance_fraction": 0.0935,
+            "gridcell_exceedance_fraction": 0.0941,
+            "max_vorticity_loc": [
+              21.25,
+              94.0
+            ],
+            "min_vws": 0.66,
+            "mean_vws": 13.12,
+            "mean_rh700": 57.59,
+            "mean_rh500": 32.71,
+            "max_vorticity_change_24h": -58.879,
+            "min_vws_change_24h": 0.32
+          },
+          {
+            "date": "2024-05-29",
+            "max_vorticity": 26.033,
+            "mean_vorticity": 0.104,
+            "weighted_exceedance_fraction": 0.0687,
+            "gridcell_exceedance_fraction": 0.0691,
+            "max_vorticity_loc": [
+              21.0,
+              94.0
+            ],
+            "min_vws": 0.23,
+            "mean_vws": 9.41,
+            "mean_rh700": 45.38,
+            "mean_rh500": 29.05,
+            "max_vorticity_change_24h": -22.368,
+            "min_vws_change_24h": -0.42
+          }
+        ],
+        "empirical_highlights": {
+          "peak_max_vorticity": 107.28016662597656,
+          "peak_max_vorticity_date": "2024-05-27",
+          "minimum_vws": 0.06751778721809387,
+          "minimum_vws_date": "2024-05-21",
+          "max_weighted_exceedance_fraction": 0.35316624852652545,
+          "max_weighted_exceedance_date": "2024-05-26"
+        }
+      },
+      "CBOB": {
+        "daily_records": [
+          {
+            "date": "2024-05-18",
+            "max_vorticity": 7.803,
+            "mean_vorticity": -0.987,
+            "weighted_exceedance_fraction": 0.0018,
+            "gridcell_exceedance_fraction": 0.0018,
+            "max_vorticity_loc": [
+              16.5,
+              80.75
+            ],
+            "min_vws": 0.05,
+            "mean_vws": 5.73,
+            "mean_rh700": 68.65,
+            "mean_rh500": 62.1,
+            "max_vorticity_change_24h": -7.145,
+            "min_vws_change_24h": 0.04
+          },
+          {
+            "date": "2024-05-19",
+            "max_vorticity": 3.951,
+            "mean_vorticity": -1.024,
+            "weighted_exceedance_fraction": 0.0,
+            "gridcell_exceedance_fraction": 0.0,
+            "max_vorticity_loc": [
+              13.0,
+              92.5
+            ],
+            "min_vws": 0.3,
+            "mean_vws": 7.16,
+            "mean_rh700": 67.82,
+            "mean_rh500": 67.53,
+            "max_vorticity_change_24h": -3.852,
+            "min_vws_change_24h": 0.25
+          },
+          {
+            "date": "2024-05-20",
+            "max_vorticity": 16.481,
+            "mean_vorticity": -1.015,
+            "weighted_exceedance_fraction": 0.0036,
+            "gridcell_exceedance_fraction": 0.0036,
+            "max_vorticity_loc": [
+              17.75,
+              80.75
+            ],
+            "min_vws": 0.48,
+            "mean_vws": 7.28,
+            "mean_rh700": 69.04,
+            "mean_rh500": 67.48,
+            "max_vorticity_change_24h": 12.531,
+            "min_vws_change_24h": 0.18
+          },
+          {
+            "date": "2024-05-21",
+            "max_vorticity": 13.437,
+            "mean_vorticity": -0.194,
+            "weighted_exceedance_fraction": 0.0149,
+            "gridcell_exceedance_fraction": 0.0148,
+            "max_vorticity_loc": [
+              18.0,
+              81.75
+            ],
+            "min_vws": 0.04,
+            "mean_vws": 8.25,
+            "mean_rh700": 71.0,
+            "mean_rh500": 70.13,
+            "max_vorticity_change_24h": -3.044,
+            "min_vws_change_24h": -0.44
+          },
+          {
+            "date": "2024-05-22",
+            "max_vorticity": 13.251,
+            "mean_vorticity": 1.28,
+            "weighted_exceedance_fraction": 0.1003,
+            "gridcell_exceedance_fraction": 0.0995,
+            "max_vorticity_loc": [
+              14.0,
+              89.75
+            ],
+            "min_vws": 0.08,
+            "mean_vws": 8.29,
+            "mean_rh700": 71.87,
+            "mean_rh500": 78.48,
+            "max_vorticity_change_24h": -0.186,
+            "min_vws_change_24h": 0.04
+          },
+          {
+            "date": "2024-05-23",
+            "max_vorticity": 27.364,
+            "mean_vorticity": 2.634,
+            "weighted_exceedance_fraction": 0.175,
+            "gridcell_exceedance_fraction": 0.1741,
+            "max_vorticity_loc": [
+              13.0,
+              87.25
+            ],
+            "min_vws": 0.17,
+            "mean_vws": 8.67,
+            "mean_rh700": 74.01,
+            "mean_rh500": 83.51,
+            "max_vorticity_change_24h": 14.112,
+            "min_vws_change_24h": 0.09
+          },
+          {
+            "date": "2024-05-24",
+            "max_vorticity": 26.909,
+            "mean_vorticity": 3.736,
+            "weighted_exceedance_fraction": 0.3384,
+            "gridcell_exceedance_fraction": 0.3389,
+            "max_vorticity_loc": [
+              16.0,
+              90.0
+            ],
+            "min_vws": 0.34,
+            "mean_vws": 13.68,
+            "mean_rh700": 75.44,
+            "mean_rh500": 85.78,
+            "max_vorticity_change_24h": -0.454,
+            "min_vws_change_24h": 0.17
+          },
+          {
+            "date": "2024-05-25",
+            "max_vorticity": 54.047,
+            "mean_vorticity": 3.485,
+            "weighted_exceedance_fraction": 0.2886,
+            "gridcell_exceedance_fraction": 0.2893,
+            "max_vorticity_loc": [
+              15.75,
+              87.5
+            ],
+            "min_vws": 0.26,
+            "mean_vws": 17.0,
+            "mean_rh700": 81.34,
+            "mean_rh500": 85.18,
+            "max_vorticity_change_24h": 27.138,
+            "min_vws_change_24h": -0.08
+          },
+          {
+            "date": "2024-05-26",
+            "max_vorticity": 25.318,
+            "mean_vorticity": 1.774,
+            "weighted_exceedance_fraction": 0.1518,
+            "gridcell_exceedance_fraction": 0.1518,
+            "max_vorticity_loc": [
+              18.0,
+              89.75
+            ],
+            "min_vws": 0.27,
+            "mean_vws": 14.79,
+            "mean_rh700": 76.2,
+            "mean_rh500": 68.08,
+            "max_vorticity_change_24h": -28.729,
+            "min_vws_change_24h": 0.01
+          },
+          {
+            "date": "2024-05-27",
+            "max_vorticity": 15.26,
+            "mean_vorticity": 1.276,
+            "weighted_exceedance_fraction": 0.0702,
+            "gridcell_exceedance_fraction": 0.0703,
+            "max_vorticity_loc": [
+              16.25,
+              80.75
+            ],
+            "min_vws": 0.45,
+            "mean_vws": 17.3,
+            "mean_rh700": 64.81,
+            "mean_rh500": 49.49,
+            "max_vorticity_change_24h": -10.058,
+            "min_vws_change_24h": 0.18
+          },
+          {
+            "date": "2024-05-28",
+            "max_vorticity": 10.572,
+            "mean_vorticity": 1.257,
+            "weighted_exceedance_fraction": 0.0375,
+            "gridcell_exceedance_fraction": 0.0375,
+            "max_vorticity_loc": [
+              14.75,
+              80.25
+            ],
+            "min_vws": 1.39,
+            "mean_vws": 20.3,
+            "mean_rh700": 56.9,
+            "mean_rh500": 46.92,
+            "max_vorticity_change_24h": -4.688,
+            "min_vws_change_24h": 0.94
+          },
+          {
+            "date": "2024-05-29",
+            "max_vorticity": 12.882,
+            "mean_vorticity": 0.76,
+            "weighted_exceedance_fraction": 0.0502,
+            "gridcell_exceedance_fraction": 0.0503,
+            "max_vorticity_loc": [
+              17.75,
+              81.5
+            ],
+            "min_vws": 3.79,
+            "mean_vws": 18.92,
+            "mean_rh700": 53.19,
+            "mean_rh500": 45.67,
+            "max_vorticity_change_24h": 2.309,
+            "min_vws_change_24h": 2.4
+          }
+        ],
+        "empirical_highlights": {
+          "peak_max_vorticity": 54.04704666137695,
+          "peak_max_vorticity_date": "2024-05-25",
+          "minimum_vws": 0.04222789406776428,
+          "minimum_vws_date": "2024-05-21",
+          "max_weighted_exceedance_fraction": 0.33836557839408965,
+          "max_weighted_exceedance_date": "2024-05-24"
+        }
+      }
+    }
+  },
+  "biparjoy_2023": {
+    "event_name": "Cyclone Biparjoy (2023)",
+    "window_start": "2023-05-28",
+    "window_end": "2023-06-16",
+    "basins_analyzed": [
+      "CAS",
+      "NAS"
+    ],
+    "observations_count": 40,
+    "basin_daily_observations": {
+      "CAS": {
+        "daily_records": [
+          {
+            "date": "2023-05-28",
+            "max_vorticity": 10.834,
+            "mean_vorticity": -0.426,
+            "weighted_exceedance_fraction": 0.0102,
+            "gridcell_exceedance_fraction": 0.0102,
+            "max_vorticity_loc": [
+              14.0,
+              74.25
+            ],
+            "min_vws": 0.47,
+            "mean_vws": 10.74,
+            "mean_rh700": 34.41,
+            "mean_rh500": 11.5,
+            "max_vorticity_change_24h": 0.493,
+            "min_vws_change_24h": 0.4
+          },
+          {
+            "date": "2023-05-29",
+            "max_vorticity": 7.29,
+            "mean_vorticity": -0.479,
+            "weighted_exceedance_fraction": 0.0029,
+            "gridcell_exceedance_fraction": 0.003,
+            "max_vorticity_loc": [
+              18.5,
+              73.0
+            ],
+            "min_vws": 2.03,
+            "mean_vws": 16.08,
+            "mean_rh700": 37.92,
+            "mean_rh500": 10.6,
+            "max_vorticity_change_24h": -3.544,
+            "min_vws_change_24h": 1.57
+          },
+          {
+            "date": "2023-05-30",
+            "max_vorticity": 12.358,
+            "mean_vorticity": -0.658,
+            "weighted_exceedance_fraction": 0.0267,
+            "gridcell_exceedance_fraction": 0.0269,
+            "max_vorticity_loc": [
+              16.25,
+              73.75
+            ],
+            "min_vws": 1.81,
+            "mean_vws": 19.95,
+            "mean_rh700": 38.57,
+            "mean_rh500": 9.14,
+            "max_vorticity_change_24h": 5.068,
+            "min_vws_change_24h": -0.22
+          },
+          {
+            "date": "2023-05-31",
+            "max_vorticity": 12.462,
+            "mean_vorticity": -1.18,
+            "weighted_exceedance_fraction": 0.0084,
+            "gridcell_exceedance_fraction": 0.0084,
+            "max_vorticity_loc": [
+              17.25,
+              75.0
+            ],
+            "min_vws": 0.13,
+            "mean_vws": 19.88,
+            "mean_rh700": 38.71,
+            "mean_rh500": 11.39,
+            "max_vorticity_change_24h": 0.104,
+            "min_vws_change_24h": -1.68
+          },
+          {
+            "date": "2023-06-01",
+            "max_vorticity": 7.918,
+            "mean_vorticity": -1.452,
+            "weighted_exceedance_fraction": 0.0041,
+            "gridcell_exceedance_fraction": 0.0041,
+            "max_vorticity_loc": [
+              17.75,
+              73.5
+            ],
+            "min_vws": 0.97,
+            "mean_vws": 17.74,
+            "mean_rh700": 40.7,
+            "mean_rh500": 16.47,
+            "max_vorticity_change_24h": -4.544,
+            "min_vws_change_24h": 0.84
+          },
+          {
+            "date": "2023-06-02",
+            "max_vorticity": 13.867,
+            "mean_vorticity": -1.149,
+            "weighted_exceedance_fraction": 0.01,
+            "gridcell_exceedance_fraction": 0.01,
+            "max_vorticity_loc": [
+              16.25,
+              73.5
+            ],
+            "min_vws": 0.32,
+            "mean_vws": 13.43,
+            "mean_rh700": 43.06,
+            "mean_rh500": 21.88,
+            "max_vorticity_change_24h": 5.949,
+            "min_vws_change_24h": -0.65
+          },
+          {
+            "date": "2023-06-03",
+            "max_vorticity": 8.791,
+            "mean_vorticity": -0.691,
+            "weighted_exceedance_fraction": 0.0056,
+            "gridcell_exceedance_fraction": 0.0056,
+            "max_vorticity_loc": [
+              20.0,
+              73.25
+            ],
+            "min_vws": 0.26,
+            "mean_vws": 11.03,
+            "mean_rh700": 40.94,
+            "mean_rh500": 25.55,
+            "max_vorticity_change_24h": -5.076,
+            "min_vws_change_24h": -0.06
+          },
+          {
+            "date": "2023-06-04",
+            "max_vorticity": 6.084,
+            "mean_vorticity": -0.694,
+            "weighted_exceedance_fraction": 0.002,
+            "gridcell_exceedance_fraction": 0.002,
+            "max_vorticity_loc": [
+              17.75,
+              75.0
+            ],
+            "min_vws": 0.08,
+            "mean_vws": 10.44,
+            "mean_rh700": 39.49,
+            "mean_rh500": 21.17,
+            "max_vorticity_change_24h": -2.707,
+            "min_vws_change_24h": -0.18
+          },
+          {
+            "date": "2023-06-05",
+            "max_vorticity": 6.632,
+            "mean_vorticity": -0.787,
+            "weighted_exceedance_fraction": 0.0036,
+            "gridcell_exceedance_fraction": 0.0036,
+            "max_vorticity_loc": [
+              18.25,
+              72.5
+            ],
+            "min_vws": 0.07,
+            "mean_vws": 9.98,
+            "mean_rh700": 34.8,
+            "mean_rh500": 16.56,
+            "max_vorticity_change_24h": 0.548,
+            "min_vws_change_24h": -0.01
+          },
+          {
+            "date": "2023-06-06",
+            "max_vorticity": 10.548,
+            "mean_vorticity": -0.7,
+            "weighted_exceedance_fraction": 0.003,
+            "gridcell_exceedance_fraction": 0.003,
+            "max_vorticity_loc": [
+              14.0,
+              67.0
+            ],
+            "min_vws": 0.24,
+            "mean_vws": 10.22,
+            "mean_rh700": 29.48,
+            "mean_rh500": 16.03,
+            "max_vorticity_change_24h": 3.916,
+            "min_vws_change_24h": 0.17
+          },
+          {
+            "date": "2023-06-07",
+            "max_vorticity": 48.829,
+            "mean_vorticity": 0.192,
+            "weighted_exceedance_fraction": 0.0592,
+            "gridcell_exceedance_fraction": 0.0585,
+            "max_vorticity_loc": [
+              14.0,
+              65.75
+            ],
+            "min_vws": 0.03,
+            "mean_vws": 8.72,
+            "mean_rh700": 33.25,
+            "mean_rh500": 27.1,
+            "max_vorticity_change_24h": 38.281,
+            "min_vws_change_24h": -0.21
+          },
+          {
+            "date": "2023-06-08",
+            "max_vorticity": 134.427,
+            "mean_vorticity": 1.627,
+            "weighted_exceedance_fraction": 0.0945,
+            "gridcell_exceedance_fraction": 0.0938,
+            "max_vorticity_loc": [
+              14.25,
+              66.25
+            ],
+            "min_vws": 0.19,
+            "mean_vws": 11.6,
+            "mean_rh700": 45.92,
+            "mean_rh500": 32.93,
+            "max_vorticity_change_24h": 85.597,
+            "min_vws_change_24h": 0.16
+          },
+          {
+            "date": "2023-06-09",
+            "max_vorticity": 112.897,
+            "mean_vorticity": 2.639,
+            "weighted_exceedance_fraction": 0.1355,
+            "gridcell_exceedance_fraction": 0.1348,
+            "max_vorticity_loc": [
+              16.0,
+              67.5
+            ],
+            "min_vws": 0.15,
+            "mean_vws": 15.31,
+            "mean_rh700": 53.46,
+            "mean_rh500": 47.35,
+            "max_vorticity_change_24h": -21.53,
+            "min_vws_change_24h": -0.04
+          },
+          {
+            "date": "2023-06-10",
+            "max_vorticity": 129.304,
+            "mean_vorticity": 3.336,
+            "weighted_exceedance_fraction": 0.1685,
+            "gridcell_exceedance_fraction": 0.1689,
+            "max_vorticity_loc": [
+              16.25,
+              67.5
+            ],
+            "min_vws": 3.46,
+            "mean_vws": 21.96,
+            "mean_rh700": 56.15,
+            "mean_rh500": 53.63,
+            "max_vorticity_change_24h": 16.407,
+            "min_vws_change_24h": 3.31
+          },
+          {
+            "date": "2023-06-11",
+            "max_vorticity": 186.038,
+            "mean_vorticity": 3.675,
+            "weighted_exceedance_fraction": 0.1646,
+            "gridcell_exceedance_fraction": 0.1657,
+            "max_vorticity_loc": [
+              18.5,
+              67.5
+            ],
+            "min_vws": 1.91,
+            "mean_vws": 24.85,
+            "mean_rh700": 49.11,
+            "mean_rh500": 49.22,
+            "max_vorticity_change_24h": 56.735,
+            "min_vws_change_24h": -1.55
+          },
+          {
+            "date": "2023-06-12",
+            "max_vorticity": 182.556,
+            "mean_vorticity": 2.988,
+            "weighted_exceedance_fraction": 0.1043,
+            "gridcell_exceedance_fraction": 0.1052,
+            "max_vorticity_loc": [
+              19.0,
+              67.75
+            ],
+            "min_vws": 3.17,
+            "mean_vws": 24.74,
+            "mean_rh700": 43.93,
+            "mean_rh500": 38.46,
+            "max_vorticity_change_24h": -3.482,
+            "min_vws_change_24h": 1.25
+          },
+          {
+            "date": "2023-06-13",
+            "max_vorticity": 24.59,
+            "mean_vorticity": 0.642,
+            "weighted_exceedance_fraction": 0.038,
+            "gridcell_exceedance_fraction": 0.0384,
+            "max_vorticity_loc": [
+              20.0,
+              66.75
+            ],
+            "min_vws": 8.68,
+            "mean_vws": 28.16,
+            "mean_rh700": 42.49,
+            "mean_rh500": 31.34,
+            "max_vorticity_change_24h": -157.966,
+            "min_vws_change_24h": 5.51
+          },
+          {
+            "date": "2023-06-14",
+            "max_vorticity": 13.733,
+            "mean_vorticity": 0.358,
+            "weighted_exceedance_fraction": 0.0763,
+            "gridcell_exceedance_fraction": 0.077,
+            "max_vorticity_loc": [
+              19.75,
+              60.0
+            ],
+            "min_vws": 8.51,
+            "mean_vws": 28.63,
+            "mean_rh700": 39.96,
+            "mean_rh500": 42.25,
+            "max_vorticity_change_24h": -10.857,
+            "min_vws_change_24h": -0.16
+          },
+          {
+            "date": "2023-06-15",
+            "max_vorticity": 11.102,
+            "mean_vorticity": 0.502,
+            "weighted_exceedance_fraction": 0.0638,
+            "gridcell_exceedance_fraction": 0.0643,
+            "max_vorticity_loc": [
+              20.0,
+              61.0
+            ],
+            "min_vws": 11.77,
+            "mean_vws": 28.89,
+            "mean_rh700": 33.36,
+            "mean_rh500": 41.56,
+            "max_vorticity_change_24h": -2.632,
+            "min_vws_change_24h": 3.26
+          },
+          {
+            "date": "2023-06-16",
+            "max_vorticity": 9.209,
+            "mean_vorticity": 0.255,
+            "weighted_exceedance_fraction": 0.0179,
+            "gridcell_exceedance_fraction": 0.018,
+            "max_vorticity_loc": [
+              20.0,
+              60.75
+            ],
+            "min_vws": 15.74,
+            "mean_vws": 27.78,
+            "mean_rh700": 31.03,
+            "mean_rh500": 36.34,
+            "max_vorticity_change_24h": -1.893,
+            "min_vws_change_24h": 3.97
+          }
+        ],
+        "empirical_highlights": {
+          "peak_max_vorticity": 186.03822326660156,
+          "peak_max_vorticity_date": "2023-06-11",
+          "minimum_vws": 0.026388177648186684,
+          "minimum_vws_date": "2023-06-07",
+          "max_weighted_exceedance_fraction": 0.16851727888697515,
+          "max_weighted_exceedance_date": "2023-06-10"
+        }
+      },
+      "NAS": {
+        "daily_records": [
+          {
+            "date": "2023-05-28",
+            "max_vorticity": 25.985,
+            "mean_vorticity": -1.278,
+            "weighted_exceedance_fraction": 0.0526,
+            "gridcell_exceedance_fraction": 0.0532,
+            "max_vorticity_loc": [
+              23.0,
+              60.0
+            ],
+            "min_vws": 0.58,
+            "mean_vws": 16.84,
+            "mean_rh700": 39.34,
+            "mean_rh500": 22.35,
+            "max_vorticity_change_24h": 7.462,
+            "min_vws_change_24h": -1.38
+          },
+          {
+            "date": "2023-05-29",
+            "max_vorticity": 19.376,
+            "mean_vorticity": -1.32,
+            "weighted_exceedance_fraction": 0.051,
+            "gridcell_exceedance_fraction": 0.0515,
+            "max_vorticity_loc": [
+              22.5,
+              60.0
+            ],
+            "min_vws": 0.4,
+            "mean_vws": 17.23,
+            "mean_rh700": 40.85,
+            "mean_rh500": 24.36,
+            "max_vorticity_change_24h": -6.609,
+            "min_vws_change_24h": -0.18
+          },
+          {
+            "date": "2023-05-30",
+            "max_vorticity": 13.675,
+            "mean_vorticity": -1.707,
+            "weighted_exceedance_fraction": 0.0347,
+            "gridcell_exceedance_fraction": 0.0347,
+            "max_vorticity_loc": [
+              22.5,
+              60.0
+            ],
+            "min_vws": 0.16,
+            "mean_vws": 18.42,
+            "mean_rh700": 33.79,
+            "mean_rh500": 20.87,
+            "max_vorticity_change_24h": -5.701,
+            "min_vws_change_24h": -0.24
+          },
+          {
+            "date": "2023-05-31",
+            "max_vorticity": 10.986,
+            "mean_vorticity": -1.276,
+            "weighted_exceedance_fraction": 0.0149,
+            "gridcell_exceedance_fraction": 0.0151,
+            "max_vorticity_loc": [
+              22.25,
+              60.0
+            ],
+            "min_vws": 0.08,
+            "mean_vws": 12.02,
+            "mean_rh700": 35.81,
+            "mean_rh500": 24.18,
+            "max_vorticity_change_24h": -2.69,
+            "min_vws_change_24h": -0.08
+          },
+          {
+            "date": "2023-06-01",
+            "max_vorticity": 13.779,
+            "mean_vorticity": -0.831,
+            "weighted_exceedance_fraction": 0.0329,
+            "gridcell_exceedance_fraction": 0.0333,
+            "max_vorticity_loc": [
+              22.75,
+              60.0
+            ],
+            "min_vws": 0.13,
+            "mean_vws": 10.21,
+            "mean_rh700": 37.41,
+            "mean_rh500": 35.29,
+            "max_vorticity_change_24h": 2.793,
+            "min_vws_change_24h": 0.05
+          },
+          {
+            "date": "2023-06-02",
+            "max_vorticity": 20.905,
+            "mean_vorticity": -0.729,
+            "weighted_exceedance_fraction": 0.077,
+            "gridcell_exceedance_fraction": 0.0777,
+            "max_vorticity_loc": [
+              23.25,
+              60.0
+            ],
+            "min_vws": 1.37,
+            "mean_vws": 15.09,
+            "mean_rh700": 36.16,
+            "mean_rh500": 36.12,
+            "max_vorticity_change_24h": 7.127,
+            "min_vws_change_24h": 1.24
+          },
+          {
+            "date": "2023-06-03",
+            "max_vorticity": 14.448,
+            "mean_vorticity": -1.026,
+            "weighted_exceedance_fraction": 0.0677,
+            "gridcell_exceedance_fraction": 0.0683,
+            "max_vorticity_loc": [
+              23.75,
+              61.5
+            ],
+            "min_vws": 1.94,
+            "mean_vws": 13.35,
+            "mean_rh700": 33.66,
+            "mean_rh500": 30.94,
+            "max_vorticity_change_24h": -6.457,
+            "min_vws_change_24h": 0.57
+          },
+          {
+            "date": "2023-06-04",
+            "max_vorticity": 16.417,
+            "mean_vorticity": -1.007,
+            "weighted_exceedance_fraction": 0.059,
+            "gridcell_exceedance_fraction": 0.0595,
+            "max_vorticity_loc": [
+              24.25,
+              70.5
+            ],
+            "min_vws": 7.21,
+            "mean_vws": 16.31,
+            "mean_rh700": 27.81,
+            "mean_rh500": 24.15,
+            "max_vorticity_change_24h": 1.968,
+            "min_vws_change_24h": 5.27
+          },
+          {
+            "date": "2023-06-05",
+            "max_vorticity": 16.029,
+            "mean_vorticity": -0.782,
+            "weighted_exceedance_fraction": 0.0598,
+            "gridcell_exceedance_fraction": 0.0603,
+            "max_vorticity_loc": [
+              24.5,
+              69.75
+            ],
+            "min_vws": 8.48,
+            "mean_vws": 16.17,
+            "mean_rh700": 25.33,
+            "mean_rh500": 14.02,
+            "max_vorticity_change_24h": -0.388,
+            "min_vws_change_24h": 1.26
+          },
+          {
+            "date": "2023-06-06",
+            "max_vorticity": 18.049,
+            "mean_vorticity": -0.188,
+            "weighted_exceedance_fraction": 0.0711,
+            "gridcell_exceedance_fraction": 0.0719,
+            "max_vorticity_loc": [
+              24.0,
+              70.25
+            ],
+            "min_vws": 4.11,
+            "mean_vws": 13.68,
+            "mean_rh700": 24.85,
+            "mean_rh500": 18.87,
+            "max_vorticity_change_24h": 2.021,
+            "min_vws_change_24h": -4.37
+          },
+          {
+            "date": "2023-06-07",
+            "max_vorticity": 15.853,
+            "mean_vorticity": -0.096,
+            "weighted_exceedance_fraction": 0.0609,
+            "gridcell_exceedance_fraction": 0.0617,
+            "max_vorticity_loc": [
+              24.25,
+              70.75
+            ],
+            "min_vws": 0.25,
+            "mean_vws": 11.05,
+            "mean_rh700": 25.57,
+            "mean_rh500": 13.85,
+            "max_vorticity_change_24h": -2.196,
+            "min_vws_change_24h": -3.86
+          },
+          {
+            "date": "2023-06-08",
+            "max_vorticity": 11.374,
+            "mean_vorticity": -0.566,
+            "weighted_exceedance_fraction": 0.0458,
+            "gridcell_exceedance_fraction": 0.0462,
+            "max_vorticity_loc": [
+              25.0,
+              70.0
+            ],
+            "min_vws": 0.08,
+            "mean_vws": 9.48,
+            "mean_rh700": 25.38,
+            "mean_rh500": 7.69,
+            "max_vorticity_change_24h": -4.479,
+            "min_vws_change_24h": -0.18
+          },
+          {
+            "date": "2023-06-09",
+            "max_vorticity": 10.478,
+            "mean_vorticity": -1.165,
+            "weighted_exceedance_fraction": 0.0149,
+            "gridcell_exceedance_fraction": 0.0151,
+            "max_vorticity_loc": [
+              24.75,
+              66.0
+            ],
+            "min_vws": 0.22,
+            "mean_vws": 7.06,
+            "mean_rh700": 23.75,
+            "mean_rh500": 9.58,
+            "max_vorticity_change_24h": -0.896,
+            "min_vws_change_24h": 0.15
+          },
+          {
+            "date": "2023-06-10",
+            "max_vorticity": 12.757,
+            "mean_vorticity": -0.567,
+            "weighted_exceedance_fraction": 0.0367,
+            "gridcell_exceedance_fraction": 0.0367,
+            "max_vorticity_loc": [
+              24.0,
+              64.75
+            ],
+            "min_vws": 0.07,
+            "mean_vws": 6.86,
+            "mean_rh700": 31.8,
+            "mean_rh500": 21.35,
+            "max_vorticity_change_24h": 2.279,
+            "min_vws_change_24h": -0.16
+          },
+          {
+            "date": "2023-06-11",
+            "max_vorticity": 30.017,
+            "mean_vorticity": 0.665,
+            "weighted_exceedance_fraction": 0.1013,
+            "gridcell_exceedance_fraction": 0.1003,
+            "max_vorticity_loc": [
+              20.0,
+              68.0
+            ],
+            "min_vws": 0.1,
+            "mean_vws": 9.09,
+            "mean_rh700": 40.08,
+            "mean_rh500": 36.76,
+            "max_vorticity_change_24h": 17.26,
+            "min_vws_change_24h": 0.03
+          },
+          {
+            "date": "2023-06-12",
+            "max_vorticity": 151.684,
+            "mean_vorticity": 2.828,
+            "weighted_exceedance_fraction": 0.1779,
+            "gridcell_exceedance_fraction": 0.1764,
+            "max_vorticity_loc": [
+              20.0,
+              67.25
+            ],
+            "min_vws": 1.04,
+            "mean_vws": 12.74,
+            "mean_rh700": 48.91,
+            "mean_rh500": 53.1,
+            "max_vorticity_change_24h": 121.668,
+            "min_vws_change_24h": 0.94
+          },
+          {
+            "date": "2023-06-13",
+            "max_vorticity": 174.543,
+            "mean_vorticity": 5.539,
+            "weighted_exceedance_fraction": 0.2882,
+            "gridcell_exceedance_fraction": 0.2874,
+            "max_vorticity_loc": [
+              21.5,
+              66.5
+            ],
+            "min_vws": 0.91,
+            "mean_vws": 19.32,
+            "mean_rh700": 60.6,
+            "mean_rh500": 59.27,
+            "max_vorticity_change_24h": 22.859,
+            "min_vws_change_24h": -0.13
+          },
+          {
+            "date": "2023-06-14",
+            "max_vorticity": 161.958,
+            "mean_vorticity": 5.071,
+            "weighted_exceedance_fraction": 0.2916,
+            "gridcell_exceedance_fraction": 0.2908,
+            "max_vorticity_loc": [
+              21.75,
+              66.5
+            ],
+            "min_vws": 0.32,
+            "mean_vws": 18.22,
+            "mean_rh700": 58.8,
+            "mean_rh500": 52.74,
+            "max_vorticity_change_24h": -12.585,
+            "min_vws_change_24h": -0.6
+          },
+          {
+            "date": "2023-06-15",
+            "max_vorticity": 188.212,
+            "mean_vorticity": 4.959,
+            "weighted_exceedance_fraction": 0.2643,
+            "gridcell_exceedance_fraction": 0.2641,
+            "max_vorticity_loc": [
+              22.25,
+              67.25
+            ],
+            "min_vws": 0.95,
+            "mean_vws": 18.3,
+            "mean_rh700": 51.29,
+            "mean_rh500": 59.25,
+            "max_vorticity_change_24h": 26.253,
+            "min_vws_change_24h": 0.63
+          },
+          {
+            "date": "2023-06-16",
+            "max_vorticity": 131.148,
+            "mean_vorticity": 4.037,
+            "weighted_exceedance_fraction": 0.1777,
+            "gridcell_exceedance_fraction": 0.1791,
+            "max_vorticity_loc": [
+              23.5,
+              69.25
+            ],
+            "min_vws": 2.47,
+            "mean_vws": 17.85,
+            "mean_rh700": 43.58,
+            "mean_rh500": 52.83,
+            "max_vorticity_change_24h": -57.064,
+            "min_vws_change_24h": 1.51
+          }
+        ],
+        "empirical_highlights": {
+          "peak_max_vorticity": 188.21157836914062,
+          "peak_max_vorticity_date": "2023-06-15",
+          "minimum_vws": 0.06601077318191528,
+          "minimum_vws_date": "2023-06-10",
+          "max_weighted_exceedance_fraction": 0.2916412621510498,
+          "max_weighted_exceedance_date": "2023-06-14"
+        }
+      }
+    }
+  }
+}

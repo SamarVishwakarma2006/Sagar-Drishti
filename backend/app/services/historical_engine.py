@@ -690,15 +690,19 @@ class HistoricalFeatureEngine:
         max_lat: Optional[float] = None,
         min_lon: Optional[float] = None,
         max_lon: Optional[float] = None,
+        nc_path: Optional[str] = None,
     ) -> TrainingDatasetExportResponse:
         """
-        Rolls across all eligible days (t >= 29) of the available 2-year dataset,
+        Rolls across all eligible days (t >= 29) of the available dataset,
         computes the unified feature vector for every day, and exports:
         1. features.parquet: Columnar feature table
         2. features_metadata.json: Detailed provenance, baseline metadata, and feature catalogue.
         Leaves raw Copernicus NetCDF completely untouched.
         """
-        ds = CopernicusService.get_dataset()
+        if nc_path and os.path.exists(nc_path):
+            ds = xr.open_dataset(nc_path, engine="netcdf4")
+        else:
+            ds = CopernicusService.get_dataset()
         coord_time = next((c for c in ["time", "record"] if c in ds.coords or c in ds.dims), None)
         coord_lat = next((c for c in ["latitude", "lat"] if c in ds.coords or c in ds.dims), None)
         coord_lon = next((c for c in ["longitude", "lon"] if c in ds.coords or c in ds.dims), None)

@@ -367,6 +367,21 @@ export interface PredictionDataQuality {
   reason?: string;
 }
 
+export interface CandidateV2Decision {
+  basin: string;
+  horizon: number;
+  raw_score: number;
+  calibrated_probability: number;
+  risk_tier: 'LOW' | 'MODERATE' | 'HIGH';
+  policy_threshold: number;
+  persistence_state: string;
+  alert_decision: 'ALERT' | 'WATCH' | 'NO_ALERT';
+  alert_reason: string;
+  model_version: string;
+  operational_threshold?: number;
+  alert?: 'ALERT' | 'WATCH' | 'NO_ALERT';
+}
+
 export interface PredictionResponse {
   status: 'success' | 'insufficient_data' | 'error';
   date: string;
@@ -395,6 +410,7 @@ export interface PredictionResponse {
   data_quality: PredictionDataQuality;
   limitations: string[];
   message: string;
+  candidate_v2?: CandidateV2Decision | null;
 }
 
 export interface PredictionRequest {

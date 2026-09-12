@@ -548,6 +548,37 @@ async def get_prediction_model_status():
     return PredictionService.get_model_status()
 
 
+@router.get("/prediction/shadow/telemetry", tags=["ML Prediction"])
+async def get_shadow_telemetry(limit: int = 50):
+    """
+    Returns recent telemetry records from the non-blocking v2_10yr shadow inference pipeline.
+    """
+    import glob
+    shadow_dir = os.path.join(os.path.dirname(__file__), "..", "..", "data", "shadow")
+    records = []
+    log_files = sorted(glob.glob(os.path.join(shadow_dir, "shadow_telemetry_*.jsonl")), reverse=True)
+    for lf in log_files:
+        if len(records) >= limit:
+            break
+        try:
+            with open(lf, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+                for line in reversed(lines):
+                    line = line.strip()
+                    if line:
+                        records.append(json.loads(line))
+                        if len(records) >= limit:
+                            break
+        except Exception:
+            continue
+    return {
+        "status": "active",
+        "shadow_model": "v2.0.0-10yr-candidate",
+        "count": len(records),
+        "telemetry": records,
+    }
+
+
 @router.post("/prediction/predict", response_model=PredictionResponse, tags=["ML Prediction"])
 async def predict_ocean_risk(req: PredictionRequest):
     """

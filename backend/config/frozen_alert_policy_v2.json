@@ -1,0 +1,176 @@
+{
+  "policy_version": "v2.0.0-operational-alert-policy",
+  "created_at": "2026-09-11T21:26:00Z",
+  "policy_selection_gate": {
+    "status": "LOCKED",
+    "rule_changes_permitted_using_test_set": false,
+    "gate_description": "All thresholds, persistence windows, escalation rules, cooldown/reset rules, and minimum observation requirements frozen strictly using 2024 validation data prior to test benchmark execution."
+  },
+  "validation_dataset_period": {
+    "start_date": "2024-01-01",
+    "end_date": "2024-12-31",
+    "total_samples": 732,
+    "bay_of_bengal_samples": 366,
+    "arabian_sea_samples": 366,
+    "source_dataset": "backend/data/historical/features_10yr.parquet"
+  },
+  "primary_metric": "calibrated_probability",
+  "primary_metric_description": "Alert decisions and risk tiers are evaluated exclusively on post-hoc isotonic calibrated probabilities fitted on the 2024 validation set. Raw Random Forest vote fractions are forbidden from triggering alerts or determining risk tiers.",
+  "selected_basin_specific_thresholds": {
+    "bob": {
+      "basin_name": "Bay of Bengal",
+      "high_immediate": 0.60,
+      "moderate_persistent": 0.20,
+      "low_cutoff": 0.20,
+      "cooldown_reset": 0.15
+    },
+    "aras": {
+      "basin_name": "Arabian Sea",
+      "high_immediate": 0.50,
+      "moderate_persistent": 0.08,
+      "low_cutoff": 0.08,
+      "cooldown_reset": 0.05
+    }
+  },
+  "selected_persistence_policy": {
+    "bob": {
+      "rule": "2_consecutive",
+      "window_size_days": 2,
+      "min_positive_days": 2,
+      "rationale": "Suppresses single-day marine spikes while confirming persistent multi-day cyclogenetic preconditioning."
+    },
+    "aras": {
+      "rule": "2_of_3",
+      "window_size_days": 3,
+      "min_positive_days": 2,
+      "rationale": "Accounts for intermittent cloud/surface sampling gaps and shorter-lived Arabian Sea disturbances."
+    }
+  },
+  "selected_risk_tier_escalation_rules": {
+    "tiers": {
+      "CRITICAL": {
+        "calibrated_probability_range": ">= 0.75",
+        "action": "Immediate maximum emergency advisory across all basins"
+      },
+      "HIGH": {
+        "calibrated_probability_range": ">= 0.60 (BoB), >= 0.50 (ArAs)",
+        "action": "Immediate ALERT triggered on single day without requiring multi-day persistence"
+      },
+      "MODERATE": {
+        "calibrated_probability_range": ">= 0.20 to < 0.60 (BoB), >= 0.08 to < 0.50 (ArAs)",
+        "action": "Initial WATCH (pending confirmation). Escalates to ALERT upon persistence fulfillment (2-consecutive for BoB, 2-of-3 for ArAs)"
+      },
+      "LOW": {
+        "calibrated_probability_range": "< 0.20 (BoB), < 0.08 (ArAs)",
+        "action": "NO_ALERT"
+      }
+    },
+    "escalation_state_machine": {
+      "states": ["NO_ALERT", "WATCH", "ALERT"],
+      "reasons": [
+        "IMMEDIATE_HIGH",
+        "PERSISTENT_MODERATE_CONFIRMED",
+        "MODERATE_WATCH_PENDING_CONFIRMATION",
+        "COOLDOWN_DE_ESCALATION",
+        "BELOW_THRESHOLD"
+      ]
+    }
+  },
+  "selected_alert_cooldown_reset_rules": {
+    "bob": {
+      "reset_consecutive_days": 2,
+      "reset_probability_ceiling": 0.15,
+      "description": "De-escalates from ALERT to NO_ALERT only after 2 consecutive days below 0.15 calibrated probability."
+    },
+    "aras": {
+      "reset_consecutive_days": 2,
+      "reset_probability_ceiling": 0.05,
+      "description": "De-escalates from ALERT to NO_ALERT only after 2 consecutive days below 0.05 calibrated probability."
+    }
+  },
+  "selected_minimum_observation_requirements": {
+    "feature_dimensions": 101,
+    "feature_schema": "Strictly conforms to features_10yr.parquet 101-feature specification",
+    "observation_window_days": {
+      "minimum_required": 1,
+      "persistence_eval_buffer_bob": 2,
+      "persistence_eval_buffer_aras": 3
+    },
+    "physical_integrity_checks": [
+      "Depth must correspond to surface ocean layer (~0.494m)",
+      "Non-null ocean mask (no land-masked coordinates)",
+      "Physical bounds valid for Copernicus variables (thetao, so, zos, mlotst, uo, vo)",
+      "Daily chronological ordering without missing timesteps in persistence window (missing timesteps reset rolling buffer)"
+    ]
+  },
+  "basin_policies": {
+    "bob": {
+      "basin_name": "Bay of Bengal",
+      "thresholds": {
+        "high_immediate": 0.60,
+        "moderate_persistent": 0.20,
+        "low_cutoff": 0.20,
+        "cooldown_reset": 0.15
+      },
+      "persistence": {
+        "rule": "2_consecutive",
+        "window_size_days": 2,
+        "min_positive_days": 2
+      },
+      "cooldown": {
+        "reset_consecutive_days": 2
+      },
+      "validation_metrics": {
+        "cyclone_detection_rate": 0.75,
+        "cyclones_detected": "3/4 (Remal 72h, BOB 05 48h, Dana 72h; Fengal 0h)",
+        "median_warning_lead_hours": 72,
+        "calm_window_false_alarms": "38/330 days (11.5%)",
+        "baseline_single_day_calm_alarms": "173/330 days (52.4%)",
+        "false_alarm_reduction_pct": 78.0,
+        "alerts_per_month_equivalent": 4.8
+      }
+    },
+    "aras": {
+      "basin_name": "Arabian Sea",
+      "thresholds": {
+        "high_immediate": 0.50,
+        "moderate_persistent": 0.08,
+        "low_cutoff": 0.08,
+        "cooldown_reset": 0.05
+      },
+      "persistence": {
+        "rule": "2_of_3",
+        "window_size_days": 3,
+        "min_positive_days": 2
+      },
+      "cooldown": {
+        "reset_consecutive_days": 2
+      },
+      "validation_metrics": {
+        "cyclone_detection_rate": 0.50,
+        "cyclones_detected": "1/2 (Depression ARB 01 detected; Cyclone Asna undetectable due to land origin at 23N vs 16.5N central site)",
+        "median_warning_lead_hours": 0,
+        "calm_window_false_alarms": "103/349 days (29.5%)",
+        "baseline_single_day_calm_alarms": "109/349 days (31.2%)",
+        "alerts_per_month_equivalent": 8.8
+      }
+    }
+  },
+  "policy_selection_metrics": {
+    "validation_period": "2024-01-01 to 2024-12-31",
+    "bay_of_bengal": {
+      "detection_rate": "75.0% (3/4)",
+      "median_lead_time_hours": 72,
+      "calm_false_alarm_rate": "11.5% (38/330 calm days)",
+      "alerts_per_month": 4.8,
+      "false_alarm_suppression_vs_baseline": "78.0% reduction"
+    },
+    "arabian_sea": {
+      "detection_rate": "50.0% (1/2)",
+      "median_lead_time_hours": 0,
+      "calm_false_alarm_rate": "29.5% (103/349 calm days)",
+      "alerts_per_month": 8.8,
+      "undetectable_event_analysis": "Cyclone Asna formed over land at 23.5°N in Gujarat/Rajasthan and only entered the Gulf of Kutch for 24h. The central Arabian Sea monitoring point (16.5°N) exhibited deep MLD (36m) and negative SST anomalies (-0.24°C), making it physically impossible to detect from ocean surface features at the central monitoring point."
+    }
+  }
+}
