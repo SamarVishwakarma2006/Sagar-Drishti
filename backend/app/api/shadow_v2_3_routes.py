@@ -10,7 +10,10 @@ CRITICAL SECURITY & OPERATIONAL ISOLATION INVARIANTS:
 
 from typing import Optional
 from fastapi import APIRouter, Query
-from backend.app.services.shadow_v2_3_monitor import ShadowV23Monitor
+try:
+    from ..services.shadow_v2_3_monitor import ShadowV23Monitor
+except (ImportError, ValueError):
+    from backend.app.services.shadow_v2_3_monitor import ShadowV23Monitor
 
 router = APIRouter(tags=["V2.3 Shadow Research"])
 _monitor = ShadowV23Monitor()
