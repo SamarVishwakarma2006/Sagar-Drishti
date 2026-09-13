@@ -322,3 +322,109 @@ export const PredictionAPI = {
     return await res.json();
   },
 };
+
+export interface ForwardPredictionReq {
+  system_id: string;
+  forecast_origin_timestamp: string;
+  cyclone_history?: any[];
+  observations?: any[];
+  features?: Record<string, number>;
+  demo_scenario_id?: string;
+  observation_timestamp?: string;
+  data_availability_timestamp?: string;
+  ocean_source_timestamp?: string;
+  ocean_source_available_timestamp?: string;
+  ocean_age_hours?: number;
+  candidate_target_fixes?: any[];
+}
+
+export interface ForwardPredictionRes {
+  status: string;
+  system_id: string;
+  origin: string;
+  valid_time: string;
+  predicted_vmax_24h: number | null;
+  model_version: string;
+  model_hash: string;
+  feature_contract_hash: string;
+  preprocessing_hash: string;
+  causal_firewall: string;
+  feature_completeness: number;
+  missing_features: string[];
+  latitude?: number | null;
+  longitude?: number | null;
+  scientific_disclaimer: string;
+  evaluation_status: string;
+  target_info?: any;
+  warnings: string[];
+}
+
+export interface ValidationRes {
+  is_valid: boolean;
+  system_id: string;
+  forecast_origin_timestamp: string;
+  checks: Array<{ check: string; status: string; detail: string }>;
+  available_features: string[];
+  missing_features: string[];
+  feature_completeness: number;
+  can_predict: boolean;
+  message: string;
+}
+
+export interface DemoScenarioItem {
+  scenario_id: string;
+  system_id: string;
+  system_name: string;
+  description: string;
+  forecast_origin_timestamp: string;
+  latitude: number;
+  longitude: number;
+  basin: string;
+  fix_count: number;
+  latest_observed_vmax: number;
+}
+
+export const ForecastAPI = {
+  async getDemoScenarios(): Promise<DemoScenarioItem[]> {
+    const res = await fetch(`${API_BASE}/forecast/demo-scenarios`);
+    if (!res.ok) {
+      throw new Error('Failed to fetch prospective demo scenarios');
+    }
+    return await res.json();
+  },
+
+  async validateInputs(req: ForwardPredictionReq): Promise<ValidationRes> {
+    const res = await fetch(`${API_BASE}/forecast/validate-inputs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail || 'Validation request failed');
+    }
+    return await res.json();
+  },
+
+  async predictForward(req: ForwardPredictionReq): Promise<ForwardPredictionRes> {
+    const res = await fetch(`${API_BASE}/forecast/cyclone-intensity`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail || 'Forward prediction request failed');
+    }
+    return await res.json();
+  },
+
+  async getHistory(limit: number = 50): Promise<any[]> {
+    const res = await fetch(`${API_BASE}/forecast/history?limit=${limit}`);
+    if (!res.ok) {
+      return [];
+    }
+    return await res.json();
+  },
+};
+

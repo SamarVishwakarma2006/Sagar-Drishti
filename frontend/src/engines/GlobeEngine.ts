@@ -8,6 +8,7 @@ export class GlobeEngine {
   private lastAct = 0;
   private group: Cesium.Entity[] = [];
   private disasterGroup: Cesium.Entity[] = [];
+  private forecastGroup: Cesium.Entity[] = [];
   private hover: LatLon | null = null;
   private lastHover = 0;
 
@@ -549,6 +550,84 @@ export class GlobeEngine {
       }
     });
     this.disasterGroup = [];
+  }
+
+  markForwardPrediction(pred: {
+    system_id: string;
+    origin: string;
+    valid_time: string;
+    predicted_vmax_24h: number;
+    lat: number;
+    lon: number;
+  }) {
+    if (!this.viewer) return;
+    this.clearForwardPrediction();
+
+    // 1. Glowing Forecast Origin Beacon (Cyan / Indigo Palette)
+    this.forecastGroup.push(
+      this.viewer.entities.add({
+        name: `Forecast Origin: ${pred.system_id}`,
+        position: Cesium.Cartesian3.fromDegrees(pred.lon, pred.lat, 0),
+        ellipse: {
+          semiMajorAxis: 150000,
+          semiMinorAxis: 150000,
+          height: 0,
+          material: Cesium.Color.fromCssColorString('#06b6d4').withAlpha(0.25),
+          outline: true,
+          outlineColor: Cesium.Color.fromCssColorString('#22d3ee').withAlpha(0.9),
+          outlineWidth: 2.5,
+        },
+        point: {
+          pixelSize: 12,
+          color: Cesium.Color.fromCssColorString('#06b6d4'),
+          outlineColor: Cesium.Color.fromCssColorString('#ffffff'),
+          outlineWidth: 2.5,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+        },
+        label: {
+          text: `⚡ FORWARD INFERENCE (T+24h)\nSystem: ${pred.system_id}\nPredicted Vmax: ${pred.predicted_vmax_24h} kts\nValid: ${pred.valid_time}`,
+          font: 'bold 12px "Space Grotesk", sans-serif',
+          fillColor: Cesium.Color.fromCssColorString('#ecfeff'),
+          showBackground: true,
+          backgroundColor: Cesium.Color.fromCssColorString('rgba(8, 51, 68, 0.9)'),
+          backgroundPadding: new Cesium.Cartesian2(10, 6),
+          pixelOffset: new Cesium.Cartesian2(0, -36),
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 2.5e7),
+        },
+      })
+    );
+
+    // Smoothly fly camera to the forecast origin
+    this.flyToForecastArea(pred.lat, pred.lon);
+  }
+
+  flyToForecastArea(lat: number, lon: number) {
+    if (!this.viewer) return;
+    this.flying = true;
+    this.viewer.camera.flyTo({
+      destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1.4e6),
+      duration: 2.2,
+      easingFunction: Cesium.EasingFunction.QUADRATIC_OUT,
+      complete: () => {
+        this.flying = false;
+      },
+      cancel: () => {
+        this.flying = false;
+      },
+    });
+  }
+
+  clearForwardPrediction() {
+    if (!this.viewer) return;
+    this.forecastGroup.forEach((e) => {
+      try {
+        this.viewer!.entities.remove(e);
+      } catch (_) {
+        // entity might have been removed
+      }
+    });
+    this.forecastGroup = [];
   }
 
   setPaused(p: boolean) {

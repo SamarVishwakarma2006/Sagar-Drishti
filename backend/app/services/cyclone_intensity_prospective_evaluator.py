@@ -330,15 +330,33 @@ class CycloneIntensityProspectiveEvaluator:
         # Frozen model inference (native NaN handling in XGBoost)
         pred_val = float(self.model.predict(df_x)[0])
         
-        # Enforce physical clipping bounds [15.0, 165.0] kt
+        # Enforce physical clipping bounds [15.0, 165.0] kt (Operational validity guard, not model recalibration)
+        clipping_applied = bool(pred_val < 15.0 or pred_val > 165.0)
         pred_clipped = round(float(np.clip(pred_val, 15.0, 165.0)), 2)
 
-        # Build 17-field forecast record (Correction 7 & Fix 1)
+        # Model Input Forensics snapshot immediately before inference
+        forensic_snapshot = {
+            "forecast_origin_timestamp": t_origin.isoformat(),
+            "feature_names": list(FROZEN_29_FEATURES),
+            "feature_ordering": list(range(len(FROZEN_29_FEATURES))),
+            "feature_values": {k: float(row_values[idx]) if not pd.isna(row_values[idx]) else None for idx, k in enumerate(FROZEN_29_FEATURES)},
+            "dtypes": "float64",
+            "missingness": {"missing_keys": missing_keys, "missing_count": len(missing_keys)},
+            "preprocessing_state": "RAW_TABULAR_NATIVE_CONTINUOUS",
+            "model_hash": FROZEN_MODEL_SHA256,
+            "feature_contract_hash": FROZEN_FEATURE_CONTRACT_SHA256,
+            "preprocessing_hash": FROZEN_PREPROCESSING_SHA256,
+        }
+
+        # Build 17+ field forecast record
         record = {
             "system_id": system_id,
             "forecast_origin_timestamp": t_origin.isoformat(),
             "forecast_valid_time": t_valid.isoformat(),
             "forecast_vmax_24h": pred_clipped,
+            "raw_vmax_24h": round(pred_val, 2),
+            "reported_vmax_24h": pred_clipped,
+            "clipping_applied": clipping_applied,
             "model_version": MODEL_VERSION,
             "model_hash": FROZEN_MODEL_SHA256,
             "feature_contract_hash": FROZEN_FEATURE_CONTRACT_SHA256,
@@ -351,7 +369,8 @@ class CycloneIntensityProspectiveEvaluator:
             "feature_completeness": feature_completeness,
             "missingness_flags": json.dumps(missing_keys),
             "prediction_status": PredictionStatus.PREDICTION_GENERATED.value,
-            "evaluation_mode": self.evaluation_mode.value
+            "evaluation_mode": self.evaluation_mode.value,
+            "model_input_forensics": forensic_snapshot,
         }
 
         return record
@@ -376,7 +395,9 @@ class CycloneIntensityProspectiveEvaluator:
             if field not in forecast_record:
                 raise ValueError(f"Forecast record missing required schema field: {field}")
         
-        df_new = pd.DataFrame([forecast_record])
+        # Exclude nested model_input_forensics dict from flat parquet file
+        record_to_save = {k: v for k, v in forecast_record.items() if k != "model_input_forensics"}
+        df_new = pd.DataFrame([record_to_save])
         
         if target_path.exists():
             existing_df = pd.read_parquet(target_path)

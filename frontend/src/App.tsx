@@ -5,6 +5,7 @@ import { SiteExplorer } from './components/SiteExplorer';
 import { SitePanel } from './components/SitePanel';
 import { DataIngestionPanel } from './components/DataIngestionPanel';
 import { HistoricalDisasterSelector } from './components/HistoricalDisasterSelector';
+import { ForwardPredictionPanel } from './components/ForwardPredictionPanel';
 import { Inspector } from './components/Inspector';
 import { ColorbarControls } from './components/ColorbarControls';
 import { SagarBot } from './components/SagarBot';
@@ -26,6 +27,7 @@ export const App: React.FC = () => {
   const [bootMsg, setBootMsg] = useState('INITIALIZING SAGAR DRISHTI OBSERVATORY...');
   const [showColorbar, setShowColorbar] = useState(false);
   const [showDisasters, setShowDisasters] = useState(false);
+  const [showForecast, setShowForecast] = useState(false);
   const skipRef = useRef<() => void>(() => {});
 
   // Dive orchestration: Globe -> Dive -> Underwater
@@ -136,6 +138,8 @@ export const App: React.FC = () => {
           onToggleColorbar={() => setShowColorbar(!showColorbar)}
           showDisasters={showDisasters}
           onToggleDisasters={() => setShowDisasters(!showDisasters)}
+          showForecast={showForecast}
+          onToggleForecast={() => setShowForecast(!showForecast)}
         />
       )}
 
@@ -149,6 +153,9 @@ export const App: React.FC = () => {
           <DataIngestionPanel />
           {showDisasters && (
             <HistoricalDisasterSelector onClose={() => setShowDisasters(false)} />
+          )}
+          {showForecast && (
+            <ForwardPredictionPanel onClose={() => setShowForecast(false)} />
           )}
 
           <div className="absolute bottom-4 right-4 z-10 flex flex-col gap-2 items-end">

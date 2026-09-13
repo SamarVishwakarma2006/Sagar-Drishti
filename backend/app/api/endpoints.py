@@ -25,6 +25,10 @@ from ..models.schemas import (
     PredictionRequest,
     PredictionResponse,
     CustomObservationRequest,
+    ForwardPredictionRequest,
+    ForwardPredictionValidationResponse,
+    ForwardPredictionResponse,
+    DemoScenarioSummary,
 )
 from ..parsers.netcdf_parser import NetCDFParser
 from ..parsers.tabular_parser import TabularParser
@@ -637,4 +641,49 @@ async def predict_custom_ocean_risk(req: CustomObservationRequest):
         )
 
 
+# ==============================================================================
+# PHASE 4.8: FORWARD PREDICTION & PROSPECTIVE INFERENCE API
+# ==============================================================================
 
+@router.get("/forecast/demo-scenarios", response_model=List[DemoScenarioSummary], tags=["Forward Prediction"])
+async def get_forecast_demo_scenarios():
+    """
+    Returns pre-packaged synthetic demo scenarios beyond the historical dataset cutoff (post 2026-06-23)
+    for interactive 1-click evaluation of the frozen prospective cyclone intensity model.
+    """
+    from ..services.forward_prediction_service import ForwardPredictionService
+    service = ForwardPredictionService()
+    return service.get_demo_scenarios()
+
+
+@router.post("/forecast/validate-inputs", response_model=ForwardPredictionValidationResponse, tags=["Forward Prediction"])
+async def validate_forecast_inputs(req: ForwardPredictionRequest):
+    """
+    Pre-flight causal firewall validation for forward prediction:
+    Verifies frozen model SHA-256 integrity, enforces observation & availability timestamp firewalls,
+    checks 29-feature contract completeness, and reports itemized check status.
+    """
+    from ..services.forward_prediction_service import ForwardPredictionService
+    service = ForwardPredictionService()
+    res = service.validate_inputs(
+        system_id=req.system_id,
+        forecast_origin_timestamp=req.forecast_origin_timestamp,
+        cyclone_history=[f.model_dump() for f in req.cyclone_history] if req.cyclone_history else None,
+        observations=[o.model_dump() for o in req.observations] if req.observations else None,
+        features=req.features,
+        demo_scenario_id=req.demo_scenario_id,
+        ocean_source_timestamp=req.ocean_source_timestamp,
+        ocean_source_available_timestamp=req.ocean_source_available_timestamp,
+        ocean_age_hours=req.ocean_age_hours
+    )
+    return res
+
+
+@router.post("/forecast/cyclone-intensity", response_model=ForwardPredictionResponse, tags=["Forward Prediction"])
+async def predict_cyclone_intensity_forward(req: ForwardPredictionRequest):
+    """
+    Forward Prediction / Prospective Inference:
+    Evaluates newly arriving observations up to forecast origin T, causally constructs the
+    authoritative 29-feature contract, verifies frozen XGBoost model SHA-256, executes read-only
+    service = ForwardPredictionService()
+    return service.get_forecast_history(limit=limit)

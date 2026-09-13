@@ -2,7 +2,7 @@ import React from 'react';
 import { useApp, store } from '../store/oceanStore';
 import { VARIABLES, timeUTC } from '../services/syntheticOcean';
 import { VariableKey } from '../types/ocean';
-import { Waves, Thermometer, Droplets, Wind, Sliders, AlertTriangle } from 'lucide-react';
+import { Waves, Thermometer, Droplets, Wind, Sliders, AlertTriangle, Zap } from 'lucide-react';
 
 const iconMap: Record<string, React.ReactNode> = {
   Thermometer: <Thermometer size={13} />,
@@ -16,6 +16,8 @@ interface TopBarProps {
   showColorbar?: boolean;
   onToggleDisasters?: () => void;
   showDisasters?: boolean;
+  onToggleForecast?: () => void;
+  showForecast?: boolean;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -23,6 +25,8 @@ export const TopBar: React.FC<TopBarProps> = ({
   showColorbar,
   onToggleDisasters,
   showDisasters,
+  onToggleForecast,
+  showForecast,
 }) => {
   const s = useApp();
   const uw = s.phase === 'underwater';
@@ -102,6 +106,25 @@ export const TopBar: React.FC<TopBarProps> = ({
             <span className="hidden sm:inline">
               {s.activeHazardZone ? 'HAZARD ZONE ACTIVE' : 'DISASTER HAZARDS'}
             </span>
+          </button>
+        )}
+
+        {/* Forward Prediction / Forecast Mode Toggle */}
+        {onToggleForecast && (
+          <button
+            onClick={onToggleForecast}
+            title="Toggle Forward Prediction / Prospective Inference Mode (T > 2026-06-23)"
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded text-[10px] font-mono border transition-all ${
+              showForecast
+                ? 'border-cyan-400 text-cyan-200 bg-cyan-950/40 font-semibold shadow-md ring-1 ring-cyan-400/50'
+                : 'border-line text-dim hover:text-cyan-200 hover:border-cyan-500/40 bg-white/[0.02]'
+            }`}
+          >
+            <Zap
+              size={12}
+              className={showForecast ? 'text-cyan-300 animate-pulse' : 'text-cyan-400'}
+            />
+            <span className="hidden sm:inline">FORECAST MODE</span>
           </button>
         )}
 

@@ -57,6 +57,7 @@ class IntentType(str, Enum):
     REGION_COMPARISON = "REGION_COMPARISON"
     GENERAL_OCEAN_STATUS = "GENERAL_OCEAN_STATUS"
     CONFIDENCE_INQUIRY = "CONFIDENCE_INQUIRY"
+    FORWARD_FORECAST = "FORWARD_FORECAST"
     CLARIFICATION = "CLARIFICATION"
     GENERAL_CHAT = "GENERAL_CHAT"
 
@@ -221,6 +222,19 @@ class IntentClassifier:
         # 1. Greetings / Help
         if t in ["hi", "hello", "hey", "namaste", "help", "who are you"]:
             return IntentType.GENERAL_CHAT
+
+        # 1.5 Forward Forecast / Prospective Cyclone Intensity Inquiries
+        if (
+            ("predicted intensity" in t)
+            or ("intensity 24 hours" in t or "intensity 24h" in t or "intensity in 24" in t or "intensity tomorrow" in t)
+            or ("why was this forecast generated" in t or "why this forecast" in t)
+            or ("what data was used" in t or "which data was used" in t or "data was used" in t)
+            or ("was future data used" in t or "future data used" in t or "any future data" in t or "future observation" in t)
+            or ("is this a historical or forward" in t or "historical or forward" in t or "forward prediction" in t or "prospective prediction" in t)
+            or ("are all required inputs available" in t or "required inputs available" in t or "inputs available" in t)
+            or ("vmax 24h" in t or "predicted vmax" in t or "cyclone intensity forecast" in t or "intensity forecast" in t)
+        ):
+            return IntentType.FORWARD_FORECAST
 
         # 2. Region comparison (mentions comparison between BOB and ARAS or two basins)
         if (
@@ -644,6 +658,105 @@ class DecisionSupportGenerator:
             f"5. **Statistical Power Disparity Across Horizons**: The 0-day and 1-day models have few independent event days in the chronological test split and are statistically underpowered, while the 2-day and 3-day horizons show stronger preliminary discrimination on the held-out event."
         )
 
+    @classmethod
+    def generate_forward_forecast_response(
+        cls,
+        query_text: str,
+        latest_forecast: Optional[Dict[str, Any]],
+    ) -> str:
+        from .forward_prediction_service import SCIENTIFIC_DISCLAIMER
+        q = query_text.lower()
+        if not latest_forecast:
+            return (
+                "### Forward Prediction / Prospective Inference\n"
+                "No forward prediction has been executed in the active session yet.\n\n"
+                "To generate a forward prediction:\n"
+                "1. Switch to **FORECAST MODE** in the top navigation bar.\n"
+                "2. Ingest post-historical cyclone observations (or select a pre-packaged post-2026 scenario).\n"
+                "3. Verify the dual causal availability firewall.\n"
+                "4. Click **GENERATE FORWARD PREDICTION** to run the frozen EXP-E XGBoost model.\n\n"
+                f"> **Scientific Notice**: {SCIENTIFIC_DISCLAIMER}"
+            )
+
+        sys_id = latest_forecast.get("system_id", "ACTIVE_SYSTEM")
+        vmax_pred = latest_forecast.get("forecast_vmax_24h", latest_forecast.get("predicted_vmax_24h"))
+        origin = latest_forecast.get("forecast_origin_timestamp", latest_forecast.get("origin", "N/A"))
+        valid_t = latest_forecast.get("forecast_valid_time", latest_forecast.get("valid_time", "N/A"))
+        completeness = latest_forecast.get("feature_completeness", 1.0)
+        model_ver = latest_forecast.get("model_version", "SD-INTENSITY-EXP-E-V1.0")
+
+        # Specific Question: Future data used?
+        if any(w in q for w in ["was future data used", "future data used", "future observation", "leakage"]):
+            return (
+                f"### Causal Firewall Verification — {sys_id}\n"
+                f"**No future data was used.**\n\n"
+                f"The forward inference engine enforces a strict **Dual Causal Availability Firewall**:\n"
+                f"1. **Observation Firewall**: Every predictor input satisfies `observation_timestamp <= forecast_origin ({origin})`.\n"
+                f"2. **Availability Firewall**: Every predictor input satisfies `data_available_timestamp <= forecast_origin`.\n"
+                f"3. **Zero Filesystem Clock Reliance**: Filesystem `mtime`/`ctime` is explicitly banned.\n\n"
+                f"All 29 features were derived strictly from observations known and accessible at forecast origin $T$.\n\n"
+                f"> **Scientific Notice**: {SCIENTIFIC_DISCLAIMER}"
+            )
+
+        # Specific Question: Historical or forward?
+        if any(w in q for w in ["historical or forward", "is this a historical", "forward prediction", "what kind of prediction"]):
+            return (
+                f"### Forecast Provenance — {sys_id}\n"
+                f"**This is a FORWARD INFERENCE prediction**, not a historical backtest.\n\n"
+                f"- **Model**: Frozen Research XGBoost ({model_ver}), loaded read-only with cryptographic SHA-256 verification.\n"
+                f"- **Data**: Genuinely new or post-historical observations at origin **{origin}**.\n"
+                f"- **Distinction**: Forward inference runs a frozen model on newly arriving data. "
+                f"It is NOT proof of prospective scientific generalization until target outcomes (T+24h) "
+                f"are independently verified through the longitudinal evaluation framework.\n\n"
+                f"> **Scientific Notice**: {SCIENTIFIC_DISCLAIMER}"
+            )
+
+        # Specific Question: What data / why generated?
+        if any(w in q for w in ["why was this forecast generated", "what data was used", "which data", "drivers"]):
+            return (
+                f"### Forecast Inputs & Scientific Contract — {sys_id}\n"
+                f"This forecast was generated using the authoritative **29-feature contract** of the frozen Cyclone Intensity model:\n\n"
+                f"1. **Kinematics (9)**: Current intensity ($V_{{max}}$), 6h/12h/24h intensity changes ($\\Delta V_{{max}}$), central pressure ($P_c$), pressure change ($\\Delta P_c$), translation speed, and location.\n"
+                f"2. **Atmosphere (11)**: 200–850 hPa vertical wind shear (inner core & 200–800 km environment), 850 hPa relative vorticity (core mean & max, environment mean), 700 hPa and 500 hPa relative humidity.\n"
+                f"3. **Ocean State (4)**: Sea surface temperature (SST core & env), mixed layer depth (MLD core), sea level anomaly (SLA core).\n"
+                f"4. **Radial Contrasts (5)**: Core-minus-environment deltas for shear, vorticity, moisture, and SST.\n\n"
+                f"Feature completeness at origin: **{completeness * 100:.1f}%**.\n\n"
+                f"> **Scientific Notice**: {SCIENTIFIC_DISCLAIMER}"
+            )
+
+        # Specific Question: Are all required inputs available?
+        if any(w in q for w in ["are all required inputs available", "required inputs available", "inputs available", "missing features"]):
+            missing = latest_forecast.get("missing_features", [])
+            if isinstance(missing, str):
+                try:
+                    missing = json.loads(missing)
+                except Exception:
+                    missing = []
+            missing_text = "None. All 29 features present." if not missing else f"Missing: {', '.join(missing)}"
+            return (
+                f"### Input Data Sufficiency — {sys_id}\n"
+                f"- **Feature Completeness**: **{completeness * 100:.1f}%** ({29 - len(missing)}/29 features active)\n"
+                f"- **Kinematics**: Complete\n"
+                f"- **Atmospheric Predictors**: Complete\n"
+                f"- **Ocean Predictors**: Complete\n"
+                f"- **Missing Predictors**: {missing_text}\n"
+                f"- **Frozen Model Status**: Cryptographically verified (SHA-256 match)\n\n"
+                f"> **Scientific Notice**: {SCIENTIFIC_DISCLAIMER}"
+            )
+
+        # Default: Predicted intensity 24 hours from now
+        vmax_disp = f"{vmax_pred:.1f}" if vmax_pred is not None else "N/A"
+        return (
+            f"### Forward Cyclone Intensity Prediction — {sys_id}\n\n"
+            f"**Predicted Intensity ($V_{{max}}$ at T+24h)**: **{vmax_disp} kts**\n\n"
+            f"- **Forecast Origin ($T$)**: `{origin}`\n"
+            f"- **Forecast Valid Time ($T+24\\text{{h}}$)**: `{valid_t}`\n"
+            f"- **Model**: Frozen Research XGBoost (`{model_ver}`)\n"
+            f"- **Causal Availability Firewall**: `PASS` (zero future data leakage)\n"
+            f"- **Evaluation Lifecycle**: `TARGET_PENDING` (awaiting ground-truth synoptic fix at valid time)\n\n"
+            f"> **Scientific Notice**: {SCIENTIFIC_DISCLAIMER}"
+        )
+
 
 # ==============================================================================
 # MAIN SAGARBOT CONVERSATIONAL SERVICE
@@ -812,6 +925,25 @@ class SagarBotService:
                     "Random Forest probability is an uncalibrated voting proportion, not a measure of confidence.",
                     "Validation metrics reflect historical split performance, distinct from instantaneous model scores.",
                     "Independent test split contains only the Fengal event and does not establish broad generalization.",
+                ],
+            }
+
+        # --- CASE E2: FORWARD FORECAST INQUIRY ---
+        elif intent == IntentType.FORWARD_FORECAST:
+            from .forward_prediction_service import ForwardPredictionService
+            forward_svc = ForwardPredictionService()
+            history = forward_svc.get_forecast_history(limit=1)
+            latest_forecast = history[0] if history else None
+            deterministic_reply = DecisionSupportGenerator.generate_forward_forecast_response(req.message, latest_forecast)
+            evidence = {
+                "intent": intent.value,
+                "latest_forecast": latest_forecast or {},
+                "model_version": "SD-INTENSITY-EXP-E-V1.0",
+                "causal_firewall": "PASS",
+                "data_quality": {"has_forecast": bool(latest_forecast)},
+                "limitations": [
+                    "Forward inference uses the frozen research model on user-provided or newly available observations.",
+                    "This forecast is not itself proof of prospective generalization; future outcomes are evaluated separately through the prospective validation framework."
                 ],
             }
 

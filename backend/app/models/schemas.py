@@ -515,5 +515,111 @@ class PredictionResponse(BaseModel):
     candidate_v2: Optional[CandidateV2Decision] = None
 
 
+# ==============================================================================
+# FORWARD PREDICTION / PROSPECTIVE INFERENCE SCHEMAS
+# ==============================================================================
+
+class CycloneFixRecord(BaseModel):
+    system_id: str
+    observation_timestamp: str
+    data_availability_timestamp: Optional[str] = None
+    latitude: float
+    longitude: float
+    max_wind_kts: float
+    central_pressure_hpa: float
+    basin_id: Optional[str] = None
 
 
+class ObservationRecord(BaseModel):
+    source: str = "custom"
+    variable: str
+    value: float
+    unit: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    observation_timestamp: str
+    data_availability_timestamp: Optional[str] = None
+
+
+class ForwardPredictionRequest(BaseModel):
+    system_id: str = "CUSTOM-SYS-01"
+    forecast_origin_timestamp: str = "2026-07-10T12:00:00Z"
+    cyclone_history: Optional[List[CycloneFixRecord]] = None
+    observations: Optional[List[ObservationRecord]] = None
+    features: Optional[Dict[str, float]] = None
+    demo_scenario_id: Optional[str] = None
+    observation_timestamp: Optional[str] = None
+    data_availability_timestamp: Optional[str] = None
+    ocean_source_timestamp: Optional[str] = None
+    ocean_source_available_timestamp: Optional[str] = None
+    ocean_age_hours: Optional[float] = None
+    candidate_target_fixes: Optional[List[CycloneFixRecord]] = None
+    evaluation_mode: Optional[str] = "TRUE_PROSPECTIVE"
+
+
+class CausalValidationItem(BaseModel):
+    check: str
+    status: str  # "PASS" | "FAIL" | "WARNING"
+    detail: str
+
+
+class ForwardPredictionValidationResponse(BaseModel):
+    is_valid: bool
+    system_id: str
+    forecast_origin_timestamp: str
+    checks: List[CausalValidationItem]
+    available_features: List[str]
+    missing_features: List[str]
+    feature_completeness: float
+    can_predict: bool
+    message: str
+
+
+class ForwardPredictionResponse(BaseModel):
+    status: str  # "PREDICTION_GENERATED" | "INSUFFICIENT_INPUT_DATA" | "INSUFFICIENT_HISTORY" | "CAUSAL_REJECTED" | "ERROR"
+    system_id: str
+    origin: str
+    valid_time: str
+    predicted_vmax_24h: Optional[float] = None
+    raw_predicted_vmax_24h: Optional[float] = None
+    reported_predicted_vmax_24h: Optional[float] = None
+    clipping_applied: bool = False
+    clipping_bounds: Optional[List[float]] = [15.0, 165.0]
+    model_version: str
+    model_hash: str
+    feature_contract_version: Optional[str] = None
+    feature_contract_hash: str
+    preprocessing_version: Optional[str] = None
+    preprocessing_hash: str
+    input_dataset_source: Optional[str] = None
+    input_cutoff: Optional[str] = None
+    observation_cutoff: Optional[str] = None
+    availability_cutoff: Optional[str] = None
+    causal_firewall: str  # "PASS" | "FAIL"
+    feature_completeness: float
+    missing_features: List[str] = Field(default_factory=list)
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    scientific_disclaimer: str
+    evaluation_status: str  # "TARGET_PENDING" | "TARGET_AVAILABLE" | "TARGET_UNAVAILABLE" | "CAUSAL_REJECTED" | "INSUFFICIENT_HISTORY"
+    evaluation_mode: str = "TRUE_PROSPECTIVE"  # "TRUE_PROSPECTIVE" | "AVAILABILITY_TIMESTAMP_REPLAY" | "HISTORICAL_BACKTEST"
+    synthetic_fixture_label: Optional[str] = None
+    target_info: Optional[Dict[str, Any]] = None
+    model_input_forensics: Optional[Dict[str, Any]] = None
+    warnings: List[str] = Field(default_factory=list)
+
+
+class DemoScenarioSummary(BaseModel):
+    scenario_id: str
+    system_id: str
+    system_name: str
+    description: str
+    fixture_type: str = "SYNTHETIC_TEST_FIXTURE"
+    fixture_label: str = "SYNTHETIC TEST FIXTURE — NOT REAL METEOROLOGICAL DATA"
+    scientific_use_restriction: str = "PIPELINE_AND_CAUSAL_TESTING_ONLY — NO_ACCURACY_CLAIMS"
+    forecast_origin_timestamp: str
+    latitude: float
+    longitude: float
+    basin: str
+    fix_count: int
+    latest_observed_vmax: float
