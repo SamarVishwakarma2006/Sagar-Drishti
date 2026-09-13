@@ -1,0 +1,18 @@
+{
+  "atmos_only_0d": {
+    "path": "backend\\models\\candidates\\v2_3\\atmos_only\\risk_model_0d.joblib",
+    "sha256": "2916535bbb43a3a83391b5e10d2edccf72930852194e8289ab898ec0f062c55e"
+  },
+  "atmos_only_1d": {
+    "path": "backend\\models\\candidates\\v2_3\\atmos_only\\risk_model_1d.joblib",
+    "sha256": "62f1a0b78c24775953b0cdaf200ee9d09c36b355973ab51c87f623c213126b33"
+  },
+  "atmos_only_2d": {
+    "path": "backend\\models\\candidates\\v2_3\\atmos_only\\risk_model_2d.joblib",
+    "sha256": "bb85e826f1f9f815fc7d5a5986982d2c5694c2145738235c97a7ca744e00e400"
+  },
+  "atmos_only_3d": {
+    "path": "backend\\models\\candidates\\v2_3\\atmos_only\\risk_model_3d.joblib",
+    "sha256": "b47f97da960300552cd703e3eccb6475270d3baafc397dce7b0f594aa365297d"
+  }
+}

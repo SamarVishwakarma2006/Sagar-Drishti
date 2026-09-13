@@ -710,6 +710,24 @@ class PredictionService:
         except Exception as _shadow_err:
             logger.debug("Shadow evaluation exception: %s", _shadow_err)
 
+        # Non-blocking, isolated Shadow Inference for candidate V2.3 Model D
+        try:
+            from .shadow_v2_3_service import ShadowV23Service
+            ShadowV23Service.dispatch_shadow_evaluation(
+                ocean_features=x_raw[0],
+                site_id=loc_info.get("site_id", loc_info.get("region", "bob")),
+                horizon_days=horizon_days,
+                date_str=date_str,
+                v1_result={
+                    "risk_score": prob_positive,
+                    "alert_level": warning_level,
+                    "threshold": frozen_threshold,
+                },
+                prediction_timestamp=prediction_ts,
+            )
+        except Exception as _shadow_v2_3_err:
+            logger.debug("Shadow V2.3 dispatch exception: %s", _shadow_v2_3_err)
+
         return PredictionResponse(
             status="success",
             date=date_str,
@@ -1082,6 +1100,24 @@ class PredictionService:
                 }
         except Exception as _shadow_err:
             logger.debug("Shadow evaluation exception: %s", _shadow_err)
+
+        # Non-blocking, isolated Shadow Inference for candidate V2.3 Model D
+        try:
+            from .shadow_v2_3_service import ShadowV23Service
+            ShadowV23Service.dispatch_shadow_evaluation(
+                ocean_features=x_raw[0],
+                site_id=loc_info.get("site_id", loc_info.get("region", "bob")),
+                horizon_days=horizon_days,
+                date_str=date_str,
+                v1_result={
+                    "risk_score": prob_positive,
+                    "alert_level": warning_level,
+                    "threshold": frozen_threshold,
+                },
+                prediction_timestamp=prediction_ts,
+            )
+        except Exception as _shadow_v2_3_err:
+            logger.debug("Shadow V2.3 dispatch exception: %s", _shadow_v2_3_err)
 
         return PredictionResponse(
             status="success",

@@ -51,6 +51,11 @@ app.add_middleware(
 # Mount API router
 app.include_router(api_router, prefix="/api")
 
+# Mount V2.3 Shadow Research API router (Research Only - Zero Operational Authority)
+from .api.shadow_v2_3_routes import router as shadow_v2_3_router
+app.include_router(shadow_v2_3_router, prefix="/shadow/v2.3")
+app.include_router(shadow_v2_3_router, prefix="/api/shadow/v2.3")
+
 
 @app.get("/")
 def root():

@@ -1,0 +1,81 @@
+{
+  "manifest_id": "SD-PROTECTED-ARTIFACT-MANIFEST-V1",
+  "created_at": "2026-09-13T07:22:00Z",
+  "governance_status": "LOCKED_IMMUTABLE",
+  "reconciliation_note": "Reconciles previous 11-artifact dictionary representation with the 12th item (backend/data/historical/imd_tracks_2016_2026.parquet). All 12 items are canonical, authoritative, and protected.",
+  "total_protected_artifacts": 12,
+  "artifacts": {
+    "backend/models/risk_model_3d.joblib": {
+      "sha256": "3f52f16be035c66391cc885ebfc55efb2c8bc7627b13b7b43ccafd98f4a41740",
+      "size_bytes": 311920,
+      "description": "Production v1.1.0 operational model artifact (3-day horizon hazard classifier)",
+      "protection_rule": "DO_NOT_MODIFY"
+    },
+    "backend/models/v2_10yr/risk_model_3d.joblib": {
+      "sha256": "7c4f17861c0d48e962c286404d77f7b9bc329afc076a11bb24dd099df91082d3",
+      "size_bytes": 800546,
+      "description": "V2.0.0 10-year calibrated operational baseline model (v2_10yr)",
+      "protection_rule": "DO_NOT_MODIFY"
+    },
+    "backend/models/candidates/v2_3/ocean_atmos_all/risk_model_0d.joblib": {
+      "sha256": "7f78946c01442793af8103995496199d19361378d627dd92262a391a7dd61e15",
+      "size_bytes": 251527,
+      "description": "V2.3 Shadow Model D horizon 0d candidate model",
+      "protection_rule": "DO_NOT_MODIFY"
+    },
+    "backend/models/candidates/v2_3/ocean_atmos_all/risk_model_1d.joblib": {
+      "sha256": "b0245d154f53786119e8d226f3ba90c22fff0a3c1e59b70f09c8ce420c2679fe",
+      "size_bytes": 262718,
+      "description": "V2.3 Shadow Model D horizon 1d candidate model",
+      "protection_rule": "DO_NOT_MODIFY"
+    },
+    "backend/models/candidates/v2_3/ocean_atmos_all/risk_model_2d.joblib": {
+      "sha256": "aca2e9423af471e533928a970b52bdf6d1dc7433ae85545a3b2a79fb86dad86c",
+      "size_bytes": 264590,
+      "description": "V2.3 Shadow Model D horizon 2d candidate model",
+      "protection_rule": "DO_NOT_MODIFY"
+    },
+    "backend/models/candidates/v2_3/ocean_atmos_all/risk_model_3d.joblib": {
+      "sha256": "250948b2aa72babeb68afca8910c36626b623a114c064126862e2c834f63d775",
+      "size_bytes": 265617,
+      "description": "V2.3 Shadow Model D horizon 3d candidate model",
+      "protection_rule": "DO_NOT_MODIFY"
+    },
+    "backend/config/frozen_alert_policy_v2.json": {
+      "sha256": "6ff3fe00ff9354c4c9a5a49ce4f04dc7458bceea29c7018d590550dbad3eefd6",
+      "size_bytes": 6736,
+      "description": "V2.0.0 frozen operational risk alert policy threshold specification",
+      "protection_rule": "DO_NOT_MODIFY"
+    },
+    "backend/data/historical/features_10yr.parquet": {
+      "sha256": "cdf3837f9ebe68eab100a6122d32a383a29b87a937afa42de39e787452903867",
+      "size_bytes": 3076259,
+      "description": "Canonical 10-year Copernicus 101-feature ocean historical dataset",
+      "protection_rule": "DO_NOT_MODIFY"
+    },
+    "backend/data/historical/labeled_features_10yr_clean.parquet": {
+      "sha256": "25070aad573c23bb67adbfbae34314515f4860b9ecfa9a35ab3c6f4e86b99f6a",
+      "size_bytes": 3094015,
+      "description": "Clean labeled 10-year dataset for hazard training and verification",
+      "protection_rule": "DO_NOT_MODIFY"
+    },
+    "backend/data/era5/features_atmosphere_10yr_daily.parquet": {
+      "sha256": "551aa9cb4ca460ec7d81036a6be54a0155efd1603ae849033dc9582c80d79864",
+      "size_bytes": 6798667,
+      "description": "Canonical 10-year ERA5 daily atmospheric features dataset",
+      "protection_rule": "DO_NOT_MODIFY"
+    },
+    "backend/config/v2_3_frozen_experiment_manifest.json": {
+      "sha256": "73d407d798f68de2e5934f544077bb89f8b84e9db97d060447275d54661d50bc",
+      "size_bytes": 35380,
+      "description": "V2.3 frozen multi-horizon evaluation manifest",
+      "protection_rule": "DO_NOT_MODIFY"
+    },
+    "backend/data/historical/imd_tracks_2016_2026.parquet": {
+      "sha256": "e3f1b87455e716767e3b34a05b3dff04587dc09c6689a7dc0eaf7b72f951b643",
+      "size_bytes": 46813,
+      "description": "Historical IMD Best Track 2016-2026 parquet archive",
+      "protection_rule": "DO_NOT_MODIFY"
+    }
+  }
+}

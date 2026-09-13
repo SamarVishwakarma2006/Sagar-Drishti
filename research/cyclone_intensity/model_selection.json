@@ -1,0 +1,70 @@
+{
+  "selection_timestamp": "2026-09-13T07:50:10.138080+00:00",
+  "selected_experiment_id": "EXP-E-CORE-ENVIRONMENT-RADIAL-CONTRASTS",
+  "selected_model_family": "XGBoost",
+  "selected_hyperparameters": {
+    "n_estimators": 200,
+    "max_depth": 5,
+    "learning_rate": 0.03,
+    "subsample": 0.85,
+    "colsample_bytree": 0.85
+  },
+  "feature_count": 29,
+  "features": [
+    "vmax_current",
+    "dvmax_6h",
+    "dvmax_12h",
+    "dvmax_24h",
+    "pc_current",
+    "dpc_6h",
+    "translation_speed_kts",
+    "latitude_current",
+    "longitude_current",
+    "vws_env_mean_200_800km",
+    "vws_env_min_200_800km",
+    "vws_core_mean_0_100km",
+    "vort_core_mean_0_100km",
+    "vort_core_max_0_100km",
+    "vort_env_mean_200_800km",
+    "rh_700_env_mean_200_800km",
+    "rh_700_env_min_200_800km",
+    "rh_700_core_mean_0_100km",
+    "rh_500_env_mean_200_800km",
+    "rh_500_core_mean_0_100km",
+    "sst_core_mean_0_100km",
+    "sst_env_mean_200_800km",
+    "mld_core_mean_0_100km",
+    "sla_core_mean_0_100km",
+    "delta_vws_core_minus_env",
+    "delta_vort_core_minus_env",
+    "delta_rh700_core_minus_env",
+    "delta_rh500_core_minus_env",
+    "delta_sst_core_minus_env"
+  ],
+  "validation_metrics": {
+    "storm_mae_mean": 7.352,
+    "storm_mae_median": 7.22,
+    "storm_mae_std": 4.503,
+    "row_mae": 8.88,
+    "row_rmse": 12.096,
+    "row_bias": -0.417,
+    "persistence_skill_pct": 7.17,
+    "trend_skill_pct": 4.15
+  },
+  "validation_bootstrap_ci95": {
+    "iterations": 1000,
+    "storm_mae_ci95": [
+      5.632,
+      9.156
+    ],
+    "persistence_skill_ci95": [
+      -40.5,
+      25.67
+    ],
+    "trend_skill_ci95": [
+      -41.01,
+      21.5
+    ]
+  },
+  "selection_rationale": "Model EXP-E-CORE-ENVIRONMENT-RADIAL-CONTRASTS achieved the lowest validation storm-level MAE (7.352 kt) with positive persistence skill (7.17%) and trend skill (4.15%). Validated on 24 independent storms (382 fixes) with zero test data contamination."
+}

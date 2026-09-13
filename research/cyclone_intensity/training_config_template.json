@@ -1,0 +1,67 @@
+{
+  "config_template_id": "SD-TRAINING-CONFIG-INTENSITY-V1",
+  "created_at": "2026-09-13T07:26:00Z",
+  "status": "DESIGN_ONLY_ZERO_TRAINING_PERMITTED",
+  "training_authorized": false,
+  "hardware_execution_policy": {
+    "reference_engine": "DETERMINISTIC_CPU",
+    "cpu_threads": 12,
+    "random_seed": 42,
+    "gpu_directml_acceleration": {
+      "status": "OPTIONAL_FOR_EVALUATION_AND_INFERENCE",
+      "requirement": "Scientific training and validation baseline results must be 100% reproducible on the reference deterministic CPU execution path."
+    }
+  },
+  "candidate_model_families": {
+    "lightgbm_regressor": {
+      "family": "Gradient Boosted Decision Trees (Histogram Binning)",
+      "class": "lightgbm.LGBMRegressor",
+      "objective": "regression_l1",
+      "eval_metric": "mae",
+      "native_nan_support": true,
+      "hyperparameter_search_grid": {
+        "n_estimators": [100, 200, 300],
+        "max_depth": [3, 5, 7],
+        "learning_rate": [0.03, 0.05, 0.1],
+        "num_leaves": [15, 31, 63],
+        "min_child_samples": [10, 20],
+        "subsample": [0.7, 0.85, 1.0],
+        "colsample_bytree": [0.7, 0.85, 1.0]
+      }
+    },
+    "random_forest_regressor": {
+      "family": "Bagged Decision Trees",
+      "class": "sklearn.ensemble.RandomForestRegressor",
+      "criterion": "absolute_error",
+      "native_nan_support": false,
+      "imputation_policy": "TRAIN_ONLY_MEDIAN",
+      "hyperparameter_search_grid": {
+        "n_estimators": [100, 200, 300],
+        "max_depth": [4, 6, 8],
+        "min_samples_split": [5, 10],
+        "min_samples_leaf": [2, 5],
+        "max_features": ["sqrt", 0.7]
+      }
+    },
+    "xgboost_regressor": {
+      "family": "Gradient Boosted Trees (Exact / Hist)",
+      "class": "xgboost.XGBRegressor",
+      "objective": "reg:absoluteerror",
+      "tree_method": "hist",
+      "native_nan_support": true,
+      "hyperparameter_search_grid": {
+        "n_estimators": [100, 200, 300],
+        "max_depth": [3, 5, 7],
+        "learning_rate": [0.03, 0.05, 0.1],
+        "subsample": [0.7, 0.85, 1.0],
+        "colsample_bytree": [0.7, 0.85, 1.0]
+      }
+    }
+  },
+  "search_constraints": {
+    "unrestricted_search_forbidden": true,
+    "max_trials_per_ablation": 18,
+    "selection_data": "VALIDATION_PARTITION_ONLY (2022-2023, 24 storms)",
+    "test_set_access": "STRICTLY_FORBIDDEN"
+  }
+}

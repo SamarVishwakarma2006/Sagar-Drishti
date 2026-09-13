@@ -1,0 +1,82 @@
+{
+  "ocean_only_0d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_only\\risk_model_0d.joblib",
+    "sha256": "c5046d2c4c47521d3dbe709b86bd16585760129158b8f18b3e3d9c36d164a83c"
+  },
+  "ocean_only_1d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_only\\risk_model_1d.joblib",
+    "sha256": "0cdaf02079ba1322e31bbae9d4b50d09ef5b122ac1ae681d5e82f0b88614bb6c"
+  },
+  "ocean_only_2d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_only\\risk_model_2d.joblib",
+    "sha256": "f9829a3b63eae60a3a1a9096d9614d169f7ba1af538b98077ad2b48981038064"
+  },
+  "ocean_only_3d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_only\\risk_model_3d.joblib",
+    "sha256": "8d9ec34b75bcd319e5a6e038e631063f53a683d39167484bb292422d2a47b4ee"
+  },
+  "ocean_atmos_base_0d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_base\\risk_model_0d.joblib",
+    "sha256": "9adbe87826286f8664fcdfab5c55f34eb6672f6e4a56f8e85fb7fdf1c702d744"
+  },
+  "ocean_atmos_base_1d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_base\\risk_model_1d.joblib",
+    "sha256": "f25bc1a2edd6d1cc9becfa8bd0c9730a35a54e602fa18ebeaa556db3f79f220d"
+  },
+  "ocean_atmos_base_2d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_base\\risk_model_2d.joblib",
+    "sha256": "bcfa73ad3f1baa6d3c691428a4a9b43768e3108c98451097f5127ae120cc6cd0"
+  },
+  "ocean_atmos_base_3d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_base\\risk_model_3d.joblib",
+    "sha256": "908e0493feec6d0d9f74d3cedfb8c3d252e7268b3ef9eb9e6c67a4b78e53a263"
+  },
+  "ocean_atmos_dynamic_0d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_dynamic\\risk_model_0d.joblib",
+    "sha256": "ffcc3f4adf70f73580fc8626e7ce6615d982a29db56543f93460e89a3552bc1c"
+  },
+  "ocean_atmos_dynamic_1d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_dynamic\\risk_model_1d.joblib",
+    "sha256": "433afac5fa89d8f0a2c06aca799eb2b596ce1b42a01799c0a941b42808969ce0"
+  },
+  "ocean_atmos_dynamic_2d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_dynamic\\risk_model_2d.joblib",
+    "sha256": "929f187afb1d5033ea565141d7916b49d8975e1c35fc4af07e3a8404e1a09b51"
+  },
+  "ocean_atmos_dynamic_3d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_dynamic\\risk_model_3d.joblib",
+    "sha256": "349dbcef61f9daba40ee37eed9e8aeda4b897db1b4bf54a4b4d4c1bdec374f10"
+  },
+  "ocean_atmos_all_0d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_all\\risk_model_0d.joblib",
+    "sha256": "7f78946c01442793af8103995496199d19361378d627dd92262a391a7dd61e15"
+  },
+  "ocean_atmos_all_1d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_all\\risk_model_1d.joblib",
+    "sha256": "b0245d154f53786119e8d226f3ba90c22fff0a3c1e59b70f09c8ce420c2679fe"
+  },
+  "ocean_atmos_all_2d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_all\\risk_model_2d.joblib",
+    "sha256": "aca2e9423af471e533928a970b52bdf6d1dc7433ae85545a3b2a79fb86dad86c"
+  },
+  "ocean_atmos_all_3d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_all\\risk_model_3d.joblib",
+    "sha256": "250948b2aa72babeb68afca8910c36626b623a114c064126862e2c834f63d775"
+  },
+  "atmos_only_0d": {
+    "path": "backend\\models\\candidates\\v2_3\\atmos_only\\risk_model_0d.joblib",
+    "sha256": "2916535bbb43a3a83391b5e10d2edccf72930852194e8289ab898ec0f062c55e"
+  },
+  "atmos_only_1d": {
+    "path": "backend\\models\\candidates\\v2_3\\atmos_only\\risk_model_1d.joblib",
+    "sha256": "62f1a0b78c24775953b0cdaf200ee9d09c36b355973ab51c87f623c213126b33"
+  },
+  "atmos_only_2d": {
+    "path": "backend\\models\\candidates\\v2_3\\atmos_only\\risk_model_2d.joblib",
+    "sha256": "bb85e826f1f9f815fc7d5a5986982d2c5694c2145738235c97a7ca744e00e400"
+  },
+  "atmos_only_3d": {
+    "path": "backend\\models\\candidates\\v2_3\\atmos_only\\risk_model_3d.joblib",
+    "sha256": "b47f97da960300552cd703e3eccb6475270d3baafc397dce7b0f594aa365297d"
+  }
+}

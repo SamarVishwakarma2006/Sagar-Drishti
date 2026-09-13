@@ -1,0 +1,70 @@
+{
+  "specification_id": "SD-BASELINE-SPEC-INTENSITY-V1",
+  "created_at": "2026-09-13T07:24:00Z",
+  "status": "FROZEN_PRE_TRAINING_SPECIFICATION",
+  "cliper_lite_status": "EXCLUDED_FROM_V1 (Per Final Design-Gate Correction 1: zero learned models in V1 baseline suite)",
+  "test_set_quarantine_policy": "STRICT_FORBIDDEN (No baseline calculation may access the 2024-2026 quarantined test partition)",
+  "baselines": {
+    "baseline_a_persistence": {
+      "name": "Persistence Baseline",
+      "model_type": "DETERMINISTIC_NON_LEARNED",
+      "formula": "Vmax_hat(T+24h) = Vmax(T)",
+      "description": "Assumes zero net intensity change over 24 hours. Primary scientific benchmark against which ML skill is measured.",
+      "parameters": "None (Zero tunable parameters)"
+    },
+    "baseline_b_damped_trend": {
+      "name": "Damped Kinematic Trend Baseline",
+      "model_type": "DETERMINISTIC_NON_LEARNED",
+      "formula": "Vmax_hat(T+24h) = clip(Vmax(T) + alpha * trend_12h_equivalent, 15.0, 165.0)",
+      "damping_coefficient_alpha": 0.5,
+      "alpha_provenance": "PRE-DECLARED HEURISTIC (Represents 50% continuation of past 12-hour kinematic intensity change rate over the subsequent 24 hours to prevent unphysical runaway extrapolation; frozen prior to validation comparison without tuning)",
+      "trend_derivation_rule": "Use dvmax_12h if available; if dvmax_12h is NaN, fall back to 2.0 * dvmax_6h; if both NaN, trend = 0.0",
+      "clipping_policy": {
+        "min_bound_knots": 15.0,
+        "min_bound_provenance": "IMD Best Track standard meteorological depression floor (lowest recognized cyclonic disturbance classification in RSMC New Delhi tracks is 17 kt; 15 kt represents low-end depression/deep depression boundary)",
+        "max_bound_knots": 165.0,
+        "max_bound_provenance": "North Indian Ocean physical maximum intensity ceiling for Super Cyclonic Storms (e.g. 1999 Odisha cyclone, SuCS Amphan 2020, Mocha 2023 peak gusts/estimates)"
+      }
+    }
+  },
+  "deterministic_reference_metrics": {
+    "partition_train_2016_2021": {
+      "total_partition_storms": 64,
+      "storms_with_valid_targets": 58,
+      "target_rows_count": 1121,
+      "persistence": {
+        "row_mae_knots": 15.16,
+        "row_rmse_knots": 20.76,
+        "row_bias_knots": 0.62,
+        "storm_mae_knots": 10.26
+      },
+      "damped_trend": {
+        "row_mae_knots": 14.12,
+        "row_rmse_knots": 19.69,
+        "row_bias_knots": 1.69,
+        "storm_mae_knots": 9.95
+      }
+    },
+    "partition_validation_2022_2023": {
+      "total_partition_storms": 24,
+      "storms_with_valid_targets": 22,
+      "target_rows_count": 382,
+      "persistence": {
+        "row_mae_knots": 12.12,
+        "row_rmse_knots": 18.20,
+        "row_bias_knots": -0.34,
+        "storm_mae_knots": 7.92
+      },
+      "damped_trend": {
+        "row_mae_knots": 11.32,
+        "row_rmse_knots": 17.53,
+        "row_bias_knots": 0.80,
+        "storm_mae_knots": 7.67
+      }
+    },
+    "partition_test_2024_2026": {
+      "status": "QUARANTINED_UNACCESSED",
+      "access_rule": "FORBIDDEN (Test set metrics will only be evaluated once after entire ML training pipeline is frozen and authorized)"
+    }
+  }
+}

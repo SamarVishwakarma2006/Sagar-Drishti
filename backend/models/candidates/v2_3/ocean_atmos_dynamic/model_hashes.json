@@ -1,0 +1,18 @@
+{
+  "ocean_atmos_dynamic_0d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_dynamic\\risk_model_0d.joblib",
+    "sha256": "ffcc3f4adf70f73580fc8626e7ce6615d982a29db56543f93460e89a3552bc1c"
+  },
+  "ocean_atmos_dynamic_1d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_dynamic\\risk_model_1d.joblib",
+    "sha256": "433afac5fa89d8f0a2c06aca799eb2b596ce1b42a01799c0a941b42808969ce0"
+  },
+  "ocean_atmos_dynamic_2d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_dynamic\\risk_model_2d.joblib",
+    "sha256": "929f187afb1d5033ea565141d7916b49d8975e1c35fc4af07e3a8404e1a09b51"
+  },
+  "ocean_atmos_dynamic_3d": {
+    "path": "backend\\models\\candidates\\v2_3\\ocean_atmos_dynamic\\risk_model_3d.joblib",
+    "sha256": "349dbcef61f9daba40ee37eed9e8aeda4b897db1b4bf54a4b4d4c1bdec374f10"
+  }
+}

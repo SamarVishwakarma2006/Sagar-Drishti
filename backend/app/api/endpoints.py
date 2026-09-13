@@ -1,3 +1,5 @@
+import glob
+import json
 import os
 from typing import List, Optional
 from fastapi import APIRouter, UploadFile, File, HTTPException, Query, Request, Response, status
@@ -553,7 +555,6 @@ async def get_shadow_telemetry(limit: int = 50):
     """
     Returns recent telemetry records from the non-blocking v2_10yr shadow inference pipeline.
     """
-    import glob
     shadow_dir = os.path.join(os.path.dirname(__file__), "..", "..", "data", "shadow")
     records = []
     log_files = sorted(glob.glob(os.path.join(shadow_dir, "shadow_telemetry_*.jsonl")), reverse=True)

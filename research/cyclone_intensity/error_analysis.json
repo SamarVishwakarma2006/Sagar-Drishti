@@ -1,0 +1,147 @@
+{
+  "stratified_error_analysis": {
+    "duration_short_storms": {
+      "count": 11,
+      "storm_mae": 4.805
+    },
+    "duration_long_storms": {
+      "count": 13,
+      "storm_mae": 6.327
+    },
+    "intensity_weak_le35kt": {
+      "fixes": 301,
+      "row_mae": 5.462
+    },
+    "intensity_mod_strong_gt35kt": {
+      "fixes": 95,
+      "row_mae": 8.317
+    },
+    "vws_favorable_le15kt": {
+      "fixes": 0,
+      "row_mae": null
+    },
+    "vws_unfavorable_gt15kt": {
+      "fixes": 396,
+      "row_mae": 6.147
+    }
+  },
+  "permutation_feature_importance_validation": {
+    "vmax_current": {
+      "mae_increase_knots": 5.7639,
+      "std": 0.5005
+    },
+    "pc_current": {
+      "mae_increase_knots": 1.7425,
+      "std": 0.1657
+    },
+    "sst_env_mean_200_800km": {
+      "mae_increase_knots": 1.2467,
+      "std": 0.161
+    },
+    "longitude_current": {
+      "mae_increase_knots": 1.2071,
+      "std": 0.118
+    },
+    "latitude_current": {
+      "mae_increase_knots": 1.0065,
+      "std": 0.2156
+    },
+    "sla_core_mean_0_100km": {
+      "mae_increase_knots": 0.886,
+      "std": 0.1098
+    },
+    "dpc_6h": {
+      "mae_increase_knots": 0.6453,
+      "std": 0.1272
+    },
+    "dvmax_12h": {
+      "mae_increase_knots": 0.3535,
+      "std": 0.0793
+    },
+    "vort_core_mean_0_100km": {
+      "mae_increase_knots": 0.1634,
+      "std": 0.038
+    },
+    "delta_sst_core_minus_env": {
+      "mae_increase_knots": 0.1609,
+      "std": 0.0605
+    },
+    "translation_speed_kts": {
+      "mae_increase_knots": 0.1485,
+      "std": 0.0371
+    },
+    "dvmax_24h": {
+      "mae_increase_knots": 0.1421,
+      "std": 0.0561
+    },
+    "mld_core_mean_0_100km": {
+      "mae_increase_knots": 0.1172,
+      "std": 0.0601
+    },
+    "sst_core_mean_0_100km": {
+      "mae_increase_knots": 0.1094,
+      "std": 0.0582
+    },
+    "rh_500_core_mean_0_100km": {
+      "mae_increase_knots": 0.0572,
+      "std": 0.0221
+    },
+    "delta_vort_core_minus_env": {
+      "mae_increase_knots": 0.0482,
+      "std": 0.0175
+    },
+    "dvmax_6h": {
+      "mae_increase_knots": 0.0459,
+      "std": 0.0242
+    },
+    "rh_700_env_mean_200_800km": {
+      "mae_increase_knots": 0.0228,
+      "std": 0.0136
+    },
+    "rh_500_env_mean_200_800km": {
+      "mae_increase_knots": 0.0211,
+      "std": 0.0113
+    },
+    "rh_700_core_mean_0_100km": {
+      "mae_increase_knots": 0.0178,
+      "std": 0.0065
+    },
+    "delta_rh700_core_minus_env": {
+      "mae_increase_knots": 0.0137,
+      "std": 0.0071
+    },
+    "vws_env_mean_200_800km": {
+      "mae_increase_knots": 0.0131,
+      "std": 0.0055
+    },
+    "vws_core_mean_0_100km": {
+      "mae_increase_knots": 0.0093,
+      "std": 0.0088
+    },
+    "vws_env_min_200_800km": {
+      "mae_increase_knots": 0.0067,
+      "std": 0.0062
+    },
+    "vort_core_max_0_100km": {
+      "mae_increase_knots": 0.0033,
+      "std": 0.0068
+    },
+    "delta_vws_core_minus_env": {
+      "mae_increase_knots": 0.0027,
+      "std": 0.0056
+    },
+    "rh_700_env_min_200_800km": {
+      "mae_increase_knots": -0.0024,
+      "std": 0.0087
+    },
+    "delta_rh500_core_minus_env": {
+      "mae_increase_knots": -0.0185,
+      "std": 0.0107
+    },
+    "vort_env_mean_200_800km": {
+      "mae_increase_knots": -0.0389,
+      "std": 0.0306
+    }
+  },
+  "causality_caveat": "Permutation importance quantifies model sensitivity to individual feature perturbation. Because atmospheric and oceanic features are physically correlated, importance does NOT establish physical causality."
+}
