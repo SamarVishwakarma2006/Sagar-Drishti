@@ -13,7 +13,6 @@ import {
 } from '../services/syntheticOcean';
 import { VariableKey, FloatRecord, ProfileResult, ProvInfo, LatLon } from '../types/ocean';
 import { Radio, Crosshair, X, Info, Copy } from 'lucide-react';
-import { EarlyWarningCard } from './EarlyWarningCard';
 
 const ProfileChart: React.FC<{
   prof: ProfileResult;
@@ -249,16 +248,6 @@ export const Inspector: React.FC = () => {
             </div>
           )}
         </div>
-
-        {/* Dedicated Environmental Field Sampler ML Analysis */}
-        <EarlyWarningCard
-          lat={pos.lat}
-          lon={pos.lon}
-          regionName={site.name}
-          compact={true}
-          variant="field_sampler"
-          customObservation={site.custom_observation || s.customObservation || s.activeUpload?.custom_observation}
-        />
 
         {/* Physical readings */}
         <div className="grid grid-cols-2 gap-2">
