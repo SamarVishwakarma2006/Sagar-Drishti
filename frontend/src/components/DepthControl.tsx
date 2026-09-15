@@ -1,7 +1,7 @@
 import React, { useRef, useMemo, useState } from 'react';
 import { useApp, store, toast } from '../store/oceanStore';
 import { Ocean, clamp, fmtDepth } from '../services/syntheticOcean';
-import { ChevronUp, ChevronDown, Layers } from 'lucide-react';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 
 function getStratum(depth: number): { name: string; zone: string } {
   if (depth < 200) return { name: 'EPIPELAGIC', zone: 'Sunlit' };

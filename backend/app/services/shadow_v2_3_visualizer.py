@@ -15,7 +15,10 @@ matplotlib.use("Agg")  # Non-interactive headless backend
 import matplotlib.pyplot as plt
 import numpy as np
 
-from backend.app.services.shadow_v2_3_monitor import ShadowV23Monitor
+try:
+    from backend.app.services.shadow_v2_3_monitor import ShadowV23Monitor
+except ImportError:
+    from app.services.shadow_v2_3_monitor import ShadowV23Monitor
 
 logger = logging.getLogger("sagar_drishti.shadow_v2_3_visualizer")
 

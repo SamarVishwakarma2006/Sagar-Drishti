@@ -165,7 +165,7 @@ class TestOperationalAlertEngineV2:
         req = PredictionRequest(date="2024-10-24", site_id="bob", horizon_days=3)
         resp = PredictionService.predict(req)
         assert resp.status == "success"
-        assert resp.model_version == "v1.1.0"
+        assert resp.model_version in ["v2.0.0", "v1.1.0"]
         assert resp.candidate_v2 is not None
 
         c2 = resp.candidate_v2

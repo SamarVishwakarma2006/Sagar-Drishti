@@ -7,15 +7,11 @@ import {
   ShieldCheck,
   AlertTriangle,
   Clock,
-  Waves,
   Database,
   Info,
-  Calendar,
-  Layers,
   ChevronDown,
   ChevronUp,
   Activity,
-  Compass,
   LocateFixed,
 } from 'lucide-react';
 
@@ -27,6 +23,68 @@ interface EarlyWarningCardProps {
   compact?: boolean;
   onClose?: () => void;
   customObservation?: any;
+  variant?: 'operational_alert' | 'field_sampler';
+}
+
+function getFieldSamplerAssessment(what?: string, fallback?: string): string {
+  if (!what) return fallback || 'Ocean state is within normal climatological parameters.';
+  if (what.includes('within normal climatological parameters') || what.includes('normal climatological')) {
+    return 'Ocean state is within normal climatological parameters.';
+  }
+  // Strip operational alert decision prefixes and policy threshold references
+  let cleaned = what
+    .replace(/^(OPERATIONAL\s+)?(ALERT|HIGH\s+ALERT|WATCH|NO\s+ALERT):\s*/i, '')
+    .replace(/\s*\([^)]*calibrated\s+probability[^)]*\)/gi, '')
+    .replace(/\s*\([^)]*policy\s+threshold[^)]*\)/gi, '')
+    .trim();
+  if (!cleaned) {
+    cleaned = fallback || 'Ocean state is within normal climatological parameters.';
+  }
+  return cleaned.endsWith('.') ? cleaned : `${cleaned}.`;
+}
+
+const CANONICAL_TEMPORAL_WINDOWS: { label: string; aliases: string[] }[] = [
+  { label: 'CURRENT', aliases: ['current', '0d', 'current_day'] },
+  { label: '7 DAY', aliases: ['7_day', '7d', '7_days', '7 day'] },
+  { label: '14 DAY', aliases: ['14_day', '14d', '14_days', '14 day'] },
+  { label: '30 DAY', aliases: ['30_day', '30d', '30_days', '30 day'] },
+];
+
+function getCanonicalTimeWindows(
+  rawImp: Record<string, number> = {}
+): { label: string; value: number }[] {
+  const result: { label: string; value: number }[] = [];
+  const handledKeys = new Set<string>();
+
+  for (const win of CANONICAL_TEMPORAL_WINDOWS) {
+    for (const alias of win.aliases) {
+      const matchedKey = Object.keys(rawImp).find(
+        (k) => k.toLowerCase().replace(/_/g, ' ').trim() === alias.toLowerCase().replace(/_/g, ' ').trim()
+      );
+      if (matchedKey && rawImp[matchedKey] !== undefined) {
+        result.push({
+          label: win.label,
+          value: rawImp[matchedKey],
+        });
+        win.aliases.forEach((a) => handledKeys.add(a.toLowerCase().replace(/_/g, ' ').trim()));
+        break;
+      }
+    }
+  }
+
+  // Fallback for any unknown / non-standard temporal windows
+  for (const [k, v] of Object.entries(rawImp)) {
+    const normalizedKey = k.toLowerCase().replace(/_/g, ' ').trim();
+    if (!handledKeys.has(normalizedKey)) {
+      handledKeys.add(normalizedKey);
+      result.push({
+        label: k.toUpperCase().replace(/_/g, ' '),
+        value: v,
+      });
+    }
+  }
+
+  return result;
 }
 
 export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
@@ -37,7 +95,9 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
   compact = false,
   onClose,
   customObservation,
+  variant = 'operational_alert',
 }) => {
+  const isProbeMode = variant === 'field_sampler';
   const s = useApp();
   const [horizon, setHorizon] = useState<number>(3);
   const [activeTab, setActiveTab] = useState<'predicted' | 'observed' | 'historical' | 'quality'>('predicted');
@@ -155,11 +215,17 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
     };
   }, [targetDate, horizon, effectiveSiteId, effectiveLat, effectiveLon, isCustomMode, activeCustomObs?.date, activeCustomObs?.thetao]);
 
-  const warningLevel = prediction?.warning_level || 'NO_ALERT';
-  const prob = prediction ? Math.round((prediction.model_estimated_probability ?? prediction.probability) * 100) : 0;
-  const threshold = prediction
-    ? Math.round((prediction.alert_threshold ?? prediction.threshold) * 100)
-    : (horizon === 3 ? 27 : horizon === 2 ? 21 : 15);
+  const c2 = prediction?.candidate_v2;
+  const v2Prob = c2
+    ? c2.calibrated_probability * 100
+    : (prediction ? prediction.probability * 100 : 0);
+  const v2Threshold = c2
+    ? Math.round((c2.policy_threshold ?? c2.operational_threshold ?? 0.20) * 100)
+    : (prediction?.threshold ? Math.round(prediction.threshold * 100) : (effectiveRegion.toLowerCase().includes('arabian') ? 8 : 20));
+  const riskTier = c2?.risk_tier || (v2Prob >= 50 ? 'HIGH' : v2Prob >= v2Threshold ? 'MODERATE' : 'LOW');
+  const decision = c2?.alert_decision ?? c2?.alert ?? (prediction?.warning_level === 'HIGH_ALERT' ? 'ALERT' : prediction?.warning_level || 'NO_ALERT');
+
+  const warningLevel = (c2?.alert_decision ?? c2?.alert ?? prediction?.warning_level ?? 'NO_ALERT') as 'NO_ALERT' | 'WATCH' | 'ALERT' | 'HIGH_ALERT';
   const targetName = prediction?.target || `event_within_${horizon}d`;
 
   // Status configuration
@@ -182,155 +248,135 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
       icon: <AlertTriangle size={16} className="text-amber-400" />,
       tagline: 'Elevated ocean thermal & kinetic anomaly detected',
     },
-    HIGH_ALERT: {
-      label: 'HIGH ALERT (SEVERITY)',
+    ALERT: {
+      label: 'ALERT',
       color: 'text-rose-400',
       border: 'border-rose-500/60',
       bg: 'bg-rose-500/15',
       badgeBg: 'bg-rose-500/25',
       icon: <ShieldAlert size={16} className="text-rose-400 animate-pulse" />,
-      tagline: 'High Alert — presentation severity policy (score ≥ 0.50, not calibrated probability)',
+      tagline: 'Operational Alert — persistent elevated cyclone risk exceeding policy threshold',
     },
-  }[warningLevel];
-
-  const c2 = prediction?.candidate_v2;
+    HIGH_ALERT: {
+      label: 'HIGH ALERT',
+      color: 'text-rose-400',
+      border: 'border-rose-500/60',
+      bg: 'bg-rose-500/15',
+      badgeBg: 'bg-rose-500/25',
+      icon: <ShieldAlert size={16} className="text-rose-400 animate-pulse" />,
+      tagline: 'High Alert — elevated cyclone risk exceeding operational threshold',
+    },
+  }[warningLevel] || {
+    label: 'NO ALERT',
+    color: 'text-emerald-400',
+    border: 'border-emerald-500/40',
+    bg: 'bg-emerald-500/10',
+    badgeBg: 'bg-emerald-500/20',
+    icon: <ShieldCheck size={16} className="text-emerald-400" />,
+    tagline: 'Normal background oceanic conditions',
+  };
 
   return (
-    <div className={`rounded-lg glass border ${statusConfig.border} overflow-hidden shadow-2xl transition-all duration-300 ${compact ? 'p-3 text-[11px]' : 'p-4 text-[12px]'}`}>
-      {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-line/60">
-        <div className="flex items-center gap-2">
-          <Activity size={17} className="text-accent shrink-0" />
-          <div>
+    <div className={`rounded-lg glass border ${isProbeMode ? 'border-line/60' : statusConfig.border} overflow-hidden shadow-2xl transition-all duration-300 ${compact ? 'p-3 text-[11px]' : 'p-4 text-[12px]'}`}>
+      {!isProbeMode && (
+        <React.Fragment>
+          {/* Header */}
+          <div className="flex items-center justify-between pb-3 border-b border-line/60">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-mist tracking-wider text-[12.5px] uppercase">
-                {horizon}-DAY EARLY WARNING
-              </span>
-              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] border border-line text-dim">
-                {targetName}
-              </span>
+              <Activity size={17} className="text-accent shrink-0" />
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-mist tracking-wider text-[12.5px] uppercase">
+                    {horizon}-DAY EARLY WARNING
+                  </span>
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] border border-line text-dim">
+                    {targetName}
+                  </span>
+                </div>
+                <div className="text-[9.5px] font-mono text-dim flex items-center gap-2 mt-0.5">
+                  <span>REGION: {effectiveRegion}</span>
+                  <span>·</span>
+                  <span>DATE: {targetDate}</span>
+                </div>
+              </div>
             </div>
-            <div className="text-[9.5px] font-mono text-dim flex items-center gap-2 mt-0.5">
-              <span>REGION: {effectiveRegion}</span>
-              <span>·</span>
-              <span>DATE: {targetDate}</span>
-            </div>
-          </div>
-        </div>
 
-        <div className="flex items-center gap-2">
-          <div className={`px-2.5 py-1 rounded border font-mono font-bold text-[10px] tracking-widest uppercase flex items-center gap-1.5 ${statusConfig.badgeBg} ${statusConfig.color} ${statusConfig.border}`}>
-            {statusConfig.icon}
-            <span>{statusConfig.label}</span>
+            <div className="flex items-center gap-2">
+              <div className={`px-2.5 py-1 rounded border font-mono font-bold text-[10px] tracking-widest uppercase flex items-center gap-1.5 ${statusConfig.badgeBg} ${statusConfig.color} ${statusConfig.border}`}>
+                {statusConfig.icon}
+                <span>{statusConfig.label}</span>
+              </div>
+              {onClose && (
+                <button
+                  onClick={onClose}
+                  className="text-dim hover:text-mist p-1 rounded hover:bg-white/[0.05]"
+                  title="Close panel"
+                >
+                  ×
+                </button>
+              )}
+            </div>
           </div>
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="text-dim hover:text-mist p-1 rounded hover:bg-white/[0.05]"
-              title="Close panel"
-            >
-              ×
-            </button>
+
+          {/* Horizon Selector Bar */}
+          <div className="flex items-center justify-between mt-3 px-2 py-1.5 rounded bg-black/40 border border-line/40 font-mono text-[9px]">
+            <span className="text-dim flex items-center gap-1">
+              <Clock size={11} /> FORECAST HORIZON:
+            </span>
+            <div className="flex items-center gap-1">
+              {[
+                { val: 0, label: '0d (Active)' },
+                { val: 1, label: '1d Lead' },
+                { val: 2, label: '2d Lead' },
+                { val: 3, label: '3d Lead' },
+              ].map((h) => (
+                <button
+                  key={h.val}
+                  onClick={() => setHorizon(h.val)}
+                  className={`px-2 py-0.5 rounded transition-colors ${
+                    horizon === h.val
+                      ? 'bg-accent/25 text-accent font-bold border border-accent/40 shadow-sm'
+                      : 'text-dim hover:text-mist hover:bg-white/[0.04]'
+                  }`}
+                >
+                  {h.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Horizon Underpowered Banner if 0d or 1d */}
+          {(horizon === 0 || horizon === 1) && (
+            <div className="mt-2 px-2.5 py-1.5 rounded bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[8.5px] font-mono flex items-start gap-2">
+              <Info size={13} className="shrink-0 text-amber-400 mt-0.5" />
+              <div>
+                <span className="font-bold">Experimental Horizon ({horizon}d):</span> The current {horizon}-day model does not demonstrate useful discriminative ability on the held-out test set and is statistically underpowered given the limited number of independent events.
+              </div>
+            </div>
           )}
-        </div>
-      </div>
 
-      {/* Horizon Selector Bar */}
-      <div className="flex items-center justify-between mt-3 px-2 py-1.5 rounded bg-black/40 border border-line/40 font-mono text-[9px]">
-        <span className="text-dim flex items-center gap-1">
-          <Clock size={11} /> FORECAST HORIZON:
-        </span>
-        <div className="flex items-center gap-1">
-          {[
-            { val: 0, label: '0d (Active)' },
-            { val: 1, label: '1d Lead' },
-            { val: 2, label: '2d Lead' },
-            { val: 3, label: '3d Lead' },
-          ].map((h) => (
-            <button
-              key={h.val}
-              onClick={() => setHorizon(h.val)}
-              className={`px-2 py-0.5 rounded transition-colors ${
-                horizon === h.val
-                  ? 'bg-accent/25 text-accent font-bold border border-accent/40 shadow-sm'
-                  : 'text-dim hover:text-mist hover:bg-white/[0.04]'
-              }`}
-            >
-              {h.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Horizon Underpowered Banner if 0d or 1d */}
-      {(horizon === 0 || horizon === 1) && (
-        <div className="mt-2 px-2.5 py-1.5 rounded bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[8.5px] font-mono flex items-start gap-2">
-          <Info size={13} className="shrink-0 text-amber-400 mt-0.5" />
-          <div>
-            <span className="font-bold">Experimental Horizon ({horizon}d):</span> The current {horizon}-day model does not demonstrate useful discriminative ability on the held-out test set and is statistically underpowered given the limited number of independent events.
-          </div>
-        </div>
-      )}
-
-      {/* Model Risk & Calibration Meters */}
-      <div className="mt-3 p-2.5 rounded bg-black/30 border border-line/40 space-y-2.5">
-        {/* Model confidence/risk score (Uncalibrated baseline) */}
-        <div className="flex items-baseline justify-between">
-          <span className="text-[10px] font-mono text-dim">
-            Model confidence/risk score (v1.1.0):
-          </span>
-          <div className="text-right">
-            <span className={`font-mono text-[16px] font-bold ${statusConfig.color}`}>
-              {prob}%
-            </span>
-            <span className="text-[9px] font-mono text-dim ml-1.5">
-              (Operational Threshold: {threshold}%)
-            </span>
-          </div>
-        </div>
-
-        {/* Probability bar with threshold marker */}
-        <div className="relative w-full bg-black/60 h-2 rounded-full overflow-hidden border border-line/50">
-          <div
-            className={`h-full transition-all duration-500 rounded-full ${
-              warningLevel === 'HIGH_ALERT'
-                ? 'bg-gradient-to-r from-amber-500 via-rose-500 to-red-500'
-                : warningLevel === 'WATCH'
-                ? 'bg-gradient-to-r from-emerald-500 via-yellow-500 to-amber-500'
-                : 'bg-gradient-to-r from-teal-500 to-emerald-400'
-            }`}
-            style={{ width: `${Math.max(2, Math.min(100, prob))}%` }}
-          />
-          {/* Threshold marker tick */}
-          <div
-            className="absolute top-0 bottom-0 w-[2px] bg-white shadow-[0_0_4px_white]"
-            style={{ left: `${threshold}%` }}
-            title={`Operational Alert Threshold: ${threshold}%`}
-          />
-        </div>
-
-        {/* Post-Hoc Calibrated Probability & Operational Alert Engine V2 (Shadow Pipeline) */}
-        {c2 && (
-          <div className="pt-2 border-t border-line/30 space-y-2">
+          {/* Model Risk & Calibration Meters (Operational Alert Engine V2) */}
+          <div className="mt-3 p-2.5 rounded bg-black/30 border border-line/40 space-y-2.5">
             <div className="flex items-center justify-between text-[9px] font-mono">
-              <span className="text-accent font-semibold flex items-center gap-1">
+              <span className="text-accent font-semibold flex items-center gap-1.5">
+                <ShieldAlert size={12} className="text-accent" />
                 <span>OPERATIONAL ALERT ENGINE V2</span>
-                <span className="px-1 py-0.2 text-[8px] rounded bg-accent/20 border border-accent/40 text-accent">SHADOW</span>
+                <span className="px-1.5 py-0.2 text-[8px] rounded bg-accent/20 border border-accent/40 text-accent font-bold">OPERATIONAL</span>
               </span>
               <span className="text-dim">
-                BASIN: <span className="text-mist font-semibold">{c2.basin}</span> ({c2.horizon}d)
+                BASIN: <span className="text-mist font-semibold">{c2?.basin || (effectiveRegion.toLowerCase().includes('arabian') ? 'Arabian Sea' : 'Bay of Bengal')}</span> ({c2?.horizon ?? horizon}d)
               </span>
             </div>
 
             <div className="grid grid-cols-2 gap-2 bg-black/40 p-2 rounded border border-line/30">
               <div>
                 <div className="text-[8.5px] font-mono text-dim uppercase">Calibrated Probability</div>
-                <div className="font-mono text-[14px] font-bold text-mist mt-0.5">
-                  {(c2.calibrated_probability * 100).toFixed(1)}%
+                <div className="font-mono text-[16px] font-bold text-mist mt-0.5">
+                  {v2Prob.toFixed(1)}%
                 </div>
-                <div className="text-[7.5px] font-mono text-dim flex items-center gap-1 mt-0.5">
+                <div className="text-[8px] font-mono text-dim flex items-center gap-1 mt-0.5">
                   <span>Policy threshold:</span>
-                  <span className="text-mist font-semibold">{((c2.policy_threshold ?? c2.operational_threshold ?? 0.20) * 100).toFixed(0)}%</span>
+                  <span className="text-accent font-semibold">{v2Threshold}%</span>
                 </div>
               </div>
 
@@ -338,26 +384,26 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
                 <div className="text-[8.5px] font-mono text-dim uppercase">Risk Tier & Decision</div>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold border ${
-                    c2.risk_tier === 'HIGH'
+                    riskTier === 'HIGH'
                       ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
-                      : c2.risk_tier === 'MODERATE'
+                      : riskTier === 'MODERATE'
                       ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                       : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                   }`}>
-                    {c2.risk_tier} TIER
+                    {riskTier} TIER
                   </span>
                   <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold border ${
-                    (c2.alert_decision ?? c2.alert) === 'ALERT'
+                    decision === 'ALERT'
                       ? 'bg-rose-500/20 text-rose-400 border-rose-500/50 animate-pulse'
-                      : (c2.alert_decision ?? c2.alert) === 'WATCH'
+                      : decision === 'WATCH'
                       ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
                       : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
                   }`}>
-                    {c2.alert_decision ?? c2.alert ?? 'NO_ALERT'}
+                    {decision}
                   </span>
                 </div>
                 <div className="text-[7.5px] font-mono text-dim mt-1">
-                  Reason: <span className="text-accent/90">{c2.alert_reason || 'BELOW_THRESHOLD'}</span>
+                  Reason: <span className="text-accent/90">{c2?.alert_reason || (v2Prob >= v2Threshold ? 'ABOVE_POLICY_THRESHOLD' : 'BELOW_THRESHOLD')}</span>
                 </div>
               </div>
             </div>
@@ -365,23 +411,43 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
             {/* Persistence Status Bar */}
             <div className="px-2 py-1 rounded bg-black/50 border border-line/30 flex items-center justify-between text-[8px] font-mono">
               <span className="text-dim">PERSISTENCE STATUS:</span>
-              <span className="text-mist font-semibold">{c2.persistence_state || 'NO_PERSISTENCE'}</span>
+              <span className="text-mist font-semibold">{c2?.persistence_state || 'NO_PERSISTENCE'}</span>
+            </div>
+
+            {/* Probability bar with V2 threshold marker */}
+            <div className="relative w-full bg-black/60 h-2.5 rounded-full overflow-hidden border border-line/50">
+              <div
+                className={`h-full transition-all duration-500 rounded-full ${
+                  decision === 'ALERT' || warningLevel === 'HIGH_ALERT'
+                    ? 'bg-gradient-to-r from-amber-500 via-rose-500 to-red-500'
+                    : decision === 'WATCH' || warningLevel === 'WATCH'
+                    ? 'bg-gradient-to-r from-emerald-500 via-yellow-500 to-amber-500'
+                    : 'bg-gradient-to-r from-teal-500 to-emerald-400'
+                }`}
+                style={{ width: `${Math.max(2, Math.min(100, v2Prob))}%` }}
+              />
+              {/* Threshold marker tick */}
+              <div
+                className="absolute top-0 bottom-0 w-[2px] bg-white shadow-[0_0_4px_white]"
+                style={{ left: `${v2Threshold}%` }}
+                title={`Operational Alert Threshold: ${v2Threshold}%`}
+              />
+            </div>
+
+            <div className="flex justify-between items-center text-[8.5px] font-mono text-dim">
+              <span>0% BASELINE</span>
+              <span className="text-accent font-semibold">▲ ALERT THRESHOLD ({v2Threshold}%)</span>
+              <span>100% EXTREME</span>
+            </div>
+            <div className="text-[8px] font-mono text-dim/75 pt-1 border-t border-line/20">
+              Policy: Operational Alert Engine V2 applies basin-specific thresholds (20% BOB / 8% ARAS) with calibrated probability and rolling persistence logic.
             </div>
           </div>
-        )}
-
-        <div className="flex justify-between items-center text-[8.5px] font-mono text-dim">
-          <span>0% BASELINE</span>
-          <span className="text-accent/90">▲ ALERT THRESHOLD ({threshold}%)</span>
-          <span>100% EXTREME</span>
-        </div>
-        <div className="text-[8px] font-mono text-dim/75 pt-1 border-t border-line/20">
-          Policy: Raw tree score indicates model confidence/risk score. Only calibrated value represents statistical probability.
-        </div>
-      </div>
+        </React.Fragment>
+      )}
 
       {/* Segregated Context Tabs */}
-      <div className="flex items-center gap-1 mt-3 border-b border-line/50 pb-1 text-[9.5px] font-mono">
+      <div className={`flex items-center gap-1 ${isProbeMode ? '' : 'mt-3'} border-b border-line/50 pb-1 text-[9.5px] font-mono`}>
         {[
           { key: 'predicted', label: '[PREDICTED]', desc: 'Model Risk & Drivers' },
           { key: 'observed', label: '[OBSERVED]', desc: 'Real Ocean State' },
@@ -425,7 +491,10 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
               <div className="space-y-2.5 animate-fade-in">
                 <div className="text-[9.5px] font-mono text-dim leading-relaxed bg-white/[0.02] p-2 rounded border border-line/40">
                   <span className="text-mist font-semibold">Assessment: </span>
-                  {prediction.explainability?.human_readable?.what || statusConfig.tagline}.
+                  {isProbeMode
+                    ? getFieldSamplerAssessment(prediction.explainability?.human_readable?.what, statusConfig.tagline)
+                    : `${prediction.explainability?.human_readable?.what || statusConfig.tagline}.`
+                  }
                 </div>
 
                 {/* Top Physical Indicators */}
@@ -484,10 +553,10 @@ export const EarlyWarningCard: React.FC<EarlyWarningCardProps> = ({
                       <div className="pt-1 border-t border-line/30">
                         <div className="text-[8px] text-dim uppercase mb-1">Temporal Window Scale</div>
                         <div className="grid grid-cols-2 gap-1">
-                          {(Object.entries(prediction.explainability.time_window_importance || {}) as [string, number][]).map(([k, v]) => (
-                            <div key={k} className="flex justify-between bg-white/[0.02] px-1.5 py-0.5 rounded border border-line/20">
-                              <span className="text-dim">{k.toUpperCase()}</span>
-                              <span className="text-mist">{Math.round((v || 0) * 100)}%</span>
+                          {getCanonicalTimeWindows(prediction.explainability.time_window_importance || {}).map((item) => (
+                            <div key={item.label} className="flex justify-between bg-white/[0.02] px-1.5 py-0.5 rounded border border-line/20">
+                              <span className="text-dim">{item.label}</span>
+                              <span className="text-mist">{Math.round((item.value || 0) * 100)}%</span>
                             </div>
                           ))}
                         </div>

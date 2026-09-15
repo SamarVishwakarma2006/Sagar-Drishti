@@ -1,10 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import {
   AppState,
-  SitePhysics,
-  VariableKey,
-  PaletteKey,
-  Selection,
   IngestionMetadata,
   ColorbarSettings,
   LLMProvider,

@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useApp, store, globeRegistry } from '../store/oceanStore';
 import { Ocean, provFor, fmtLat, fmtLon, fmtDepth } from '../services/syntheticOcean';
-import { Provenance } from '../types/ocean';
-import { X, LocateFixed, ArrowDownToLine, Waves, Activity, BarChart2 } from 'lucide-react';
+import { X, LocateFixed, ArrowDownToLine, Activity, BarChart2 } from 'lucide-react';
 import { EarlyWarningCard } from './EarlyWarningCard';
 
 export const SitePanel: React.FC<{ onDive: () => void }> = ({ onDive }) => {

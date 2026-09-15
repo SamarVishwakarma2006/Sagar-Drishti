@@ -13,12 +13,10 @@ import {
   PALETTES,
   buildLUT,
   clamp,
-  lerp,
   isMobile,
   hashStr,
   mulberry32,
   isOcean,
-  getBathymetry,
 } from '../services/syntheticOcean';
 
 function softDotTexture(): THREE.CanvasTexture {
@@ -38,7 +36,6 @@ export class UnderwaterEngine {
   private renderer: THREE.WebGLRenderer | null = null;
   private scene: THREE.Scene | null = null;
   private camera: THREE.PerspectiveCamera | null = null;
-  private container: HTMLElement | null = null;
   private site: SitePhysics | null = null;
   private disposed = false;
   private ro: ResizeObserver | null = null;
@@ -128,7 +125,6 @@ export class UnderwaterEngine {
       onDepthDelta: (d: number) => void;
     }
   ) {
-    this.container = container;
     this.site = site;
     this.onSelect = cb.onSelect;
     this.onDepthDelta = cb.onDepthDelta;

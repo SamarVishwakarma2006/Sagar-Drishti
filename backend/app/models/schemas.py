@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Dict, Any, Optional, Union
+from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field, model_validator
 
 
@@ -493,15 +493,16 @@ class PredictionResponse(BaseModel):
     target: str = "event_within_3d"  # "event_within_0d" | "event_within_1d" | "event_within_2d" | "event_within_3d"
     prediction: str  # "alert" | "advisory" | "normal"
     warning_level: str = "NO_ALERT"  # "NO_ALERT" | "WATCH" | "HIGH_ALERT"
-    probability: float  # Uncalibrated model-estimated risk score
-    model_estimated_probability: Optional[float] = None  # Explicit uncalibrated score alias
-    threshold: float = 0.27  # Horizon-specific operational decision threshold
-    alert_threshold: Optional[float] = None  # Explicit horizon-specific decision threshold alias
+    probability: float  # Calibrated operational probability from Operational Alert Engine V2
+    model_estimated_probability: Optional[float] = None  # Calibrated probability alias
+    raw_risk_score: Optional[float] = None  # Uncalibrated raw Random Forest tree score
+    threshold: float = 0.20  # Operational policy decision threshold
+    alert_threshold: Optional[float] = None  # Policy threshold alias
     probability_display: str = ""
     event_type: str = "none"  # "tropical_cyclone", "depression", "none"
-    is_calibrated: bool = False
-    model_name: str = "RandomForestClassifier"
-    model_version: str = "v1.1.0"
+    is_calibrated: bool = True
+    model_name: str = "OperationalAlertEngineV2"
+    model_version: str = "v2.0.0"
     prediction_timestamp: str = ""
     explainability: PredictionExplainability = Field(default_factory=PredictionExplainability)
     top_features: List[FeatureAttribution] = Field(default_factory=list)
@@ -513,6 +514,7 @@ class PredictionResponse(BaseModel):
     limitations: List[str] = Field(default_factory=list)
     message: str = ""
     candidate_v2: Optional[CandidateV2Decision] = None
+    operational_v2: Optional[CandidateV2Decision] = None
 
 
 # ==============================================================================
@@ -553,6 +555,8 @@ class ForwardPredictionRequest(BaseModel):
     ocean_source_timestamp: Optional[str] = None
     ocean_source_available_timestamp: Optional[str] = None
     ocean_age_hours: Optional[float] = None
+    data_provenance_class: Optional[str] = None
+    atmos_source_id: Optional[str] = None
     candidate_target_fixes: Optional[List[CycloneFixRecord]] = None
     evaluation_mode: Optional[str] = "TRUE_PROSPECTIVE"
 
@@ -573,6 +577,21 @@ class ForwardPredictionValidationResponse(BaseModel):
     feature_completeness: float
     can_predict: bool
     message: str
+
+
+class ThreatAssessment(BaseModel):
+    threat_level: str = Field(..., description="Intensity-based threat level (e.g. 'HIGH THREAT', 'WATCH')")
+    short_threat_level: str = Field(..., description="Short threat level name (e.g. 'HIGH THREAT', 'LOW')")
+    intensity_band: str = Field(..., description="Intensity band description (e.g. '64–82 kt')")
+    threat_basis: str = Field(default="Predicted Vmax", description="Primary basis of threat assessment")
+    symbol: str = Field(default="⚪", description="Visual indicator symbol")
+    color: str = Field(default="cyan", description="UI color token")
+    description: str = Field(default="", description="Meteorological interpretation")
+    predicted_vmax_kt: Optional[float] = Field(default=None, description="Predicted intensity in knots")
+    calibrated_probability: Optional[float] = Field(default=None, description="Calibrated risk probability if available; None otherwise")
+    probability_label: str = Field(default="N/A", description="Scientist-facing probability display string ('N/A' if unavailable)")
+    risk_basis: str = Field(default="INTENSITY ONLY", description="Risk basis ('INTENSITY ONLY' or 'CALIBRATED MODEL')")
+    risk_level: Optional[str] = Field(default=None, description="Risk level")
 
 
 class ForwardPredictionResponse(BaseModel):
@@ -603,10 +622,20 @@ class ForwardPredictionResponse(BaseModel):
     scientific_disclaimer: str
     evaluation_status: str  # "TARGET_PENDING" | "TARGET_AVAILABLE" | "TARGET_UNAVAILABLE" | "CAUSAL_REJECTED" | "INSUFFICIENT_HISTORY"
     evaluation_mode: str = "TRUE_PROSPECTIVE"  # "TRUE_PROSPECTIVE" | "AVAILABILITY_TIMESTAMP_REPLAY" | "HISTORICAL_BACKTEST"
+    data_provenance_class: Optional[str] = "UNKNOWN"
+    atmos_source_id: Optional[str] = None
+    forecast_created_at: Optional[str] = None
+    ocean_temporal_resolution: Optional[str] = "daily"
     synthetic_fixture_label: Optional[str] = None
     target_info: Optional[Dict[str, Any]] = None
     model_input_forensics: Optional[Dict[str, Any]] = None
     warnings: List[str] = Field(default_factory=list)
+    # Threat & Risk Interpretation Layer
+    threat_assessment: Optional[ThreatAssessment] = None
+    intensity_threat_level: Optional[str] = None
+    intensity_band: Optional[str] = None
+    predicted_vmax_kt: Optional[float] = None
+
 
 
 class DemoScenarioSummary(BaseModel):

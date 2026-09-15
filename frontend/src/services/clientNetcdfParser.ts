@@ -36,7 +36,7 @@ export class ClientNetcdfParser {
       lat: centerLat,
       lon: centerLon,
       maxDepth: 2500,
-      blurb: `Gridded ocean model dataset '${filename}' (${isHdf5 ? 'NetCDF-4 / HDF5' : 'Classic NetCDF'}). Dimensions: [time x depth x lat x lon].`,
+      blurb: `Gridded ocean model dataset '${filename}' (${isHdf5 ? 'NetCDF-4 / HDF5' : isClassic ? 'Classic NetCDF' : 'NetCDF Grid'}). Dimensions: [time x depth x lat x lon].`,
       ts: 28.5,
       ss: 32.2,
       td: 2.8,

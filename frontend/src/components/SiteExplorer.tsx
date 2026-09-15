@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useApp, store, globeRegistry, toast } from '../store/oceanStore';
 import { SITES, fmtLat, fmtLon, fmtDepth, pad2 } from '../services/syntheticOcean';
 import { SitePhysics } from '../types/ocean';
-import { Search, X, Database, Globe, Layers, Navigation } from 'lucide-react';
+import { Search, X, Globe, Navigation } from 'lucide-react';
 
 export const SiteExplorer: React.FC = () => {
   const s = useApp();

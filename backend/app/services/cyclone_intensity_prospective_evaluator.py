@@ -64,6 +64,13 @@ MAX_OCEAN_AGE_HOURS = 48.0
 TARGET_WINDOW_MIN_HOURS = 21.0
 TARGET_WINDOW_MAX_HOURS = 27.0
 
+# Authoritative Canonical Research Partition Boundaries
+CANONICAL_RESEARCH_SPLITS = {
+    "TRAIN": {"start_year": 2016, "end_year": 2021, "span": "2016–2021", "storm_count": 64},
+    "VALIDATION": {"start_year": 2022, "end_year": 2023, "span": "2022–2023", "storm_count": 24},
+    "TEST": {"start_year": 2024, "end_year": 2026, "span": "2024–2026", "storm_count": 29},
+}
+
 
 # -----------------------------------------------------------------------------
 # ENUMS & STATUS CODES
@@ -85,6 +92,20 @@ class TargetStatus(str, Enum):
     TARGET_PENDING = "TARGET_PENDING"
     TARGET_AVAILABLE = "TARGET_AVAILABLE"
     TARGET_UNAVAILABLE = "TARGET_UNAVAILABLE"
+    TARGET_EXCLUDED = "TARGET_EXCLUDED"
+
+
+class DataProvenanceClass(str, Enum):
+    REAL_PROSPECTIVE = "REAL_PROSPECTIVE"
+    SYNTHETIC_TEST_FIXTURE = "SYNTHETIC_TEST_FIXTURE"
+    HISTORICAL_REANALYSIS = "HISTORICAL_REANALYSIS"
+    UNKNOWN = "UNKNOWN"
+
+
+class AtmosphericSource(str, Enum):
+    ERA5_REANALYSIS = "ERA5_REANALYSIS"
+    OPERATIONAL_NWP_ANALYSIS = "OPERATIONAL_NWP_ANALYSIS"
+    OTHER_VERIFIED_OPERATIONAL_SOURCE = "OTHER_VERIFIED_OPERATIONAL_SOURCE"
 
 
 class EvaluationType(str, Enum):
@@ -97,11 +118,23 @@ class FrameworkStatus(str, Enum):
     NOT_READY = "NOT_READY"
 
 
-class ProspectiveEvidenceStatus(str, Enum):
+class ProspectiveEvidenceTier(str, Enum):
     INSUFFICIENT_PROSPECTIVE_EVIDENCE = "INSUFFICIENT_PROSPECTIVE_EVIDENCE"
+    EARLY_PROSPECTIVE_SIGNAL = "EARLY_PROSPECTIVE_SIGNAL"
     PROMISING_PROSPECTIVE_EVIDENCE = "PROMISING_PROSPECTIVE_EVIDENCE"
-    PROSPECTIVE_EVIDENCE_SUPPORTS_GENERALIZATION = "PROSPECTIVE_EVIDENCE_SUPPORTS_GENERALIZATION"
-    PROSPECTIVE_EVIDENCE_INCONCLUSIVE = "PROSPECTIVE_EVIDENCE_INCONCLUSIVE"
+    ADEQUATE_PROSPECTIVE_SAMPLE_FOR_PRELIMINARY_GENERALIZATION = "ADEQUATE_PROSPECTIVE_SAMPLE_FOR_PRELIMINARY_GENERALIZATION"
+
+
+def classify_prospective_evidence_tier(genuine_storm_count: int) -> ProspectiveEvidenceTier:
+    """Classifies prospective sample evidence according to formal scientific tiers."""
+    if genuine_storm_count < 5:
+        return ProspectiveEvidenceTier.INSUFFICIENT_PROSPECTIVE_EVIDENCE
+    elif 5 <= genuine_storm_count <= 14:
+        return ProspectiveEvidenceTier.EARLY_PROSPECTIVE_SIGNAL
+    elif 15 <= genuine_storm_count <= 29:
+        return ProspectiveEvidenceTier.PROMISING_PROSPECTIVE_EVIDENCE
+    else:
+        return ProspectiveEvidenceTier.ADEQUATE_PROSPECTIVE_SAMPLE_FOR_PRELIMINARY_GENERALIZATION
 
 
 # -----------------------------------------------------------------------------
@@ -191,6 +224,15 @@ class CycloneIntensityProspectiveEvaluator:
             if fc_hash != FROZEN_FEATURE_CONTRACT_SHA256:
                 raise ModelHashMismatchError(f"Feature contract hash mismatch: {fc_hash} != {FROZEN_FEATURE_CONTRACT_SHA256}")
 
+        # Also verify preprocessing hash
+        keycard_path = self.project_root / "research" / "cyclone_intensity" / "test_keycard.json"
+        if keycard_path.exists():
+            with open(keycard_path, "r", encoding="utf-8") as f:
+                kc = json.load(f)
+                prep_hash = kc.get("PREPROCESSING_HASH")
+                if prep_hash and prep_hash != FROZEN_PREPROCESSING_SHA256:
+                    raise ModelHashMismatchError(f"Preprocessing hash mismatch: {prep_hash} != {FROZEN_PREPROCESSING_SHA256}")
+
         self._log_causal_event(f"Verified model SHA-256: {actual_hash} [MATCH]")
         return actual_hash
 
@@ -273,18 +315,30 @@ class CycloneIntensityProspectiveEvaluator:
         data_available_timestamp: str,
         ocean_source_timestamp: Optional[str] = None,
         ocean_source_available_timestamp: Optional[str] = None,
-        ocean_age_hours: Optional[float] = None
+        ocean_age_hours: Optional[float] = None,
+        data_provenance_class: Union[DataProvenanceClass, str] = DataProvenanceClass.UNKNOWN,
+        atmos_source_id: Union[AtmosphericSource, str] = AtmosphericSource.ERA5_REANALYSIS,
+        forecast_created_at: Optional[str] = None,
+        include_extended: bool = False,
     ) -> Dict[str, Any]:
         """
         Generates a prospective intensity prediction at origin T using the frozen model.
-        Enforces causal availability, schema contracts, and returns the 17-field record.
+        Enforces causal availability, schema contracts, and returns the auditable forecast record.
         """
         # 1. Check target leakage
         for k in features.keys():
             if k.startswith("target_"):
                 raise TargetLeakageError(f"Target column '{k}' detected in input feature dictionary!")
 
-        # 2. Enforce Dual Timestamp Availability Firewall (Correction 1)
+        prov_class = data_provenance_class.value if isinstance(data_provenance_class, DataProvenanceClass) else str(data_provenance_class)
+        atmos_src = atmos_source_id.value if isinstance(atmos_source_id, AtmosphericSource) else str(atmos_source_id)
+
+        # Operational atmospheric source honesty: ERA5 has multi-month latency
+        if atmos_src == AtmosphericSource.ERA5_REANALYSIS.value and prov_class == DataProvenanceClass.REAL_PROSPECTIVE.value:
+            # ERA5 cannot be claimed as real-time operational prospective observation
+            prov_class = DataProvenanceClass.HISTORICAL_REANALYSIS.value
+
+        # 2. Enforce Dual Timestamp Availability Firewall
         self.enforce_dual_timestamp_firewall(
             observation_timestamp=observation_timestamp,
             data_available_timestamp=data_available_timestamp,
@@ -292,13 +346,38 @@ class CycloneIntensityProspectiveEvaluator:
             source_name="cyclone_observation"
         )
 
-        # 3. Ocean availability verification (Correction 8)
-        if ocean_source_timestamp and ocean_source_available_timestamp:
+        # 3. Ocean availability & freshness verification
+        # Copernicus ocean source remains daily.
+        # Require: ocean_source_timestamp <= T, ocean_source_available_timestamp <= T, ocean_age_hours <= 48
+        # If conditions fail: ocean feature = missing. Do not fabricate a replacement.
+        ocean_stale_or_invalid = False
+        if ocean_source_timestamp:
+            ocean_avail = ocean_source_available_timestamp or ocean_source_timestamp
+            try:
+                self.enforce_dual_timestamp_firewall(
+                    observation_timestamp=ocean_source_timestamp,
+                    data_available_timestamp=ocean_avail,
+                    forecast_origin_timestamp=forecast_origin_timestamp,
+                    source_name="copernicus_ocean"
+                )
+            except CausalFirewallViolationError:
+                ocean_stale_or_invalid = True
+                raise
+
+            if ocean_age_hours is not None and ocean_age_hours > MAX_OCEAN_AGE_HOURS:
+                ocean_stale_or_invalid = True
+
+        # 4. Atmospheric availability verification
+        atmos_obs_ts = features.get("atmos_observation_timestamp")
+        atmos_avail_ts = features.get("atmos_availability_timestamp")
+        if atmos_obs_ts or atmos_avail_ts:
+            effective_atmos_obs = atmos_obs_ts or forecast_origin_timestamp
+            effective_atmos_avail = atmos_avail_ts or effective_atmos_obs
             self.enforce_dual_timestamp_firewall(
-                observation_timestamp=ocean_source_timestamp,
-                data_available_timestamp=ocean_source_available_timestamp,
+                observation_timestamp=effective_atmos_obs,
+                data_available_timestamp=effective_atmos_avail,
                 forecast_origin_timestamp=forecast_origin_timestamp,
-                source_name="copernicus_ocean"
+                source_name="atmosphere"
             )
 
         # Calculate forecast valid time = T + 24h
@@ -309,6 +388,12 @@ class CycloneIntensityProspectiveEvaluator:
 
         # Calculate radial contrasts if base features are provided
         feat_dict = dict(features)
+
+        # If ocean data was stale (>48h), invalidate ocean features to prevent fabrication
+        if ocean_stale_or_invalid:
+            for ok in ["sst_core_mean_0_100km", "sst_env_mean_200_800km", "mld_core_mean_0_100km", "sla_core_mean_0_100km", "delta_sst_core_minus_env"]:
+                feat_dict[ok] = np.nan
+
         if "delta_vws_core_minus_env" not in feat_dict and "vws_core_mean_0_100km" in feat_dict and "vws_env_mean_200_800km" in feat_dict:
             feat_dict["delta_vws_core_minus_env"] = feat_dict["vws_core_mean_0_100km"] - feat_dict["vws_env_mean_200_800km"]
         if "delta_vort_core_minus_env" not in feat_dict and "vort_core_mean_0_100km" in feat_dict and "vort_env_mean_200_800km" in feat_dict:
@@ -318,7 +403,10 @@ class CycloneIntensityProspectiveEvaluator:
         if "delta_rh500_core_minus_env" not in feat_dict and "rh_500_core_mean_0_100km" in feat_dict and "rh_500_env_mean_200_800km" in feat_dict:
             feat_dict["delta_rh500_core_minus_env"] = feat_dict["rh_500_core_mean_0_100km"] - feat_dict["rh_500_env_mean_200_800km"]
         if "delta_sst_core_minus_env" not in feat_dict and "sst_core_mean_0_100km" in feat_dict and "sst_env_mean_200_800km" in feat_dict:
-            feat_dict["delta_sst_core_minus_env"] = feat_dict["sst_core_mean_0_100km"] - feat_dict["sst_env_mean_200_800km"]
+            if not pd.isna(feat_dict["sst_core_mean_0_100km"]) and not pd.isna(feat_dict["sst_env_mean_200_800km"]):
+                feat_dict["delta_sst_core_minus_env"] = feat_dict["sst_core_mean_0_100km"] - feat_dict["sst_env_mean_200_800km"]
+            else:
+                feat_dict["delta_sst_core_minus_env"] = np.nan
 
         # Build feature vector in exact frozen order
         missing_keys = [k for k in FROZEN_29_FEATURES if k not in feat_dict or pd.isna(feat_dict[k])]
@@ -334,6 +422,8 @@ class CycloneIntensityProspectiveEvaluator:
         clipping_applied = bool(pred_val < 15.0 or pred_val > 165.0)
         pred_clipped = round(float(np.clip(pred_val, 15.0, 165.0)), 2)
 
+        created_at_str = forecast_created_at or datetime.now(timezone.utc).isoformat()
+
         # Model Input Forensics snapshot immediately before inference
         forensic_snapshot = {
             "forecast_origin_timestamp": t_origin.isoformat(),
@@ -348,7 +438,7 @@ class CycloneIntensityProspectiveEvaluator:
             "preprocessing_hash": FROZEN_PREPROCESSING_SHA256,
         }
 
-        # Build 17+ field forecast record
+        # Build auditable forecast record
         record = {
             "system_id": system_id,
             "forecast_origin_timestamp": t_origin.isoformat(),
@@ -366,23 +456,39 @@ class CycloneIntensityProspectiveEvaluator:
             "ocean_source_timestamp": ocean_source_timestamp or "UNAVAILABLE",
             "ocean_source_available_timestamp": ocean_source_available_timestamp or "UNAVAILABLE",
             "ocean_age_hours": float(ocean_age_hours) if ocean_age_hours is not None else np.nan,
+            "ocean_temporal_resolution": "daily",
             "feature_completeness": feature_completeness,
             "missingness_flags": json.dumps(missing_keys),
             "prediction_status": PredictionStatus.PREDICTION_GENERATED.value,
             "evaluation_mode": self.evaluation_mode.value,
+            "data_provenance_class": prov_class,
+            "atmos_source_id": atmos_src,
+            "forecast_created_at": created_at_str,
+            "vmax_current": float(feat_dict.get("vmax_current", np.nan)) if not pd.isna(feat_dict.get("vmax_current")) else None,
+            "dvmax_12h": float(feat_dict.get("dvmax_12h", np.nan)) if not pd.isna(feat_dict.get("dvmax_12h")) else None,
             "model_input_forensics": forensic_snapshot,
         }
+
+        if not include_extended:
+            canonical_17_keys = [
+                "system_id", "forecast_origin_timestamp", "forecast_valid_time", "forecast_vmax_24h",
+                "model_version", "model_hash", "feature_contract_hash", "preprocessing_hash",
+                "feature_timestamp_cutoff", "data_availability_timestamp", "ocean_source_timestamp",
+                "ocean_source_available_timestamp", "ocean_age_hours", "feature_completeness",
+                "missingness_flags", "prediction_status", "evaluation_mode"
+            ]
+            return {k: record[k] for k in canonical_17_keys if k in record}
 
         return record
 
     def log_forecast(self, forecast_record: Dict[str, Any], filepath: Optional[Path] = None) -> Path:
         """
-        Appends the 17-field forecast record to forecast_log.parquet in an append-only,
+        Appends the forecast record to forecast_log.parquet in an append-only,
         immutable fashion. Rejects duplicate submissions for (system_id, forecast_origin_timestamp).
         """
         target_path = filepath or (self.db_dir / "forecast_log.parquet")
         
-        # Enforce 17-field schema contract
+        # Enforce schema contract
         expected_fields = [
             "system_id", "forecast_origin_timestamp", "forecast_valid_time", "forecast_vmax_24h",
             "model_version", "model_hash", "feature_contract_hash", "preprocessing_hash",
@@ -423,11 +529,16 @@ class CycloneIntensityProspectiveEvaluator:
         forecast_record: Dict[str, Any],
         candidate_fixes: List[Dict[str, Any]],
         evaluation_type: EvaluationType = EvaluationType.PROSPECTIVE_INITIAL,
-        current_clock_utc: Optional[str] = None
+        current_clock_utc: Optional[str] = None,
+        forecast_created_at: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Matches an observation within [T+21h, T+27h] under the target lifecycle state machine.
-        If deadline T+27h has passed and no fix is obtainable, enters TARGET_UNAVAILABLE (terminal).
+        Enforces:
+        1. Temporal honesty: forecast_created_at < target_available_at. If violated, marked TARGET_EXCLUDED (RETROSPECTIVE).
+        2. Provenance honesty: Non-real prospective data cannot masquerade as genuine prospective evaluation.
+        3. If deadline T+27h has passed and no fix is obtainable, enters TARGET_UNAVAILABLE (terminal).
+        TARGET_UNAVAILABLE records NEVER receive 0 error and are NEVER included in MAE/RMSE denominators.
         """
         t_origin = pd.to_datetime(forecast_record["forecast_origin_timestamp"])
         t_target_nominal = t_origin + pd.Timedelta(hours=24)
@@ -435,6 +546,16 @@ class CycloneIntensityProspectiveEvaluator:
         t_max = t_origin + pd.Timedelta(hours=TARGET_WINDOW_MAX_HOURS)
 
         now_utc = pd.to_datetime(current_clock_utc) if current_clock_utc else pd.Timestamp.now(tz="UTC")
+        if now_utc.tz is None:
+            now_utc = now_utc.tz_localize("UTC")
+
+        # Temporal honesty check: prediction must genuinely precede knowledge of the outcome
+        fc_created_str = forecast_created_at or forecast_record.get("forecast_created_at")
+        t_created = pd.to_datetime(fc_created_str) if fc_created_str else now_utc
+        if t_created.tz is None:
+            t_created = t_created.tz_localize("UTC")
+
+        prov_class = forecast_record.get("data_provenance_class", DataProvenanceClass.UNKNOWN.value)
 
         # Find eligible fixes within window [T+21h, T+27h]
         eligible_fixes = []
@@ -450,7 +571,7 @@ class CycloneIntensityProspectiveEvaluator:
                     delta_nominal = abs((fix_time - t_target_nominal).total_seconds())
                     eligible_fixes.append((delta_nominal, fix_time, float(vmax), fix))
 
-        # Lifecycle resolution (Correction 3 & Fix 2)
+        # Lifecycle resolution
         if eligible_fixes:
             # Pick closest fix to nominal T+24h
             eligible_fixes.sort(key=lambda x: x[0])
@@ -460,6 +581,78 @@ class CycloneIntensityProspectiveEvaluator:
             fix_meta = best[3]
             offset_hours = round((target_fix_time - t_target_nominal).total_seconds() / 3600.0, 2)
 
+            target_avail_str = fix_meta.get("data_availability_timestamp") or target_fix_time.isoformat()
+            t_target_avail = pd.to_datetime(target_avail_str)
+            if t_target_avail.tz is None:
+                t_target_avail = t_target_avail.tz_localize("UTC")
+
+            # Synthetic fixtures are strictly excluded from prospective scientific targets
+            if prov_class == DataProvenanceClass.SYNTHETIC_TEST_FIXTURE.value:
+                return {
+                    "system_id": forecast_record["system_id"],
+                    "forecast_origin_timestamp": forecast_record["forecast_origin_timestamp"],
+                    "forecast_valid_time": forecast_record["forecast_valid_time"],
+                    "target_status": TargetStatus.TARGET_EXCLUDED.value,
+                    "target_unavailable_reason": "SYNTHETIC_FIXTURE_EXCLUDED_FROM_SCIENTIFIC_EVALUATION",
+                    "actual_target_timestamp": target_fix_time.isoformat(),
+                    "target_offset_hours": offset_hours,
+                    "observed_vmax_24h": observed_vmax,
+                    "target_source": fix_meta.get("source", "SYNTHETIC_FIXTURE"),
+                    "target_source_version": fix_meta.get("source_version", "DEMO_V1"),
+                    "target_available_timestamp": target_avail_str,
+                    "target_retrieved_at": now_utc.isoformat(),
+                    "forecast_created_at": t_created.isoformat(),
+                    "data_provenance_class": prov_class,
+                    "evaluation_type": evaluation_type.value,
+                    "evaluation_mode": self.evaluation_mode.value,
+                }
+
+            # Temporal honesty rule: forecast_created_at < target_available_at
+            # Applies when evaluating prospective forecasts in TRUE_PROSPECTIVE mode, or for REAL_PROSPECTIVE records
+            if self.evaluation_mode == EvaluationMode.TRUE_PROSPECTIVE or prov_class == DataProvenanceClass.REAL_PROSPECTIVE.value:
+                if t_created >= t_target_avail:
+                    # Target was already available before forecast creation: RETROSPECTIVE EVALUATION
+                    return {
+                        "system_id": forecast_record["system_id"],
+                        "forecast_origin_timestamp": forecast_record["forecast_origin_timestamp"],
+                        "forecast_valid_time": forecast_record["forecast_valid_time"],
+                        "target_status": TargetStatus.TARGET_EXCLUDED.value,
+                        "target_unavailable_reason": "RETROSPECTIVE_EVALUATION_TARGET_AVAILABLE_BEFORE_FORECAST_CREATION",
+                        "actual_target_timestamp": target_fix_time.isoformat(),
+                        "target_offset_hours": offset_hours,
+                        "observed_vmax_24h": observed_vmax,
+                        "target_source": fix_meta.get("source", "IMD_SYNOPTIC"),
+                        "target_source_version": fix_meta.get("source_version", "OPERATIONAL_V1"),
+                        "target_available_timestamp": target_avail_str,
+                        "target_retrieved_at": now_utc.isoformat(),
+                        "forecast_created_at": t_created.isoformat(),
+                        "data_provenance_class": prov_class,
+                        "evaluation_type": EvaluationType.RETROSPECTIVE_REVISED.value,
+                        "evaluation_mode": self.evaluation_mode.value,
+                    }
+
+                # If in TRUE_PROSPECTIVE mode, provenance must strictly be REAL_PROSPECTIVE
+                if self.evaluation_mode == EvaluationMode.TRUE_PROSPECTIVE and prov_class != DataProvenanceClass.REAL_PROSPECTIVE.value:
+                    return {
+                        "system_id": forecast_record["system_id"],
+                        "forecast_origin_timestamp": forecast_record["forecast_origin_timestamp"],
+                        "forecast_valid_time": forecast_record["forecast_valid_time"],
+                        "target_status": TargetStatus.TARGET_EXCLUDED.value,
+                        "target_unavailable_reason": f"NON_PROSPECTIVE_PROVENANCE_CLASS_{prov_class}",
+                        "actual_target_timestamp": target_fix_time.isoformat(),
+                        "target_offset_hours": offset_hours,
+                        "observed_vmax_24h": observed_vmax,
+                        "target_source": fix_meta.get("source", "IMD_SYNOPTIC"),
+                        "target_source_version": fix_meta.get("source_version", "OPERATIONAL_V1"),
+                        "target_available_timestamp": target_avail_str,
+                        "target_retrieved_at": now_utc.isoformat(),
+                        "forecast_created_at": t_created.isoformat(),
+                        "data_provenance_class": prov_class,
+                        "evaluation_type": evaluation_type.value,
+                        "evaluation_mode": self.evaluation_mode.value,
+                    }
+
+            # Valid genuine prospective target
             return {
                 "system_id": forecast_record["system_id"],
                 "forecast_origin_timestamp": forecast_record["forecast_origin_timestamp"],
@@ -471,10 +664,12 @@ class CycloneIntensityProspectiveEvaluator:
                 "observed_vmax_24h": observed_vmax,
                 "target_source": fix_meta.get("source", "IMD_SYNOPTIC"),
                 "target_source_version": fix_meta.get("source_version", "OPERATIONAL_V1"),
-                "target_available_timestamp": fix_meta.get("data_available_timestamp", target_fix_time.isoformat()),
+                "target_available_timestamp": target_avail_str,
                 "target_retrieved_at": now_utc.isoformat(),
+                "forecast_created_at": t_created.isoformat(),
+                "data_provenance_class": prov_class,
                 "evaluation_type": evaluation_type.value,
-                "evaluation_mode": self.evaluation_mode.value
+                "evaluation_mode": self.evaluation_mode.value,
             }
         
         # If no eligible fix found, check if deadline T+27h has passed
@@ -493,8 +688,10 @@ class CycloneIntensityProspectiveEvaluator:
                 "target_source_version": None,
                 "target_available_timestamp": None,
                 "target_retrieved_at": now_utc.isoformat(),
+                "forecast_created_at": t_created.isoformat(),
+                "data_provenance_class": prov_class,
                 "evaluation_type": evaluation_type.value,
-                "evaluation_mode": self.evaluation_mode.value
+                "evaluation_mode": self.evaluation_mode.value,
             }
         else:
             # Window still open: TARGET_PENDING
@@ -511,21 +708,22 @@ class CycloneIntensityProspectiveEvaluator:
                 "target_source_version": None,
                 "target_available_timestamp": None,
                 "target_retrieved_at": now_utc.isoformat(),
+                "forecast_created_at": t_created.isoformat(),
+                "data_provenance_class": prov_class,
                 "evaluation_type": evaluation_type.value,
-                "evaluation_mode": self.evaluation_mode.value
+                "evaluation_mode": self.evaluation_mode.value,
             }
 
     def log_target_arrival(self, target_record: Dict[str, Any], filepath: Optional[Path] = None) -> Path:
         """
         Appends target arrival records to target_arrival_log.parquet.
-        Distinguishes PROSPECTIVE_INITIAL from RETROSPECTIVE_REVISED (Correction 4).
+        Distinguishes PROSPECTIVE_INITIAL from RETROSPECTIVE_REVISED.
         """
         target_path = filepath or (self.db_dir / "target_arrival_log.parquet")
         df_new = pd.DataFrame([target_record])
 
         if target_path.exists():
             existing_df = pd.read_parquet(target_path)
-            # Revisions do not overwrite: they append with evaluation_type == RETROSPECTIVE_REVISED
             combined_df = pd.concat([existing_df, df_new], ignore_index=True)
         else:
             combined_df = df_new
@@ -538,19 +736,40 @@ class CycloneIntensityProspectiveEvaluator:
         forecast_df: pd.DataFrame,
         target_df: pd.DataFrame,
         baseline_v0_dict: Optional[Dict[str, float]] = None,
-        baseline_trend_dict: Optional[Dict[str, float]] = None
+        baseline_trend_dict: Optional[Dict[str, float]] = None,
+        require_real_prospective: bool = True
     ) -> Dict[str, Any]:
         """
         Evaluates paired forecasts and targets.
-        Strictly filters to target_status == 'TARGET_AVAILABLE' and evaluation_type == 'PROSPECTIVE_INITIAL'.
-        TARGET_UNAVAILABLE records contribute zero error to MAE/RMSE/bias.
+        CRITICAL SCIENTIFIC CONTROLS:
+        1. Strictly filters to target_status == 'TARGET_AVAILABLE' and evaluation_type == 'PROSPECTIVE_INITIAL'.
+        2. TARGET_UNAVAILABLE records NEVER receive 0 error and are NEVER included in MAE/RMSE denominators.
+        3. All scientific accuracy metrics use strictly evaluated_targets as their denominator:
+           MAE = sum(abs(pred - obs)) / number_of_valid_evaluated_targets.
+        4. When require_real_prospective is True, only REAL_PROSPECTIVE records enter prospective accuracy metrics.
+        5. Computes persistence and damped trend baselines on the exact same evaluated targets.
         """
-        # Filter to available targets
+        n_forecasts_total = len(forecast_df)
+        n_targets_available = len(target_df[target_df["target_status"] == TargetStatus.TARGET_AVAILABLE.value])
+        n_targets_pending = len(target_df[target_df["target_status"] == TargetStatus.TARGET_PENDING.value])
+        n_targets_unavailable = len(target_df[target_df["target_status"] == TargetStatus.TARGET_UNAVAILABLE.value])
+        n_targets_excluded = len(target_df[target_df["target_status"] == TargetStatus.TARGET_EXCLUDED.value])
+
+        target_coverage_rate = round(n_targets_available / n_forecasts_total, 4) if n_forecasts_total > 0 else 0.0
+
+        # Filter strictly to valid evaluated targets
         valid_targets = target_df[
             (target_df["target_status"] == TargetStatus.TARGET_AVAILABLE.value) &
             (target_df["evaluation_type"] == EvaluationType.PROSPECTIVE_INITIAL.value) &
             (target_df["observed_vmax_24h"].notna())
         ].copy()
+
+        # If require_real_prospective is True, ensure non-prospective data does not enter prospective accuracy
+        if require_real_prospective:
+            if "data_provenance_class" in valid_targets.columns:
+                valid_targets = valid_targets[valid_targets["data_provenance_class"] == DataProvenanceClass.REAL_PROSPECTIVE.value].copy()
+            if "data_provenance_class" in forecast_df.columns:
+                forecast_df = forecast_df[forecast_df["data_provenance_class"] == DataProvenanceClass.REAL_PROSPECTIVE.value].copy()
 
         merged = pd.merge(
             forecast_df,
@@ -559,62 +778,80 @@ class CycloneIntensityProspectiveEvaluator:
             suffixes=("_fc", "_tgt")
         )
 
-        n_forecasts_total = len(forecast_df)
-        n_targets_available = len(merged)
-        n_targets_pending = len(target_df[target_df["target_status"] == TargetStatus.TARGET_PENDING.value])
-        n_targets_unavailable = len(target_df[target_df["target_status"] == TargetStatus.TARGET_UNAVAILABLE.value])
-        n_storms = merged["system_id"].nunique()
+        n_evaluated = len(merged)
+        evaluated_target_rate = round(n_evaluated / n_forecasts_total, 4) if n_forecasts_total > 0 else 0.0
+        n_storms = merged["system_id"].nunique() if n_evaluated > 0 else 0
+        evidence_tier = classify_prospective_evidence_tier(n_storms)
 
-        if n_targets_available == 0:
+        if n_evaluated == 0:
             return {
                 "n_storms": n_storms,
                 "n_forecasts_total": n_forecasts_total,
-                "n_targets_available": 0,
+                "n_targets_available": n_targets_available,
                 "n_targets_pending": n_targets_pending,
                 "n_targets_unavailable": n_targets_unavailable,
+                "n_targets_excluded": n_targets_excluded,
+                "target_coverage_rate": target_coverage_rate,
+                "evaluated_target_rate": evaluated_target_rate,
+                "number_of_valid_evaluated_targets": 0,
                 "row_mae": None,
                 "row_rmse": None,
                 "row_bias": None,
                 "storm_mae_mean": None,
-                "persistence_skill_pct": None,
-                "trend_skill_pct": None,
+                "persistence_mae": None,
+                "damped_trend_mae": None,
+                "model_skill_vs_persistence": None,
+                "model_skill_vs_damped_trend": None,
+                "prospective_evidence_tier": evidence_tier.value,
                 "evaluation_mode": self.evaluation_mode.value,
-                "note": "Zero evaluated targets available."
+                "note": "Zero valid prospective evaluated targets."
             }
 
         y_true = merged["observed_vmax_24h"].values
         y_pred = merged["forecast_vmax_24h"].values
         system_ids = merged["system_id"].values
 
-        # Absolute errors and bias: Bias = mean(y_pred - y_true)
+        # Absolute errors and bias: Denominator is strictly number_of_valid_evaluated_targets
         errors = np.abs(y_true - y_pred)
-        row_mae = float(np.mean(errors))
-        row_rmse = float(np.sqrt(np.mean((y_true - y_pred) ** 2)))
-        row_bias = float(np.mean(y_pred - y_true))
+        row_mae = float(np.sum(errors) / n_evaluated)
+        row_rmse = float(np.sqrt(np.sum((y_true - y_pred) ** 2) / n_evaluated))
+        row_bias = float(np.sum(y_pred - y_true) / n_evaluated)
 
         # Storm-level aggregation
         df_eval = pd.DataFrame({"system_id": system_ids, "error": errors})
         storm_maes = df_eval.groupby("system_id")["error"].mean()
         storm_mae_mean = float(storm_maes.mean())
 
-        # Baseline skills if reference baseline dicts are provided
-        pers_skill = None
-        trend_skill = None
-        if baseline_v0_dict and baseline_trend_dict:
-            pers_errors = []
-            trend_errors = []
-            for _, row in merged.iterrows():
-                key = f"{row['system_id']}_{row['forecast_origin_timestamp']}"
-                v0 = baseline_v0_dict.get(key, row["observed_vmax_24h"])
-                trend = baseline_trend_dict.get(key, row["observed_vmax_24h"])
-                pers_errors.append(abs(row["observed_vmax_24h"] - v0))
-                trend_errors.append(abs(row["observed_vmax_24h"] - trend))
+        # Baseline comparisons on the EXACT SAME evaluated targets
+        pers_errors = []
+        trend_errors = []
+        for _, row in merged.iterrows():
+            key = f"{row['system_id']}_{row['forecast_origin_timestamp']}"
             
-            pers_mae = float(np.mean(pers_errors)) if pers_errors else 0.0
-            trend_mae = float(np.mean(trend_errors)) if trend_errors else 0.0
-            
-            pers_skill = round((1.0 - (row_mae / pers_mae)) * 100.0, 2) if pers_mae > 0 else 0.0
-            trend_skill = round((1.0 - (row_mae / trend_mae)) * 100.0, 2) if trend_mae > 0 else 0.0
+            # Extract v0
+            if baseline_v0_dict and key in baseline_v0_dict:
+                v0 = baseline_v0_dict[key]
+            elif "vmax_current" in row and not pd.isna(row["vmax_current"]):
+                v0 = float(row["vmax_current"])
+            else:
+                v0 = float(row["observed_vmax_24h"])
+
+            # Extract damped trend: clip(v0 + 0.5 * dv12h, 15, 165)
+            if baseline_trend_dict and key in baseline_trend_dict:
+                trend = baseline_trend_dict[key]
+            elif "dvmax_12h" in row and not pd.isna(row["dvmax_12h"]):
+                trend = float(np.clip(v0 + 0.5 * float(row["dvmax_12h"]), 15.0, 165.0))
+            else:
+                trend = v0
+
+            pers_errors.append(abs(row["observed_vmax_24h"] - v0))
+            trend_errors.append(abs(row["observed_vmax_24h"] - trend))
+
+        pers_mae = float(np.sum(pers_errors) / n_evaluated) if n_evaluated > 0 else 0.0
+        trend_mae = float(np.sum(trend_errors) / n_evaluated) if n_evaluated > 0 else 0.0
+
+        pers_skill = round((1.0 - (row_mae / pers_mae)) * 100.0, 2) if pers_mae > 0 else 0.0
+        trend_skill = round((1.0 - (row_mae / trend_mae)) * 100.0, 2) if trend_mae > 0 else 0.0
 
         return {
             "n_storms": n_storms,
@@ -622,14 +859,108 @@ class CycloneIntensityProspectiveEvaluator:
             "n_targets_available": n_targets_available,
             "n_targets_pending": n_targets_pending,
             "n_targets_unavailable": n_targets_unavailable,
+            "n_targets_excluded": n_targets_excluded,
+            "target_coverage_rate": target_coverage_rate,
+            "evaluated_target_rate": evaluated_target_rate,
+            "number_of_valid_evaluated_targets": n_evaluated,
             "row_mae": round(row_mae, 3),
             "row_rmse": round(row_rmse, 3),
             "row_bias": round(row_bias, 3),
             "storm_mae_mean": round(storm_mae_mean, 3),
-            "persistence_skill_pct": pers_skill,
-            "trend_skill_pct": trend_skill,
+            "persistence_mae": round(pers_mae, 3),
+            "damped_trend_mae": round(trend_mae, 3),
+            "model_skill_vs_persistence": pers_skill,
+            "model_skill_vs_damped_trend": trend_skill,
+            "prospective_evidence_tier": evidence_tier.value,
             "evaluation_mode": self.evaluation_mode.value
         }
+
+    @staticmethod
+    def compute_storm_cluster_bootstrap(
+        merged_df: pd.DataFrame,
+        n_bootstrap: int = 1000,
+        confidence_level: float = 0.95,
+        random_state: int = 42
+    ) -> Dict[str, Any]:
+        """
+        Correction 12: Clustered bootstrap resampling by storm (system_id), not individual fixes.
+        Requires >= 5 storms; otherwise flags uncertainty as UNSTABLE_SAMPLE_SIZE.
+        """
+        if "system_id" not in merged_df.columns or len(merged_df) == 0:
+            return {
+                "n_storms": 0,
+                "n_forecasts": 0,
+                "bootstrap_iterations": n_bootstrap,
+                "storm_cluster_bootstrap_ci": None,
+                "status": "UNSTABLE_SAMPLE_SIZE",
+                "detail": "Empty dataset."
+            }
+
+        unique_storms = merged_df["system_id"].unique()
+        n_storms = len(unique_storms)
+        if n_storms < 5:
+            return {
+                "n_storms": n_storms,
+                "n_forecasts": len(merged_df),
+                "bootstrap_iterations": n_bootstrap,
+                "storm_cluster_bootstrap_ci": None,
+                "status": "UNSTABLE_SAMPLE_SIZE",
+                "detail": f"Sample size ({n_storms} storms) is insufficient for clustered bootstrap resampling (< 5 storms required)."
+            }
+
+        rng = np.random.RandomState(random_state)
+        boot_means = []
+        for _ in range(n_bootstrap):
+            sampled_storms = rng.choice(unique_storms, size=n_storms, replace=True)
+            boot_errors = []
+            for s in sampled_storms:
+                s_rows = merged_df[merged_df["system_id"] == s]
+                s_err = np.mean(np.abs(s_rows["observed_vmax_24h"] - s_rows["forecast_vmax_24h"]))
+                boot_errors.append(s_err)
+            boot_means.append(float(np.mean(boot_errors)))
+
+        alpha = (1.0 - confidence_level) / 2.0
+        ci_lower = float(np.percentile(boot_means, alpha * 100))
+        ci_upper = float(np.percentile(boot_means, (1.0 - alpha) * 100))
+        return {
+            "n_storms": n_storms,
+            "n_forecasts": len(merged_df),
+            "bootstrap_iterations": n_bootstrap,
+            "storm_cluster_bootstrap_ci": [round(ci_lower, 2), round(ci_upper, 2)],
+            "mean_bootstrap_mae": round(float(np.mean(boot_means)), 2),
+            "status": "VALID_CLUSTER_BOOTSTRAP"
+        }
+
+    @staticmethod
+    def compute_ocean_age_histogram(forecast_df: pd.DataFrame) -> Dict[str, int]:
+        """
+        Reports distribution of ocean observation freshness across forecasts.
+        """
+        hist = {
+            "age_0h": 0,
+            "age_6h": 0,
+            "age_12h": 0,
+            "age_18h": 0,
+            "age_24h_plus": 0,
+            "missing": 0,
+        }
+        if "ocean_age_hours" not in forecast_df.columns:
+            hist["missing"] = len(forecast_df)
+            return hist
+        for val in forecast_df["ocean_age_hours"]:
+            if pd.isna(val) or val is None:
+                hist["missing"] += 1
+            elif val <= 0.0:
+                hist["age_0h"] += 1
+            elif val <= 6.0:
+                hist["age_6h"] += 1
+            elif val <= 12.0:
+                hist["age_12h"] += 1
+            elif val <= 18.0:
+                hist["age_18h"] += 1
+            else:
+                hist["age_24h_plus"] += 1
+        return hist
 
     def compute_distribution_drift(self, prospective_features_df: pd.DataFrame) -> List[Dict[str, Any]]:
         """

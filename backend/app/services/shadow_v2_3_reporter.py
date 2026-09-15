@@ -16,8 +16,12 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 
-from backend.app.services.shadow_v2_3_monitor import ShadowV23Monitor
-from backend.app.services.shadow_v2_3_visualizer import ShadowV23Visualizer
+try:
+    from backend.app.services.shadow_v2_3_monitor import ShadowV23Monitor
+    from backend.app.services.shadow_v2_3_visualizer import ShadowV23Visualizer
+except ImportError:
+    from app.services.shadow_v2_3_monitor import ShadowV23Monitor
+    from app.services.shadow_v2_3_visualizer import ShadowV23Visualizer
 
 logger = logging.getLogger("sagar_drishti.shadow_v2_3_reporter")
 

@@ -22,7 +22,7 @@ import os
 import json
 import logging
 import threading
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, Any, List, Optional
 import numpy as np
 
 
@@ -244,5 +244,8 @@ class OperationalAlertEngineV2:
             "persistence_state": pers_state,
             "alert_decision": alert_decision,
             "alert_reason": alert_reason,
-            "model_version": "v2.0.0-10yr-candidate"
+            "model_version": "v2.0.0-10yr-candidate",
+            "operational_threshold": round(mod_th, 4),
+            "operational_alert": alert_decision,
+            "alert": alert_decision,
         }

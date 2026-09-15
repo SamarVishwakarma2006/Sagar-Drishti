@@ -1,6 +1,6 @@
 {
-  "unlock_timestamp_utc": "2026-09-13T11:06:57.375904+00:00",
-  "keycard_hash": "1d29b1fa6dab59bd9b2f95192c6de3a0460a9527db846f5f2e1d8282d5cc168f",
+  "unlock_timestamp_utc": "2026-09-13T17:31:59.815071+00:00",
+  "keycard_hash": "22ebace079e7c6fdd33e0ce57e4dbf60b6f4fc687befad803a147cb37b6d9ee2",
   "model_hash": "3abf49bc7b167c96f91425cf97d12afd606bb025f5310e774648cd52a3a1423f",
   "dataset_hash": "8bcb247a5b5efb77005704b793c019ce2643c38852ab880881b20845dff25cd0",
   "test_partition": "2024-2026",

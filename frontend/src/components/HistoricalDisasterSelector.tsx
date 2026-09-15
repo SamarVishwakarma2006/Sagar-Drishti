@@ -3,14 +3,8 @@ import { useApp, store, globeRegistry, toast } from '../store/oceanStore';
 import { HistoricalEventContext, BoundingBox } from '../types/ocean';
 import {
   AlertTriangle,
-  Compass,
   Calendar,
-  Layers,
-  Eye,
-  EyeOff,
   LocateFixed,
-  ChevronDown,
-  ChevronUp,
   X,
   Flame,
   Waves,

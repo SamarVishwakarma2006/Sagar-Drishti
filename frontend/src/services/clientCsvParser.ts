@@ -1,4 +1,4 @@
-import { SitePhysics, FloatRecord, ProfilePoint, ProfileResult, BoundingBox } from '../types/ocean';
+import { SitePhysics, FloatRecord, ProfilePoint, BoundingBox } from '../types/ocean';
 
 export class ClientCsvParser {
   static parseCsv(text: string, filename: string): { site: SitePhysics; floats: FloatRecord[]; customObservation?: any } {

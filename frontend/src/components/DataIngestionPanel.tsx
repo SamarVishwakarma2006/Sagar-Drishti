@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useApp, store, globeRegistry, toast } from '../store/oceanStore';
 import { OceanAPI } from '../services/api';
-import { UploadCloud, Database, FileUp, Loader, ChevronDown, ChevronUp, Trash2, CheckCircle } from 'lucide-react';
+import { UploadCloud, Database, FileUp, Loader, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 
 export const DataIngestionPanel: React.FC = () => {
   const s = useApp();

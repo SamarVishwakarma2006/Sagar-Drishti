@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useApp, store, globeRegistry, uwRegistry, toast } from './store/oceanStore';
+import { useApp, store, globeRegistry } from './store/oceanStore';
 import { TopBar } from './components/TopBar';
 import { SiteExplorer } from './components/SiteExplorer';
 import { SitePanel } from './components/SitePanel';
@@ -217,8 +217,9 @@ export const App: React.FC = () => {
           {/* Context-Aware SagarBot */}
           <SagarBot />
 
-          <div className="absolute bottom-[200px] right-4 hidden sm:block pointer-events-none z-10">
-            <span className="font-mono text-[8.5px] tracking-[0.2em] text-dim bg-abyss/80 border border-line rounded px-2.5 py-1 shadow-lg">
+          {/* Dive Mode Instructions Overlay */}
+          <div className="absolute bottom-4 left-3 md:left-4 pointer-events-none z-10 max-w-[calc(100vw-24px)] sm:max-w-none">
+            <span className="font-mono text-[8.5px] tracking-[0.18em] text-dim bg-abyss/80 border border-line rounded px-2.5 py-1 shadow-lg inline-block">
               DRAG TO LOOK · SCROLL FOR DEPTH · CLICK FLOATS TO INSPECT
             </span>
           </div>

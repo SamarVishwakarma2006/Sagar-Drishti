@@ -1,4 +1,4 @@
-import { SitePhysics, IngestionMetadata, ViewportContext, ChatResponse, PredictionResponse, PredictionRequest, CustomPredictionRequest } from '../types/ocean';
+import { SitePhysics, IngestionMetadata, ViewportContext, PredictionResponse, PredictionRequest, CustomPredictionRequest } from '../types/ocean';
 import { ClientCsvParser } from './clientCsvParser';
 import { ClientNetcdfParser } from './clientNetcdfParser';
 import { Ocean } from './syntheticOcean';
@@ -335,7 +335,24 @@ export interface ForwardPredictionReq {
   ocean_source_timestamp?: string;
   ocean_source_available_timestamp?: string;
   ocean_age_hours?: number;
+  data_provenance_class?: string;
+  atmos_source_id?: string;
   candidate_target_fixes?: any[];
+}
+
+export interface ThreatAssessment {
+  threat_level: string;
+  short_threat_level: string;
+  intensity_band: string;
+  threat_basis: string;
+  symbol: string;
+  color: string;
+  description: string;
+  predicted_vmax_kt: number | null;
+  calibrated_probability: number | null;
+  probability_label: string;
+  risk_basis: string;
+  risk_level: string | null;
 }
 
 export interface ForwardPredictionRes {
@@ -344,10 +361,20 @@ export interface ForwardPredictionRes {
   origin: string;
   valid_time: string;
   predicted_vmax_24h: number | null;
+  raw_predicted_vmax_24h?: number | null;
+  reported_predicted_vmax_24h?: number | null;
+  clipping_applied?: boolean;
+  clipping_bounds?: number[];
   model_version: string;
   model_hash: string;
   feature_contract_hash: string;
   preprocessing_hash: string;
+  input_dataset_source?: string;
+  synthetic_fixture_label?: string | null;
+  data_provenance_class?: string;
+  atmos_source_id?: string;
+  forecast_created_at?: string;
+  ocean_temporal_resolution?: string;
   causal_firewall: string;
   feature_completeness: number;
   missing_features: string[];
@@ -355,8 +382,14 @@ export interface ForwardPredictionRes {
   longitude?: number | null;
   scientific_disclaimer: string;
   evaluation_status: string;
+  evaluation_mode?: string;
   target_info?: any;
   warnings: string[];
+  // Threat & Risk Interpretation Layer
+  threat_assessment?: ThreatAssessment;
+  intensity_threat_level?: string;
+  intensity_band?: string;
+  predicted_vmax_kt?: number | null;
 }
 
 export interface ValidationRes {

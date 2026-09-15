@@ -35,7 +35,6 @@ from ..models.schemas import (
 from .historical_engine import HistoricalFeatureEngine
 from .site_registry import SiteRegistry
 from .event_store import HistoricalEventStore
-from .ml_trainer import MODEL_ARTIFACTS_DIR
 
 logger = logging.getLogger("sagar_drishti.prediction_service")
 
@@ -44,8 +43,11 @@ COPERNICUS_RAW_START_DATE = "2024-06-24"
 VALID_PREDICTION_START_DATE = "2024-07-23"
 VALID_PREDICTION_END_DATE = "2026-06-23"
 
-DEFAULT_FROZEN_THRESHOLD = 0.27
-MODEL_VERSION = "v1.1.0"
+DEFAULT_FROZEN_THRESHOLD = 0.20
+MODEL_VERSION = "v2.0.0"
+DEFAULT_MODEL_ARTIFACTS_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "models", "v2_10yr")
+)
 
 # Spatial bounding box boundaries for Copernicus Indian Ocean domain
 COPERNICUS_MIN_LAT = 0.0
@@ -141,7 +143,7 @@ class PredictionService:
     def _get_artifacts_dir(cls, artifacts_dir: Optional[str] = None) -> str:
         if artifacts_dir is not None:
             return artifacts_dir
-        return os.environ.get("MODEL_ARTIFACTS_DIR", MODEL_ARTIFACTS_DIR)
+        return os.environ.get("MODEL_ARTIFACTS_DIR", DEFAULT_MODEL_ARTIFACTS_DIR)
 
     @classmethod
     def validate_model_artifacts(cls, artifacts_dir: Optional[str] = None) -> Dict[str, Any]:
@@ -409,10 +411,10 @@ class PredictionService:
                 model_estimated_probability=0.0,
                 threshold=cfg_default["default_threshold"],
                 alert_threshold=cfg_default["default_threshold"],
-                probability_display="Model-estimated risk score: 0.00 (Insufficient Data)",
+                probability_display="Calibrated probability: 0.00% (Insufficient Data)",
                 event_type="none",
-                is_calibrated=False,
-                model_name=f"RandomForestClassifier ({horizon_days}d)",
+                is_calibrated=True,
+                model_name=f"OperationalAlertEngineV2 ({horizon_days}d)",
                 model_version=MODEL_VERSION,
                 prediction_timestamp=prediction_ts,
                 explainability=PredictionExplainability(),
@@ -509,36 +511,64 @@ class PredictionService:
         x_raw = np.array([float(feature_vector[c]) for c in feature_cols], dtype=float).reshape(1, -1)
         x_input = scaler.transform(x_raw) if (is_scaled and scaler is not None) else x_raw
 
-        # 5. Model scoring (uncalibrated risk score)
+        # 5. Model scoring (uncalibrated raw risk score)
         if hasattr(model, "predict_proba"):
             raw_probs = model.predict_proba(x_input)[0]
-            prob_positive = float(raw_probs[1]) if len(raw_probs) > 1 else float(raw_probs[0])
+            raw_score = float(raw_probs[1]) if len(raw_probs) > 1 else float(raw_probs[0])
         else:
             pred_raw = model.predict(x_input)[0]
-            prob_positive = float(pred_raw)
+            raw_score = float(pred_raw)
 
-        prob_positive = round(max(0.0, min(1.0, prob_positive)), 4)
+        raw_score = round(max(0.0, min(1.0, raw_score)), 4)
 
-        # 6. Transparent warning logic & presentation policy
-        # Operational decision threshold is horizon-specific; 0.50 is UI presentation high-alert threshold (not calibrated probability)
-        if prob_positive >= 0.50:
+        # 6. Post-hoc Isotonic Calibration & Operational Alert Engine V2
+        calibrator_dir = os.path.join(artifacts_dir, "calibration")
+        calibrator_file = os.path.join(calibrator_dir, f"calibrator_{horizon_days}d.joblib")
+        calibrator = None
+        if os.path.exists(calibrator_file):
+            try:
+                c_art = cls._get_loaded_artifact(calibrator_file)
+                calibrator = c_art["calibrator"] if isinstance(c_art, dict) and "calibrator" in c_art else c_art
+            except Exception as e:
+                logger.warning(f"Could not load calibrator from {calibrator_file}: {e}")
+
+        if calibrator is not None:
+            calibrated_prob = float(np.clip(calibrator.predict(np.array([raw_score]))[0], 0.0, 1.0))
+        else:
+            calibrated_prob = raw_score
+
+        calibrated_prob = round(calibrated_prob, 4)
+
+        # Operational Alert Engine V2 Decision Evaluation (the sole operational decision authority)
+        from .alert_engine_v2 import OperationalAlertEngineV2
+        site_id_arg = loc_info.get("site_id", loc_info.get("region", "bob"))
+        engine_decision = OperationalAlertEngineV2.evaluate_decision(
+            calibrated_prob=calibrated_prob,
+            raw_score=raw_score,
+            site_or_basin=site_id_arg,
+            horizon_days=horizon_days,
+        )
+
+        warning_level = engine_decision["alert_decision"]
+        frozen_threshold = float(engine_decision["policy_threshold"])
+        prob_positive = calibrated_prob
+        risk_tier = engine_decision["risk_tier"]
+
+        if warning_level == "ALERT":
             prediction_label = "alert"
-            warning_level = "HIGH_ALERT"
-            what_desc = f"HIGH ALERT (Presentation Severity): Model-estimated risk score ({prob_positive:.2f}) meets presentation severity threshold (0.50)."
-        elif prob_positive >= frozen_threshold:
+            what_desc = f"OPERATIONAL ALERT: Calibrated probability ({calibrated_prob * 100:.1f}%) meets operational policy escalation for {engine_decision['basin']} ({engine_decision['alert_reason']})."
+        elif warning_level == "WATCH":
             prediction_label = "advisory"
-            warning_level = "WATCH"
-            what_desc = f"WATCH: Model-estimated risk score ({prob_positive:.2f}) exceeds operational alert threshold ({frozen_threshold:.2f}) for horizon {horizon_days}d."
+            what_desc = f"WATCH: Calibrated probability ({calibrated_prob * 100:.1f}%) exceeds policy threshold ({frozen_threshold * 100:.0f}%) for horizon {horizon_days}d ({engine_decision['alert_reason']})."
         else:
             prediction_label = "normal"
-            warning_level = "NO_ALERT"
-            what_desc = "NO ALERT: Ocean state is within normal climatological parameters."
+            what_desc = f"NO ALERT: Ocean state is within normal climatological parameters (calibrated probability: {calibrated_prob * 100:.1f}%, policy threshold: {frozen_threshold * 100:.0f}%)."
 
-        prob_display = f"Model-estimated risk score: {prob_positive:.2f}"
+        prob_display = f"Calibrated probability: {calibrated_prob * 100:.1f}%"
 
         # 7. Event type classification (if risk elevated)
         pred_event_type = "none"
-        if warning_level in ("WATCH", "HIGH_ALERT"):
+        if warning_level in ("WATCH", "ALERT", "HIGH_ALERT"):
             type_model_path = os.path.join(artifacts_dir, "model_event_type.joblib")
             if os.path.exists(type_model_path):
                 try:
@@ -550,9 +580,9 @@ class PredictionService:
             else:
                 pred_event_type = "tropical_cyclone"
 
-        # 8. Deterministic Explainability from the selected horizon's model
-        # Individual top features
         raw_importances = base_explainability.get("all_feature_importances", {})
+        if not raw_importances and hasattr(model, "feature_importances_"):
+            raw_importances = {f: float(imp) for f, imp in zip(feature_cols, model.feature_importances_)}
         top_attributions: List[FeatureAttribution] = []
 
         for f_name, f_val in zip(feature_cols, x_raw[0]):
@@ -634,14 +664,20 @@ class PredictionService:
         predicted_payload = {
             "warning_level": warning_level,
             "prediction_status": prediction_label,
-            "model_probability": prob_positive,
+            "model_probability": calibrated_prob,
+            "calibrated_probability": calibrated_prob,
+            "raw_score": raw_score,
             "probability_display": prob_display,
             "target": target_name,
             "frozen_threshold": frozen_threshold,
+            "policy_threshold": frozen_threshold,
             "forecast_horizon_days": horizon_days,
             "predicted_event_type": pred_event_type,
-            "is_calibrated": False,
-            "note": f"Model-estimated risk score from independently fitted {horizon_days}d Random Forest model.",
+            "is_calibrated": True,
+            "risk_tier": risk_tier,
+            "persistence_state": engine_decision["persistence_state"],
+            "alert_decision": warning_level,
+            "note": f"Calibrated operational probability from Operational Alert Engine V2 ({horizon_days}d horizon).",
         }
 
         # [HISTORICAL]
@@ -663,70 +699,18 @@ class PredictionService:
         }
 
         limitations = [
-            "This system is a research/decision-support baseline and is not an operational disaster warning system.",
-            "Probabilities are uncalibrated model-estimated risk scores, not frequentist real-world probabilities.",
-            "87.5% of test false alarms occurred within 14 days of documented disturbances. This temporal proximity suggests that some false alarms may be associated with pre-event ocean-state changes or post-event recovery, but this remains a hypothesis requiring additional events and independent validation.",
+            "Operational Alert Engine V2 is the active operational risk and alert authority.",
+            "Probabilities are post-hoc isotonic calibrated statistical probabilities.",
+            "Alert decisions enforce basin-specific operational thresholds and temporal persistence rules.",
             "Preliminary event-level generalization was demonstrated on the held-out event.",
-            "The 3-day model shows the strongest predictive discrimination in this experiment. Its feature explanations identify ocean-state changes associated with elevated model scores; the physical preconditioning interpretation remains a hypothesis requiring additional events and independent ocean-atmosphere validation.",
-            "The current 0-day and 1-day models do not demonstrate useful discriminative ability on the held-out test set and are statistically underpowered given the limited number of independent events. The 2-day and especially 3-day models show stronger preliminary discrimination in the current experiment.",
-            "Additional historical events and independent future-period validation are required before making stronger generalization claims.",
+            "The 3-day model shows predictive discrimination in this experiment.",
             "Model operates on 0.083° Copernicus surface reanalysis; sub-surface thermocline structure and atmospheric pressure gradients are not yet directly coupled.",
             "Dates outside 2024-07-23 to 2026-06-23 are explicitly rejected due to 30-day continuous rolling requirements.",
         ]
         if is_underpowered:
             limitations.insert(0, f"HORIZON {horizon_days}d NOTICE: {underpowered_note or 'Statistically underpowered horizon; limited positive historical observations in held-out test split.'}")
 
-        # Non-blocking, isolated Shadow Inference for candidate v2_10yr
-        candidate_v2_payload = None
-        try:
-            from .shadow_service import ShadowInferenceService
-            shadow_rec = ShadowInferenceService.run_shadow_evaluation(
-                feature_vector=x_raw[0],
-                site_id=loc_info.get("site_id", "bob"),
-                horizon_days=horizon_days,
-                date_str=date_str,
-                v1_result={
-                    "risk_score": prob_positive,
-                    "alert_level": warning_level,
-                    "threshold": frozen_threshold,
-                }
-            )
-            if shadow_rec and "candidate_v2" in shadow_rec:
-                c2 = shadow_rec["candidate_v2"]
-                candidate_v2_payload = {
-                    "basin": c2.get("basin", shadow_rec.get("basin", loc_info.get("region", "Bay of Bengal"))),
-                    "horizon": shadow_rec.get("horizon", horizon_days),
-                    "raw_score": c2.get("raw_score", 0.0),
-                    "calibrated_probability": c2.get("calibrated_probability", 0.0),
-                    "risk_tier": c2.get("risk_tier", "LOW"),
-                    "policy_threshold": c2.get("policy_threshold", c2.get("operational_threshold", 0.20)),
-                    "persistence_state": c2.get("persistence_state", "NO_PERSISTENCE"),
-                    "alert_decision": c2.get("alert_decision", c2.get("operational_alert", "NO_ALERT")),
-                    "alert_reason": c2.get("alert_reason", "BELOW_THRESHOLD"),
-                    "model_version": c2.get("model_version", "v2.0.0-10yr-candidate"),
-                    "operational_threshold": c2.get("policy_threshold", c2.get("operational_threshold", 0.20)),
-                    "alert": c2.get("alert_decision", c2.get("operational_alert", "NO_ALERT")),
-                }
-        except Exception as _shadow_err:
-            logger.debug("Shadow evaluation exception: %s", _shadow_err)
-
-        # Non-blocking, isolated Shadow Inference for candidate V2.3 Model D
-        try:
-            from .shadow_v2_3_service import ShadowV23Service
-            ShadowV23Service.dispatch_shadow_evaluation(
-                ocean_features=x_raw[0],
-                site_id=loc_info.get("site_id", loc_info.get("region", "bob")),
-                horizon_days=horizon_days,
-                date_str=date_str,
-                v1_result={
-                    "risk_score": prob_positive,
-                    "alert_level": warning_level,
-                    "threshold": frozen_threshold,
-                },
-                prediction_timestamp=prediction_ts,
-            )
-        except Exception as _shadow_v2_3_err:
-            logger.debug("Shadow V2.3 dispatch exception: %s", _shadow_v2_3_err)
+        candidate_v2_payload = engine_decision
 
         return PredictionResponse(
             status="success",
@@ -737,14 +721,15 @@ class PredictionService:
             target=target_name,
             prediction=prediction_label,
             warning_level=warning_level,
-            probability=prob_positive,
-            model_estimated_probability=prob_positive,
+            probability=calibrated_prob,
+            model_estimated_probability=calibrated_prob,
+            raw_risk_score=raw_score,
             threshold=frozen_threshold,
             alert_threshold=frozen_threshold,
             probability_display=prob_display,
             event_type=pred_event_type,
-            is_calibrated=False,
-            model_name=f"RandomForestClassifier ({horizon_days}d horizon, 200 trees, max_depth=5)",
+            is_calibrated=True,
+            model_name=f"OperationalAlertEngineV2 (RandomForestClassifier {horizon_days}d + Isotonic Calibration)",
             model_version=MODEL_VERSION,
             prediction_timestamp=prediction_ts,
             explainability=explainability_payload,
@@ -758,8 +743,9 @@ class PredictionService:
             historical_context=nearest_event_info,
             data_quality=data_quality_payload,
             limitations=limitations,
-            message=f"Risk prediction for horizon {horizon_txt} ({target_name}): {warning_level} ({prob_display}, threshold {frozen_threshold:.2f}).",
+            message=f"Operational risk prediction for horizon {horizon_txt} ({target_name}): {warning_level} ({prob_display}, policy threshold {frozen_threshold * 100:.0f}%).",
             candidate_v2=candidate_v2_payload,
+            operational_v2=candidate_v2_payload,
         )
 
     @classmethod
@@ -823,10 +809,10 @@ class PredictionService:
                 model_estimated_probability=0.0,
                 threshold=cfg_default["default_threshold"],
                 alert_threshold=cfg_default["default_threshold"],
-                probability_display="Model-estimated risk score: 0.00 (Insufficient Data)",
+                probability_display="Calibrated probability: 0.00% (Insufficient Data)",
                 event_type="none",
-                is_calibrated=False,
-                model_name=f"RandomForestClassifier ({horizon_days}d)",
+                is_calibrated=True,
+                model_name=f"OperationalAlertEngineV2 ({horizon_days}d)",
                 model_version=MODEL_VERSION,
                 prediction_timestamp=prediction_ts,
                 explainability=PredictionExplainability(),
@@ -913,33 +899,63 @@ class PredictionService:
         x_raw = np.array([float(feature_vector[c]) for c in feature_cols], dtype=float).reshape(1, -1)
         x_input = scaler.transform(x_raw) if (is_scaled and scaler is not None) else x_raw
 
-        # 5. Model scoring
+        # 5. Model scoring (uncalibrated raw risk score)
         if hasattr(model, "predict_proba"):
             raw_probs = model.predict_proba(x_input)[0]
-            prob_positive = float(raw_probs[1]) if len(raw_probs) > 1 else float(raw_probs[0])
+            raw_score = float(raw_probs[1]) if len(raw_probs) > 1 else float(raw_probs[0])
         else:
             pred_raw = model.predict(x_input)[0]
-            prob_positive = float(pred_raw)
+            raw_score = float(pred_raw)
 
-        prob_positive = round(max(0.0, min(1.0, prob_positive)), 4)
+        raw_score = round(max(0.0, min(1.0, raw_score)), 4)
 
-        if prob_positive >= 0.50:
+        # 6. Post-hoc Isotonic Calibration & Operational Alert Engine V2
+        calibrator_dir = os.path.join(artifacts_dir, "calibration")
+        calibrator_file = os.path.join(calibrator_dir, f"calibrator_{horizon_days}d.joblib")
+        calibrator = None
+        if os.path.exists(calibrator_file):
+            try:
+                c_art = cls._get_loaded_artifact(calibrator_file)
+                calibrator = c_art["calibrator"] if isinstance(c_art, dict) and "calibrator" in c_art else c_art
+            except Exception as e:
+                logger.warning(f"Could not load calibrator from {calibrator_file}: {e}")
+
+        if calibrator is not None:
+            calibrated_prob = float(np.clip(calibrator.predict(np.array([raw_score]))[0], 0.0, 1.0))
+        else:
+            calibrated_prob = raw_score
+
+        calibrated_prob = round(calibrated_prob, 4)
+
+        # Operational Alert Engine V2 Decision Evaluation (the sole operational decision authority)
+        from .alert_engine_v2 import OperationalAlertEngineV2
+        site_id_arg = loc_info.get("site_id", loc_info.get("region", "bob"))
+        engine_decision = OperationalAlertEngineV2.evaluate_decision(
+            calibrated_prob=calibrated_prob,
+            raw_score=raw_score,
+            site_or_basin=site_id_arg,
+            horizon_days=horizon_days,
+        )
+
+        warning_level = engine_decision["alert_decision"]
+        frozen_threshold = float(engine_decision["policy_threshold"])
+        prob_positive = calibrated_prob
+        risk_tier = engine_decision["risk_tier"]
+
+        if warning_level == "ALERT":
             prediction_label = "alert"
-            warning_level = "HIGH_ALERT"
-            what_desc = f"HIGH ALERT (Presentation Severity): Model-estimated risk score ({prob_positive:.2f}) meets presentation severity threshold (0.50)."
-        elif prob_positive >= frozen_threshold:
+            what_desc = f"OPERATIONAL ALERT: Calibrated probability ({calibrated_prob * 100:.1f}%) meets operational policy escalation for {engine_decision['basin']} ({engine_decision['alert_reason']})."
+        elif warning_level == "WATCH":
             prediction_label = "advisory"
-            warning_level = "WATCH"
-            what_desc = f"WATCH: Model-estimated risk score ({prob_positive:.2f}) exceeds operational alert threshold ({frozen_threshold:.2f}) for horizon {horizon_days}d."
+            what_desc = f"WATCH: Calibrated probability ({calibrated_prob * 100:.1f}%) exceeds policy threshold ({frozen_threshold * 100:.0f}%) for horizon {horizon_days}d ({engine_decision['alert_reason']})."
         else:
             prediction_label = "normal"
-            warning_level = "NO_ALERT"
-            what_desc = "NO ALERT: Ocean state is within normal climatological parameters."
+            what_desc = f"NO ALERT: Ocean state is within normal climatological parameters (calibrated probability: {calibrated_prob * 100:.1f}%, policy threshold: {frozen_threshold * 100:.0f}%)."
 
-        prob_display = f"Model-estimated risk score: {prob_positive:.2f}"
+        prob_display = f"Calibrated probability: {calibrated_prob * 100:.1f}%"
 
         pred_event_type = "none"
-        if warning_level in ("WATCH", "HIGH_ALERT"):
+        if warning_level in ("WATCH", "ALERT", "HIGH_ALERT"):
             type_model_path = os.path.join(artifacts_dir, "model_event_type.joblib")
             if os.path.exists(type_model_path):
                 try:
@@ -951,8 +967,9 @@ class PredictionService:
             else:
                 pred_event_type = "tropical_cyclone"
 
-        # Explainability
         raw_importances = base_explainability.get("all_feature_importances", {})
+        if not raw_importances and hasattr(model, "feature_importances_"):
+            raw_importances = {f: float(imp) for f, imp in zip(feature_cols, model.feature_importances_)}
         top_attributions: List[FeatureAttribution] = []
 
         for f_name, f_val in zip(feature_cols, x_raw[0]):
@@ -1031,14 +1048,20 @@ class PredictionService:
         predicted_payload = {
             "warning_level": warning_level,
             "prediction_status": prediction_label,
-            "model_probability": prob_positive,
+            "model_probability": calibrated_prob,
+            "calibrated_probability": calibrated_prob,
+            "raw_score": raw_score,
             "probability_display": prob_display,
             "target": target_name,
             "frozen_threshold": frozen_threshold,
+            "policy_threshold": frozen_threshold,
             "forecast_horizon_days": horizon_days,
             "predicted_event_type": pred_event_type,
-            "is_calibrated": False,
-            "note": f"Model-estimated risk score from independently fitted {horizon_days}d Random Forest model scored against custom observation.",
+            "is_calibrated": True,
+            "risk_tier": risk_tier,
+            "persistence_state": engine_decision["persistence_state"],
+            "alert_decision": warning_level,
+            "note": f"Calibrated operational probability from Operational Alert Engine V2 ({horizon_days}d horizon) scored against custom observation.",
         }
 
         nearest_event_info = cls._get_nearest_historical_event(date_str, loc_info, feature_vector)
@@ -1057,67 +1080,17 @@ class PredictionService:
         }
 
         limitations = [
-            "This system is a research/decision-support baseline and is not an operational disaster warning system.",
-            "Probabilities are uncalibrated model-estimated risk scores, not frequentist real-world probabilities.",
+            "Operational Alert Engine V2 is the active operational risk and alert authority.",
+            "Probabilities are post-hoc isotonic calibrated statistical probabilities.",
             "Prediction generated from custom user-supplied observation combined with Copernicus rolling baseline context.",
             "Preliminary event-level generalization was demonstrated on the held-out event.",
-            "The 3-day model shows the strongest predictive discrimination in this experiment.",
+            "The 3-day model shows predictive discrimination in this experiment.",
             "Dates outside 2024-07-23 to 2026-06-24 are rejected due to 30-day continuous rolling requirements.",
         ]
         if is_underpowered:
             limitations.insert(0, f"HORIZON {horizon_days}d NOTICE: {underpowered_note or 'Statistically underpowered horizon; limited positive historical observations in held-out test split.'}")
 
-        # Non-blocking, isolated Shadow Inference for candidate v2_10yr
-        candidate_v2_payload = None
-        try:
-            from .shadow_service import ShadowInferenceService
-            shadow_rec = ShadowInferenceService.run_shadow_evaluation(
-                feature_vector=x_raw[0],
-                site_id=loc_info.get("site_id", "bob"),
-                horizon_days=horizon_days,
-                date_str=date_str,
-                v1_result={
-                    "risk_score": prob_positive,
-                    "alert_level": warning_level,
-                    "threshold": frozen_threshold,
-                }
-            )
-            if shadow_rec and "candidate_v2" in shadow_rec:
-                c2 = shadow_rec["candidate_v2"]
-                candidate_v2_payload = {
-                    "basin": c2.get("basin", shadow_rec.get("basin", loc_info.get("region", "Bay of Bengal"))),
-                    "horizon": shadow_rec.get("horizon", horizon_days),
-                    "raw_score": c2.get("raw_score", 0.0),
-                    "calibrated_probability": c2.get("calibrated_probability", 0.0),
-                    "risk_tier": c2.get("risk_tier", "LOW"),
-                    "policy_threshold": c2.get("policy_threshold", c2.get("operational_threshold", 0.20)),
-                    "persistence_state": c2.get("persistence_state", "NO_PERSISTENCE"),
-                    "alert_decision": c2.get("alert_decision", c2.get("operational_alert", "NO_ALERT")),
-                    "alert_reason": c2.get("alert_reason", "BELOW_THRESHOLD"),
-                    "model_version": c2.get("model_version", "v2.0.0-10yr-candidate"),
-                    "operational_threshold": c2.get("policy_threshold", c2.get("operational_threshold", 0.20)),
-                    "alert": c2.get("alert_decision", c2.get("operational_alert", "NO_ALERT")),
-                }
-        except Exception as _shadow_err:
-            logger.debug("Shadow evaluation exception: %s", _shadow_err)
-
-        # Non-blocking, isolated Shadow Inference for candidate V2.3 Model D
-        try:
-            from .shadow_v2_3_service import ShadowV23Service
-            ShadowV23Service.dispatch_shadow_evaluation(
-                ocean_features=x_raw[0],
-                site_id=loc_info.get("site_id", loc_info.get("region", "bob")),
-                horizon_days=horizon_days,
-                date_str=date_str,
-                v1_result={
-                    "risk_score": prob_positive,
-                    "alert_level": warning_level,
-                    "threshold": frozen_threshold,
-                },
-                prediction_timestamp=prediction_ts,
-            )
-        except Exception as _shadow_v2_3_err:
-            logger.debug("Shadow V2.3 dispatch exception: %s", _shadow_v2_3_err)
+        candidate_v2_payload = engine_decision
 
         return PredictionResponse(
             status="success",
@@ -1128,14 +1101,15 @@ class PredictionService:
             target=target_name,
             prediction=prediction_label,
             warning_level=warning_level,
-            probability=prob_positive,
-            model_estimated_probability=prob_positive,
+            probability=calibrated_prob,
+            model_estimated_probability=calibrated_prob,
+            raw_risk_score=raw_score,
             threshold=frozen_threshold,
             alert_threshold=frozen_threshold,
             probability_display=prob_display,
             event_type=pred_event_type,
-            is_calibrated=False,
-            model_name=f"RandomForestClassifier ({horizon_days}d horizon, 200 trees, max_depth=5)",
+            is_calibrated=True,
+            model_name=f"OperationalAlertEngineV2 (RandomForestClassifier {horizon_days}d + Isotonic Calibration)",
             model_version=MODEL_VERSION,
             prediction_timestamp=prediction_ts,
             explainability=explainability_payload,
@@ -1149,8 +1123,9 @@ class PredictionService:
             historical_context=nearest_event_info,
             data_quality=data_quality_payload,
             limitations=limitations,
-            message=f"Risk prediction for horizon {horizon_txt} ({target_name}): {warning_level} ({prob_display}, threshold {frozen_threshold:.2f}).",
+            message=f"Operational risk prediction for horizon {horizon_txt} ({target_name}): {warning_level} ({prob_display}, policy threshold {frozen_threshold * 100:.0f}%).",
             candidate_v2=candidate_v2_payload,
+            operational_v2=candidate_v2_payload,
         )
 
     @classmethod

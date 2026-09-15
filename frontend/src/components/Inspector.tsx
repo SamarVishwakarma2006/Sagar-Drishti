@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { useApp, store, toast } from '../store/oceanStore';
 import {
   Ocean,
@@ -250,12 +250,13 @@ export const Inspector: React.FC = () => {
           )}
         </div>
 
-        {/* Dedicated ML Early Warning Card */}
+        {/* Dedicated Environmental Field Sampler ML Analysis */}
         <EarlyWarningCard
           lat={pos.lat}
           lon={pos.lon}
           regionName={site.name}
           compact={true}
+          variant="field_sampler"
           customObservation={site.custom_observation || s.customObservation || s.activeUpload?.custom_observation}
         />
 

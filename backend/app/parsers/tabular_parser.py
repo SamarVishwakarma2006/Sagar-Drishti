@@ -1,10 +1,9 @@
 import io
 import re
-import math
 import numpy as np
 import pandas as pd
 from typing import Dict, Any, List, Optional, Tuple
-from ..models.schemas import BoundingBox, VariableStats, SitePhysics, FloatRecord, ProfileResult, ProfilePoint
+from ..models.schemas import BoundingBox, SitePhysics, FloatRecord, ProfileResult, ProfilePoint
 
 
 class TabularParser:

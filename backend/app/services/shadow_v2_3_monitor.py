@@ -18,8 +18,12 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-from backend.app.services.shadow_v2_3_store import ShadowV23Store
-from backend.app.services.shadow_v2_3_service import ShadowV23Service
+try:
+    from backend.app.services.shadow_v2_3_store import ShadowV23Store
+    from backend.app.services.shadow_v2_3_service import ShadowV23Service
+except ImportError:
+    from app.services.shadow_v2_3_store import ShadowV23Store
+    from app.services.shadow_v2_3_service import ShadowV23Service
 
 logger = logging.getLogger("sagar_drishti.shadow_v2_3_monitor")
 

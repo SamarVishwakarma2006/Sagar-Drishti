@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp, store, uwRegistry } from '../store/oceanStore';
-import { PALETTES, CMAPS, VARIABLES, Ocean, cssGradient } from '../services/syntheticOcean';
+import { PALETTES, VARIABLES, Ocean, cssGradient } from '../services/syntheticOcean';
 import { PaletteKey } from '../types/ocean';
 import { Sliders, RotateCcw, X } from 'lucide-react';
 

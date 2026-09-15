@@ -89,7 +89,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         )}
 
         {/* Historical Disaster & Hazard Zone Marker */}
-        {onToggleDisasters && (
+        {!uw && onToggleDisasters && (
           <button
             onClick={onToggleDisasters}
             title="Historical Disasters & 3D Globe Hazard Area Marker"
@@ -110,7 +110,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         )}
 
         {/* Forward Prediction / Forecast Mode Toggle */}
-        {onToggleForecast && (
+        {!uw && onToggleForecast && (
           <button
             onClick={onToggleForecast}
             title="Toggle Forward Prediction / Prospective Inference Mode (T > 2026-06-23)"
@@ -129,31 +129,33 @@ export const TopBar: React.FC<TopBarProps> = ({
         )}
 
         {/* Copernicus Historical Mode Toggle */}
-        <div className="flex items-center gap-1.5 border border-line rounded px-2 py-0.5 bg-white/[0.02]">
-          <button
-            onClick={() => store.setHistoricalMode(!s.historicalMode)}
-            className={`text-[9px] font-mono tracking-wider px-1.5 py-0.5 rounded transition-colors ${
-              s.historicalMode
-                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold'
-                : 'text-dim hover:text-mist'
-            }`}
-            title="Toggle Copernicus Marine 2-Year Historical Reanalysis (2024–2026)"
-          >
-            {s.historicalMode ? 'HISTORICAL LIVE' : 'HISTORICAL'}
-          </button>
+        {!uw && (
+          <div className="flex items-center gap-1.5 border border-line rounded px-2 py-0.5 bg-white/[0.02]">
+            <button
+              onClick={() => store.setHistoricalMode(!s.historicalMode)}
+              className={`text-[9px] font-mono tracking-wider px-1.5 py-0.5 rounded transition-colors ${
+                s.historicalMode
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold'
+                  : 'text-dim hover:text-mist'
+              }`}
+              title="Toggle Copernicus Marine 2-Year Historical Reanalysis (2024–2026)"
+            >
+              {s.historicalMode ? 'HISTORICAL LIVE' : 'HISTORICAL'}
+            </button>
 
-          {s.historicalMode && (
-            <input
-              type="date"
-              min="2024-06-24"
-              max="2026-06-23"
-              value={s.historicalDate}
-              onChange={(e) => store.setHistoricalDate(e.target.value)}
-              className="bg-black/60 border border-line text-amber-200 text-[10px] font-mono px-1.5 py-0.5 rounded outline-none focus:border-amber-500/50"
-              title="Copernicus Historical Reanalysis Date (2024-06-24 to 2026-06-23)"
-            />
-          )}
-        </div>
+            {s.historicalMode && (
+              <input
+                type="date"
+                min="2024-06-24"
+                max="2026-06-23"
+                value={s.historicalDate}
+                onChange={(e) => store.setHistoricalDate(e.target.value)}
+                className="bg-black/60 border border-line text-amber-200 text-[10px] font-mono px-1.5 py-0.5 rounded outline-none focus:border-amber-500/50"
+                title="Copernicus Historical Reanalysis Date (2024-06-24 to 2026-06-23)"
+              />
+            )}
+          </div>
+        )}
 
         {uw && (
           <span className="font-mono text-[10px] text-dim hidden lg:inline border border-line rounded px-2.5 py-1">

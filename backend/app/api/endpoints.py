@@ -7,7 +7,6 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, Query, Request, 
 from datetime import datetime, timezone
 from ..models.schemas import (
     SitePhysics,
-    FloatRecord,
     DataSliceResponse,
     ChatRequest,
     ChatResponse,
@@ -685,5 +684,36 @@ async def predict_cyclone_intensity_forward(req: ForwardPredictionRequest):
     Forward Prediction / Prospective Inference:
     Evaluates newly arriving observations up to forecast origin T, causally constructs the
     authoritative 29-feature contract, verifies frozen XGBoost model SHA-256, executes read-only
+    prospective inference, and persists forecast to immutable log.
+    """
+    from ..services.forward_prediction_service import ForwardPredictionService
+    service = ForwardPredictionService()
+    res = service.predict_forward(
+        system_id=req.system_id,
+        forecast_origin_timestamp=req.forecast_origin_timestamp,
+        cyclone_history=[f.model_dump() for f in req.cyclone_history] if req.cyclone_history else None,
+        observations=[o.model_dump() for o in req.observations] if req.observations else None,
+        features=req.features,
+        demo_scenario_id=req.demo_scenario_id,
+        observation_timestamp=req.observation_timestamp,
+        data_availability_timestamp=req.data_availability_timestamp,
+        ocean_source_timestamp=req.ocean_source_timestamp,
+        ocean_source_available_timestamp=req.ocean_source_available_timestamp,
+        ocean_age_hours=req.ocean_age_hours,
+        candidate_target_fixes=[f.model_dump() for f in req.candidate_target_fixes] if req.candidate_target_fixes else None,
+        data_provenance_class=req.data_provenance_class,
+        atmos_source_id=req.atmos_source_id,
+        evaluation_mode=req.evaluation_mode,
+    )
+    return res
+
+
+@router.get("/forecast/history", tags=["Forward Prediction"])
+async def get_forecast_history(limit: int = 50):
+    """
+    Returns recent forward prediction audit logs from immutable forecast_log.parquet.
+    """
+    from ..services.forward_prediction_service import ForwardPredictionService
     service = ForwardPredictionService()
     return service.get_forecast_history(limit=limit)
+
