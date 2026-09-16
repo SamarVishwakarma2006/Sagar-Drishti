@@ -484,9 +484,22 @@ class DecisionSupportGenerator:
         loc_desc = p.get("location", {}).get("description", entities.region_name)
 
         # 1. Risk Block
-        risk_header = f"### Risk\n**[{warning_level}]** — Model-estimated risk score: **{score:.2f}** (Operational Threshold: {threshold:.2f})"
+        risk_label_map = {
+            "NO_ALERT": "LOW — NO ALERT",
+            "WATCH": "WATCH — ELEVATED RISK",
+            "ALERT": "ALERT — HIGH RISK",
+            "HIGH_ALERT": "HIGH ALERT — SEVERE RISK",
+        }
+        human_risk = risk_label_map.get(warning_level, f"{warning_level} — OPERATIONAL ASSESSMENT")
+        risk_header = (
+            f"### Current Risk\n"
+            f"**{human_risk}**\n\n"
+            f"- **Estimated Event Probability**: {score * 100:.1f}%\n"
+            f"- **Operational Alert Threshold**: {threshold * 100:.1f}%\n"
+            f"- **Decision Engine**: Operational Alert Engine V2"
+        )
         if warning_level == "HIGH_ALERT":
-            risk_header += "\n*Presentation Severity Note: Score meets or exceeds the 0.50 presentation severity guideline.*"
+            risk_header += "\n- **Presentation Severity Note**: Score meets or exceeds the 0.50 presentation severity guideline."
 
         # 2. Horizon Block
         horizon_header = f"### Horizon\n**{horizon}-Day Early Warning** (Target: `{target}`)"

@@ -74,7 +74,7 @@ export const SitePanel: React.FC<{ onDive: () => void }> = ({ onDive }) => {
           }`}
         >
           <Activity size={12} className="text-rose-400" />
-          <span>AI EARLY WARNING (ML RISK)</span>
+          <span>3-DAY EARLY WARNING</span>
         </button>
 
         {site.isCustom ? (

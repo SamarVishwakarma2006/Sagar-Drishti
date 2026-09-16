@@ -187,7 +187,7 @@ export const Inspector: React.FC = () => {
             {isFloat ? `Argo ${f?.id}` : 'Virtual Water Probe'}
           </div>
           <div className="font-mono text-[8.5px] text-dim tracking-wider">
-            {isFloat ? 'IN-SITU OBSERVATION' : s.historicalMode ? 'COPERNICUS HISTORICAL REANALYSIS' : 'MODEL FIELD SAMPLER'}
+            {isFloat ? 'IN-SITU OBSERVATION' : s.historicalMode ? 'COPERNICUS HISTORICAL REANALYSIS' : 'OCEAN FIELD SAMPLER'}
           </div>
         </div>
         <button

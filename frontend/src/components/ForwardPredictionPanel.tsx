@@ -381,7 +381,7 @@ export const ForwardPredictionPanel: React.FC<ForwardPredictionPanelProps> = ({ 
           <div className="space-y-3">
             <div>
               <label className="block text-[9px] font-mono text-cyan-300 mb-1">
-                SYSTEM IDENTIFIER &amp; ORIGIN TIMESTAMP (T):
+                OBSERVATION ID &amp; TIME (T):
               </label>
               <div className="flex gap-2">
                 <input
@@ -429,7 +429,7 @@ export const ForwardPredictionPanel: React.FC<ForwardPredictionPanelProps> = ({ 
             <div className="flex items-center justify-between">
               <span className="font-mono text-[10px] font-semibold text-cyan-300 flex items-center gap-1.5">
                 <ShieldCheck size={13} />
-                PRE-FLIGHT CAUSAL CHECKLIST
+                FORECAST VALIDATION CHECK
               </span>
               <span
                 className={`font-mono text-[9px] px-1.5 py-0.5 rounded ${
@@ -441,7 +441,7 @@ export const ForwardPredictionPanel: React.FC<ForwardPredictionPanelProps> = ({ 
                 {validating
                   ? 'VALIDATING...'
                   : validation.can_predict
-                  ? 'READY FOR INFERENCE'
+                  ? 'READY TO FORECAST'
                   : 'BLOCKED'}
               </span>
             </div>
@@ -489,7 +489,7 @@ export const ForwardPredictionPanel: React.FC<ForwardPredictionPanelProps> = ({ 
           ) : (
             <React.Fragment>
               <Zap size={14} />
-              <span>GENERATE FORWARD PREDICTION</span>
+              <span>GENERATE FORECAST</span>
             </React.Fragment>
           )}
         </button>
@@ -635,8 +635,8 @@ export const ForwardPredictionPanel: React.FC<ForwardPredictionPanelProps> = ({ 
                       </div>
                     </div>
                     <div className="p-1.5 rounded bg-black/30 border border-white/5">
-                      <div className="text-[8px] text-dim uppercase tracking-wider">Risk Basis</div>
-                      <div className="text-amber-200/90 font-semibold mt-0.5">{threat.risk_basis || 'INTENSITY ONLY'}</div>
+                      <div className="text-[8px] text-dim uppercase tracking-wider">Risk Assessment</div>
+                      <div className="text-amber-200/90 font-semibold mt-0.5">{threat.risk_basis === 'INTENSITY ONLY' ? 'BASED ON INTENSITY' : (threat.risk_basis || 'BASED ON INTENSITY')}</div>
                     </div>
                   </div>
 
@@ -724,7 +724,7 @@ export const ForwardPredictionPanel: React.FC<ForwardPredictionPanelProps> = ({ 
                     VALIDATION / GROUND TRUTH
                   </span>
                   <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[8px] font-semibold">
-                    GROUND TRUTH FIX MATCHED
+                    OBSERVED EVENT MATCHED
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 pt-1">
