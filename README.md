@@ -378,12 +378,6 @@ COPERNICUSMARINE_SERVICE_USERNAME="your_copernicus_username"
 COPERNICUSMARINE_SERVICE_PASSWORD="your_copernicus_password"
 COPERNICUS_DATA_DIR="data/copernicus"
 
-# SagarBot LLM Configuration (Optional - defaults to offline physics engine if not configured)
-# Supported providers: gemini | groq | openai
-LLM_PROVIDER="gemini"
-GEMINI_API_KEY="your_gemini_api_key"
-# GROQ_API_KEY="your_groq_api_key"
-# OPENAI_API_KEY="your_openai_api_key"
 ```
 
 ---
