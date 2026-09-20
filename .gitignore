@@ -64,9 +64,20 @@ pnpm-debug.log*
 cesium/
 
 # Runtime data storage (Copernicus NetCDF & Parquet feature exports)
-data/
-backend/data/
+/data/
+backend/data/*
 *.nc
+
+# Whitelist compact production runtime datasets (< 7 MB total)
+!backend/data/copernicus/
+!backend/data/copernicus/copernicus_phy_2yr_surface.nc
+!backend/data/copernicus/metadata.json
+!backend/data/historical/
+!backend/data/historical/*.json
+!backend/data/historical/*.parquet
+
+# Exclude runtime telemetry databases & logs
+backend/data/shadow/
 
 # Temporary user upload storage & scratch directories
 backend/uploads/

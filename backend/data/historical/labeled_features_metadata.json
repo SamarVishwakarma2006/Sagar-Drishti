@@ -1,0 +1,118 @@
+{
+  "dataset_name": "Sagar-Drishti Supervised Historical Labeled Ocean Dataset",
+  "format": "parquet",
+  "target_path": "C:\\Users\\Samar\\OneDrive\\Desktop\\sih test\\Sagar-Drishti\\backend\\data\\historical\\labeled_features.parquet",
+  "total_rows": 136,
+  "total_columns": 125,
+  "label_columns": [
+    "event_active",
+    "is_active_event",
+    "event_present",
+    "event_within_1d",
+    "event_within_2d",
+    "event_within_3d",
+    "lead_0",
+    "lead_1",
+    "lead_2",
+    "lead_3",
+    "lead_days",
+    "label_status",
+    "event_type",
+    "event_id",
+    "event_name",
+    "severity",
+    "secondary_event_id",
+    "label_source",
+    "label_confidence"
+  ],
+  "data_quality_report": {
+    "total_events": 12,
+    "events_by_type": {
+      "tropical_cyclone": 4,
+      "depression": 4,
+      "coastal_swell_surge": 2,
+      "marine_heatwave": 2
+    },
+    "events_spatially_matched": 2,
+    "events_temporally_matched": 2,
+    "unmatched_events": [
+      {
+        "event_id": "IMD-2024-SCS-ASNA",
+        "name": "Severe Cyclonic Storm Asna",
+        "reason": "Event bounding box {'min_lat': 21.0, 'max_lat': 24.5, 'min_lon': 63.0, 'max_lon': 70.5} does not intersect queried observation spatial scope (point: lat=18.5, lon=88.0, site=bob)."
+      },
+      {
+        "event_id": "IMD-2024-CS-FENGAL",
+        "name": "Cyclonic Storm Fengal",
+        "reason": "Event bounding box {'min_lat': 9.5, 'max_lat': 14.5, 'min_lon': 79.0, 'max_lon': 84.0} does not intersect queried observation spatial scope (point: lat=18.5, lon=88.0, site=bob)."
+      },
+      {
+        "event_id": "IMD-2024-D-ARB01",
+        "name": "Depression ARB 01",
+        "reason": "Event bounding box {'min_lat': 14.0, 'max_lat': 18.5, 'min_lon': 68.0, 'max_lon': 73.5} does not intersect queried observation spatial scope (point: lat=18.5, lon=88.0, site=bob)."
+      },
+      {
+        "event_id": "INCOIS-2024-SW-KALLAKKADAL",
+        "name": "Kallakkadal / High Swell Surge Event",
+        "reason": "Event bounding box {'min_lat': 6.0, 'max_lat': 12.0, 'min_lon': 71.0, 'max_lon': 78.0} does not intersect queried observation spatial scope (point: lat=18.5, lon=88.0, site=bob)."
+      },
+      {
+        "event_id": "INCOIS-2024-MHW-BOB",
+        "name": "Northern Bay of Bengal Marine Heatwave",
+        "reason": "Event bounding box {'min_lat': 18.0, 'max_lat': 22.0, 'min_lon': 86.0, 'max_lon': 92.0} does not intersect queried observation spatial scope (point: lat=18.5, lon=88.0, site=bob)."
+      },
+      {
+        "event_id": "IMD-2024-SCS-REMAL",
+        "name": "Severe Cyclonic Storm Remal",
+        "reason": "Event bounding box {'min_lat': 16.0, 'max_lat': 23.5, 'min_lon': 87.0, 'max_lon': 91.5} does not intersect queried observation spatial scope (point: lat=18.5, lon=88.0, site=bob)."
+      },
+      {
+        "event_id": "IMD-2024-D-BOB04",
+        "name": "Depression BOB 04",
+        "reason": "Event bounding box {'min_lat': 20.0, 'max_lat': 23.5, 'min_lon': 85.5, 'max_lon': 89.5} does not intersect queried observation spatial scope (point: lat=18.5, lon=88.0, site=bob)."
+      },
+      {
+        "event_id": "IMD-2024-DD-BOB06",
+        "name": "Deep Depression BOB 06",
+        "reason": "Event bounding box {'min_lat': 7.0, 'max_lat': 11.5, 'min_lon': 80.5, 'max_lon': 85.5} does not intersect queried observation spatial scope (point: lat=18.5, lon=88.0, site=bob)."
+      },
+      {
+        "event_id": "INCOIS-2024-SW-KERALA",
+        "name": "Kallakkadal / High Swell Surge Event \u2014 South Arabian Sea",
+        "reason": "Event bounding box {'min_lat': 7.5, 'max_lat': 12.5, 'min_lon': 72.0, 'max_lon': 77.5} does not intersect queried observation spatial scope (point: lat=18.5, lon=88.0, site=bob)."
+      },
+      {
+        "event_id": "INCOIS-2024-MHW-ARAS",
+        "name": "Eastern Arabian Sea Marine Heatwave",
+        "reason": "Event bounding box {'min_lat': 12.0, 'max_lat': 18.0, 'min_lon': 68.0, 'max_lon': 74.0} does not intersect queried observation spatial scope (point: lat=18.5, lon=88.0, site=bob)."
+      }
+    ],
+    "total_observations": 136,
+    "positive_observations": 14,
+    "negative_clean_observations": 118,
+    "negative_buffer_observations": 4,
+    "unknown_uncovered_observations": 0,
+    "lead_distribution": {
+      "lead_0": 8,
+      "lead_1": 2,
+      "lead_2": 2,
+      "lead_3": 2
+    },
+    "date_coverage": {
+      "start": "2024-07-23",
+      "end": "2024-12-05"
+    },
+    "provenance_summary": [
+      {
+        "agency": "IMD RSMC New Delhi",
+        "bulletin_type": "Tropical Cyclone & Depression Best Track Reports"
+      },
+      {
+        "agency": "INCOIS",
+        "bulletin_type": "Ocean State Forecast & High Swell/Heatwave Warnings"
+      }
+    ],
+    "methodology_notes": "Explicit negative-label methodology: 'negative_clean' represents observations strictly inside authoritative IMD/INCOIS monitoring coverage with zero active advisories. 'negative_buffer' represents post-event relaxation wake (days T in [end_date+1, end_date+2]). 'unknown_uncovered' denotes observations outside official agency reporting dates/bounds and must be excluded from negative training sets. Discrete lead-time flags (lead_0, lead_1, lead_2, lead_3) represent 0 to 3 days pre-event lead time."
+  },
+  "exported_at": "2026-09-20T11:55:22.301120+00:00"
+}

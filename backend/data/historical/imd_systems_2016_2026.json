@@ -1,0 +1,2342 @@
+[
+  {
+    "system_id": "IMD-2016-1-ROANU",
+    "year": 2016,
+    "name": "ROANU",
+    "basin": "Bay of Bengal",
+    "start_date": "2016-05-17",
+    "end_date": "2016-05-22",
+    "centroid_lat": 17.575,
+    "centroid_lon": 85.1406,
+    "bbox": {
+      "min_lat": 11.0,
+      "max_lat": 24.5,
+      "min_lon": 80.7,
+      "max_lon": 94.7
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 45.0,
+    "track_points_count": 32,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2016-2-UNNAMED2",
+    "year": 2016,
+    "name": "UNNAMED-2",
+    "basin": "Arabian Sea",
+    "start_date": "2016-06-27",
+    "end_date": "2016-06-29",
+    "centroid_lat": 21.1444,
+    "centroid_lon": 63.1667,
+    "bbox": {
+      "min_lat": 20.3,
+      "max_lat": 21.8,
+      "min_lon": 62.3,
+      "max_lon": 64.5
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 9,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2016-3-UNNAMED3",
+    "year": 2016,
+    "name": "UNNAMED-3",
+    "basin": "North Indian Ocean",
+    "start_date": "2016-07-06",
+    "end_date": "2016-07-07",
+    "centroid_lat": 24.8,
+    "centroid_lon": 81.2,
+    "bbox": {
+      "min_lat": 24.8,
+      "max_lat": 24.8,
+      "min_lon": 81.0,
+      "max_lon": 81.5
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 5,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2016-4-UNNAMED4",
+    "year": 2016,
+    "name": "UNNAMED-4",
+    "basin": "North Indian Ocean",
+    "start_date": "2016-08-09",
+    "end_date": "2016-08-12",
+    "centroid_lat": 23.4889,
+    "centroid_lon": 87.1611,
+    "bbox": {
+      "min_lat": 22.0,
+      "max_lat": 24.4,
+      "min_lon": 84.0,
+      "max_lon": 89.7
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 18,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2016-5-UNNAMED5",
+    "year": 2016,
+    "name": "UNNAMED-5",
+    "basin": "Bay of Bengal",
+    "start_date": "2016-08-16",
+    "end_date": "2016-08-20",
+    "centroid_lat": 23.6227,
+    "centroid_lon": 83.0955,
+    "bbox": {
+      "min_lat": 21.0,
+      "max_lat": 25.0,
+      "min_lon": 76.5,
+      "max_lon": 89.0
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 22,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2016-6-KYANT",
+    "year": 2016,
+    "name": "KYANT",
+    "basin": "Bay of Bengal",
+    "start_date": "2016-10-21",
+    "end_date": "2016-10-27",
+    "centroid_lat": 15.7317,
+    "centroid_lon": 89.6902,
+    "bbox": {
+      "min_lat": 13.5,
+      "max_lat": 17.0,
+      "min_lon": 83.0,
+      "max_lon": 93.2
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 40.0,
+    "track_points_count": 41,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2016-7-UNNAMED7",
+    "year": 2016,
+    "name": "UNNAMED-7",
+    "basin": "Bay of Bengal",
+    "start_date": "2016-11-02",
+    "end_date": "2016-11-06",
+    "centroid_lat": 16.995,
+    "centroid_lon": 87.315,
+    "bbox": {
+      "min_lat": 12.7,
+      "max_lat": 21.6,
+      "min_lon": 84.7,
+      "max_lon": 91.9
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 20,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2016-8-NADA",
+    "year": 2016,
+    "name": "NADA",
+    "basin": "Bay of Bengal",
+    "start_date": "2016-11-29",
+    "end_date": "2016-12-02",
+    "centroid_lat": 9.5063,
+    "centroid_lon": 83.2687,
+    "bbox": {
+      "min_lat": 6.5,
+      "max_lat": 10.8,
+      "min_lon": 79.7,
+      "max_lon": 87.5
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 40.0,
+    "track_points_count": 16,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2016-9-VARDAH",
+    "year": 2016,
+    "name": "VARDAH",
+    "basin": "Bay of Bengal",
+    "start_date": "2016-12-06",
+    "end_date": "2016-12-13",
+    "centroid_lat": 12.1042,
+    "centroid_lon": 86.825,
+    "bbox": {
+      "min_lat": 8.5,
+      "max_lat": 13.3,
+      "min_lon": 78.0,
+      "max_lon": 91.0
+    },
+    "max_grade": "VSCS",
+    "peak_intensity_kts": 70.0,
+    "track_points_count": 48,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2016-10-UNNAMED10",
+    "year": 2016,
+    "name": "UNNAMED-10",
+    "basin": "Arabian Sea",
+    "start_date": "2016-12-17",
+    "end_date": "2016-12-18",
+    "centroid_lat": 10.6833,
+    "centroid_lon": 59.8833,
+    "bbox": {
+      "min_lat": 9.4,
+      "max_lat": 11.8,
+      "min_lon": 56.8,
+      "max_lon": 62.5
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 6,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2017-1-MAARUTHA",
+    "year": 2017,
+    "name": "MAARUTHA",
+    "basin": "Bay of Bengal",
+    "start_date": "2017-04-15",
+    "end_date": "2017-04-17",
+    "centroid_lat": 16.0438,
+    "centroid_lon": 91.875,
+    "bbox": {
+      "min_lat": 12.0,
+      "max_lat": 19.5,
+      "min_lon": 88.0,
+      "max_lon": 95.5
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 40.0,
+    "track_points_count": 16,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2017-2-MORA",
+    "year": 2017,
+    "name": "MORA",
+    "basin": "Bay of Bengal",
+    "start_date": "2017-05-28",
+    "end_date": "2017-05-30",
+    "centroid_lat": 18.6545,
+    "centroid_lon": 91.2136,
+    "bbox": {
+      "min_lat": 14.0,
+      "max_lat": 25.3,
+      "min_lon": 88.5,
+      "max_lon": 92.4
+    },
+    "max_grade": "SCS",
+    "peak_intensity_kts": 60.0,
+    "track_points_count": 22,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2017-3-UNNAMED3",
+    "year": 2017,
+    "name": "UNNAMED-3",
+    "basin": "Bay of Bengal",
+    "start_date": "2017-06-11",
+    "end_date": "2017-06-12",
+    "centroid_lat": 22.7857,
+    "centroid_lon": 90.5286,
+    "bbox": {
+      "min_lat": 20.5,
+      "max_lat": 24.5,
+      "min_lon": 89.5,
+      "max_lon": 91.5
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 7,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2017-4-UNNAMED4",
+    "year": 2017,
+    "name": "UNNAMED-4",
+    "basin": "Bay of Bengal",
+    "start_date": "2017-07-18",
+    "end_date": "2017-07-19",
+    "centroid_lat": 19.5667,
+    "centroid_lon": 85.55,
+    "bbox": {
+      "min_lat": 19.0,
+      "max_lat": 20.1,
+      "min_lon": 85.2,
+      "max_lon": 86.0
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 6,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2017-5-UNNAMED5",
+    "year": 2017,
+    "name": "UNNAMED-5",
+    "basin": "North Indian Ocean",
+    "start_date": "2017-07-26",
+    "end_date": "2017-07-27",
+    "centroid_lat": 24.0,
+    "centroid_lon": 85.0,
+    "bbox": {
+      "min_lat": 24.0,
+      "max_lat": 24.0,
+      "min_lon": 85.0,
+      "max_lon": 85.0
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 6,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2017-6-UNNAMED6",
+    "year": 2017,
+    "name": "UNNAMED-6",
+    "basin": "Bay of Bengal",
+    "start_date": "2017-09-10",
+    "end_date": "2017-10-10",
+    "centroid_lat": 23.0,
+    "centroid_lon": 87.675,
+    "bbox": {
+      "min_lat": 22.4,
+      "max_lat": 23.8,
+      "min_lon": 86.6,
+      "max_lon": 88.4
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 8,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2017-7-UNNAMED7",
+    "year": 2017,
+    "name": "UNNAMED-7",
+    "basin": "Bay of Bengal",
+    "start_date": "2017-10-19",
+    "end_date": "2017-10-19",
+    "centroid_lat": 17.65,
+    "centroid_lon": 86.45,
+    "bbox": {
+      "min_lat": 16.5,
+      "max_lat": 20.0,
+      "min_lon": 86.3,
+      "max_lon": 86.5
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 4,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2017-9-OCKHI",
+    "year": 2017,
+    "name": "OCKHI",
+    "basin": "Bay of Bengal",
+    "start_date": "2017-11-29",
+    "end_date": "2017-12-05",
+    "centroid_lat": 11.6558,
+    "centroid_lon": 72.2808,
+    "bbox": {
+      "min_lat": 6.2,
+      "max_lat": 19.2,
+      "min_lon": 68.5,
+      "max_lon": 81.8
+    },
+    "max_grade": "VSCS",
+    "peak_intensity_kts": 85.0,
+    "track_points_count": 52,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2017-10-UNNAMED10",
+    "year": 2017,
+    "name": "UNNAMED-10",
+    "basin": "Bay of Bengal",
+    "start_date": "2017-06-12",
+    "end_date": "2017-09-12",
+    "centroid_lat": 13.8588,
+    "centroid_lon": 87.3235,
+    "bbox": {
+      "min_lat": 8.5,
+      "max_lat": 19.5,
+      "min_lon": 86.2,
+      "max_lon": 88.5
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 17,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2018-1-UNNAMED1",
+    "year": 2018,
+    "name": "UNNAMED-1",
+    "basin": "Arabian Sea",
+    "start_date": "2018-03-13",
+    "end_date": "2018-03-14",
+    "centroid_lat": 7.1111,
+    "centroid_lon": 74.3222,
+    "bbox": {
+      "min_lat": 5.0,
+      "max_lat": 9.1,
+      "min_lon": 72.5,
+      "max_lon": 76.0
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 9,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2018-2-SAGAR",
+    "year": 2018,
+    "name": "SAGAR",
+    "basin": "Arabian Sea",
+    "start_date": "2018-05-16",
+    "end_date": "2018-05-20",
+    "centroid_lat": 11.92,
+    "centroid_lon": 46.28,
+    "bbox": {
+      "min_lat": 10.0,
+      "max_lat": 13.2,
+      "min_lon": 42.9,
+      "max_lon": 50.0
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 45.0,
+    "track_points_count": 25,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2018-3-MEKUNU",
+    "year": 2018,
+    "name": "MEKUNU",
+    "basin": "Arabian Sea",
+    "start_date": "2018-05-21",
+    "end_date": "2018-05-27",
+    "centroid_lat": 13.8829,
+    "centroid_lon": 55.1317,
+    "bbox": {
+      "min_lat": 8.5,
+      "max_lat": 19.0,
+      "min_lon": 52.6,
+      "max_lon": 58.5
+    },
+    "max_grade": "ESCS",
+    "peak_intensity_kts": 95.0,
+    "track_points_count": 41,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2018-4-UNNAMED4",
+    "year": 2018,
+    "name": "UNNAMED-4",
+    "basin": "Bay of Bengal",
+    "start_date": "2018-05-29",
+    "end_date": "2018-05-30",
+    "centroid_lat": 20.12,
+    "centroid_lon": 93.98,
+    "bbox": {
+      "min_lat": 18.5,
+      "max_lat": 21.8,
+      "min_lon": 92.2,
+      "max_lon": 95.8
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 5,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2018-5-UNNAMED5",
+    "year": 2018,
+    "name": "UNNAMED-5",
+    "basin": "Bay of Bengal",
+    "start_date": "2018-06-10",
+    "end_date": "2018-06-10",
+    "centroid_lat": 22.6667,
+    "centroid_lon": 91.4,
+    "bbox": {
+      "min_lat": 22.3,
+      "max_lat": 23.0,
+      "min_lon": 91.3,
+      "max_lon": 91.5
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 3,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2018-6-UNNAMED6",
+    "year": 2018,
+    "name": "UNNAMED-6",
+    "basin": "Bay of Bengal",
+    "start_date": "2018-07-21",
+    "end_date": "2018-07-23",
+    "centroid_lat": 22.3182,
+    "centroid_lon": 86.4,
+    "bbox": {
+      "min_lat": 21.0,
+      "max_lat": 23.9,
+      "min_lon": 84.0,
+      "max_lon": 88.0
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 11,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2018-7-UNNAMED7",
+    "year": 2018,
+    "name": "UNNAMED-7",
+    "basin": "Bay of Bengal",
+    "start_date": "2018-08-07",
+    "end_date": "2018-08-08",
+    "centroid_lat": 21.575,
+    "centroid_lon": 86.25,
+    "bbox": {
+      "min_lat": 21.5,
+      "max_lat": 21.7,
+      "min_lon": 84.5,
+      "max_lon": 87.5
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 4,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2018-8-UNNAMED8",
+    "year": 2018,
+    "name": "UNNAMED-8",
+    "basin": "North Indian Ocean",
+    "start_date": "2018-08-15",
+    "end_date": "2018-08-17",
+    "centroid_lat": 20.65,
+    "centroid_lon": 81.57,
+    "bbox": {
+      "min_lat": 20.0,
+      "max_lat": 21.8,
+      "min_lon": 75.8,
+      "max_lon": 86.0
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 10,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2018-9-UNNAMED9",
+    "year": 2018,
+    "name": "UNNAMED-9",
+    "basin": "Bay of Bengal",
+    "start_date": "2018-09-06",
+    "end_date": "2018-09-07",
+    "centroid_lat": 22.0143,
+    "centroid_lon": 86.2286,
+    "bbox": {
+      "min_lat": 21.7,
+      "max_lat": 22.9,
+      "min_lon": 83.3,
+      "max_lon": 88.0
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 7,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2018-10-DAYE",
+    "year": 2018,
+    "name": "DAYE",
+    "basin": "Bay of Bengal",
+    "start_date": "2018-09-19",
+    "end_date": "2018-09-22",
+    "centroid_lat": 19.7353,
+    "centroid_lon": 83.2882,
+    "bbox": {
+      "min_lat": 17.2,
+      "max_lat": 22.9,
+      "min_lon": 76.3,
+      "max_lon": 89.0
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 35.0,
+    "track_points_count": 17,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2018-11-LUBAN",
+    "year": 2018,
+    "name": "LUBAN",
+    "basin": "Arabian Sea",
+    "start_date": "2018-10-06",
+    "end_date": "2018-12-10",
+    "centroid_lat": 13.9375,
+    "centroid_lon": 58.4875,
+    "bbox": {
+      "min_lat": 11.2,
+      "max_lat": 16.2,
+      "min_lon": 49.0,
+      "max_lon": 67.0
+    },
+    "max_grade": "VSCS",
+    "peak_intensity_kts": 75.0,
+    "track_points_count": 64,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2018-12-TITLI",
+    "year": 2018,
+    "name": "TITLI",
+    "basin": "Bay of Bengal",
+    "start_date": "2018-10-08",
+    "end_date": "2018-10-12",
+    "centroid_lat": 17.6853,
+    "centroid_lon": 85.8,
+    "bbox": {
+      "min_lat": 14.0,
+      "max_lat": 22.1,
+      "min_lon": 83.7,
+      "max_lon": 88.8
+    },
+    "max_grade": "VSCS",
+    "peak_intensity_kts": 80.0,
+    "track_points_count": 34,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2018-13-GAJA",
+    "year": 2018,
+    "name": "GAJA",
+    "basin": "Bay of Bengal",
+    "start_date": "2018-11-10",
+    "end_date": "2018-11-19",
+    "centroid_lat": 11.946,
+    "centroid_lon": 81.6317,
+    "bbox": {
+      "min_lat": 9.8,
+      "max_lat": 13.5,
+      "min_lon": 65.0,
+      "max_lon": 92.5
+    },
+    "max_grade": "VSCS",
+    "peak_intensity_kts": 70.0,
+    "track_points_count": 63,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2018-14-PHETHAI",
+    "year": 2018,
+    "name": "PHETHAI",
+    "basin": "Bay of Bengal",
+    "start_date": "2018-12-13",
+    "end_date": "2018-12-17",
+    "centroid_lat": 11.4594,
+    "centroid_lon": 84.8281,
+    "bbox": {
+      "min_lat": 6.5,
+      "max_lat": 17.5,
+      "min_lon": 82.2,
+      "max_lon": 88.7
+    },
+    "max_grade": "SCS",
+    "peak_intensity_kts": 55.0,
+    "track_points_count": 32,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2019-1-PABUK",
+    "year": 2019,
+    "name": "Pabuk",
+    "basin": "Bay of Bengal",
+    "start_date": "2019-01-04",
+    "end_date": "2019-01-07",
+    "centroid_lat": 10.6182,
+    "centroid_lon": 95.6682,
+    "bbox": {
+      "min_lat": 8.5,
+      "max_lat": 13.1,
+      "min_lon": 92.0,
+      "max_lon": 99.7
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 45.0,
+    "track_points_count": 22,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2019-2-FANI",
+    "year": 2019,
+    "name": "Fani",
+    "basin": "Bay of Bengal",
+    "start_date": "2019-04-26",
+    "end_date": "2019-05-04",
+    "centroid_lat": 12.8359,
+    "centroid_lon": 86.5375,
+    "bbox": {
+      "min_lat": 2.7,
+      "max_lat": 25.2,
+      "min_lon": 83.9,
+      "max_lon": 90.7
+    },
+    "max_grade": "ESCS",
+    "peak_intensity_kts": 115.0,
+    "track_points_count": 64,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2019-3-VAYU",
+    "year": 2019,
+    "name": "Vayu",
+    "basin": "Arabian Sea",
+    "start_date": "2019-06-10",
+    "end_date": "2019-06-17",
+    "centroid_lat": 19.222,
+    "centroid_lon": 68.4508,
+    "bbox": {
+      "min_lat": 11.7,
+      "max_lat": 22.5,
+      "min_lon": 65.0,
+      "max_lon": 71.0
+    },
+    "max_grade": "VSCS",
+    "peak_intensity_kts": 80.0,
+    "track_points_count": 59,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2019-4-UNNAMED4",
+    "year": 2019,
+    "name": "UNNAMED-4",
+    "basin": "Bay of Bengal",
+    "start_date": "2019-08-06",
+    "end_date": "2019-08-09",
+    "centroid_lat": 22.2294,
+    "centroid_lon": 83.9,
+    "bbox": {
+      "min_lat": 20.5,
+      "max_lat": 24.0,
+      "min_lon": 76.1,
+      "max_lon": 88.0
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 17,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2019-5-HIKKA",
+    "year": 2019,
+    "name": "Hikka",
+    "basin": "Arabian Sea",
+    "start_date": "2019-09-22",
+    "end_date": "2019-09-25",
+    "centroid_lat": 20.0087,
+    "centroid_lon": 61.7826,
+    "bbox": {
+      "min_lat": 19.3,
+      "max_lat": 20.5,
+      "min_lon": 55.0,
+      "max_lon": 69.4
+    },
+    "max_grade": "VSCS",
+    "peak_intensity_kts": 75.0,
+    "track_points_count": 23,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2019-6-UNNAMED6",
+    "year": 2019,
+    "name": "UNNAMED-6",
+    "basin": "North Indian Ocean",
+    "start_date": "2019-09-29",
+    "end_date": "2019-10-01",
+    "centroid_lat": 23.4375,
+    "centroid_lon": 71.45,
+    "bbox": {
+      "min_lat": 23.1,
+      "max_lat": 24.0,
+      "min_lon": 70.2,
+      "max_lon": 74.1
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 8,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2019-7-KYAAR",
+    "year": 2019,
+    "name": "KYAAR",
+    "basin": "Arabian Sea",
+    "start_date": "2019-10-24",
+    "end_date": "2019-11-02",
+    "centroid_lat": 17.0446,
+    "centroid_lon": 63.8919,
+    "bbox": {
+      "min_lat": 12.0,
+      "max_lat": 19.6,
+      "min_lon": 52.5,
+      "max_lon": 71.8
+    },
+    "max_grade": "SUCS",
+    "peak_intensity_kts": 130.0,
+    "track_points_count": 74,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2019-8-MAHA",
+    "year": 2019,
+    "name": "MAHA",
+    "basin": "Arabian Sea",
+    "start_date": "2019-10-30",
+    "end_date": "2019-11-07",
+    "centroid_lat": 16.4338,
+    "centroid_lon": 68.3721,
+    "bbox": {
+      "min_lat": 6.5,
+      "max_lat": 20.2,
+      "min_lon": 63.6,
+      "max_lon": 76.2
+    },
+    "max_grade": "ESCS",
+    "peak_intensity_kts": 100.0,
+    "track_points_count": 68,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2019-9-BULBUL",
+    "year": 2019,
+    "name": "BULBUL",
+    "basin": "Bay of Bengal",
+    "start_date": "2019-11-05",
+    "end_date": "2019-11-11",
+    "centroid_lat": 17.8,
+    "centroid_lon": 88.9341,
+    "bbox": {
+      "min_lat": 13.1,
+      "max_lat": 23.1,
+      "min_lon": 87.6,
+      "max_lon": 91.9
+    },
+    "max_grade": "VSCS",
+    "peak_intensity_kts": 75.0,
+    "track_points_count": 41,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2019-10-PAWAN",
+    "year": 2019,
+    "name": "PAWAN",
+    "basin": "Arabian Sea",
+    "start_date": "2019-12-02",
+    "end_date": "2019-12-07",
+    "centroid_lat": 7.8656,
+    "centroid_lon": 54.25,
+    "bbox": {
+      "min_lat": 5.7,
+      "max_lat": 9.6,
+      "min_lon": 48.3,
+      "max_lon": 56.7
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 40.0,
+    "track_points_count": 32,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2019-11-UNNAMED11",
+    "year": 2019,
+    "name": "UNNAMED-11",
+    "basin": "Arabian Sea",
+    "start_date": "2019-12-03",
+    "end_date": "2019-12-05",
+    "centroid_lat": 14.6556,
+    "centroid_lon": 68.7333,
+    "bbox": {
+      "min_lat": 12.7,
+      "max_lat": 15.4,
+      "min_lon": 67.2,
+      "max_lon": 71.0
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 9,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2019-12-UNNAMED12",
+    "year": 2019,
+    "name": "UNNAMED-12",
+    "basin": "Arabian Sea",
+    "start_date": "2019-12-08",
+    "end_date": "2019-12-10",
+    "centroid_lat": 10.29,
+    "centroid_lon": 59.1,
+    "bbox": {
+      "min_lat": 9.4,
+      "max_lat": 10.6,
+      "min_lon": 55.2,
+      "max_lon": 62.2
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 10,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2020-1-AMPHAN",
+    "year": 2020,
+    "name": "AMPHAN",
+    "basin": "Bay of Bengal",
+    "start_date": "2020-05-16",
+    "end_date": "2020-05-21",
+    "centroid_lat": 16.0364,
+    "centroid_lon": 87.0523,
+    "bbox": {
+      "min_lat": 10.4,
+      "max_lat": 25.4,
+      "min_lon": 86.0,
+      "max_lon": 89.6
+    },
+    "max_grade": "SUCS",
+    "peak_intensity_kts": 130.0,
+    "track_points_count": 44,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2020-2-UNNAMED2",
+    "year": 2020,
+    "name": "UNNAMED-2",
+    "basin": "Arabian Sea",
+    "start_date": "2020-05-29",
+    "end_date": "2020-05-31",
+    "centroid_lat": 17.1538,
+    "centroid_lon": 53.8769,
+    "bbox": {
+      "min_lat": 16.8,
+      "max_lat": 17.3,
+      "min_lon": 52.9,
+      "max_lon": 54.3
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 13,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2020-3-NISARGA",
+    "year": 2020,
+    "name": "NISARGA",
+    "basin": "Arabian Sea",
+    "start_date": "2020-06-01",
+    "end_date": "2020-06-04",
+    "centroid_lat": 16.9565,
+    "centroid_lon": 72.6435,
+    "bbox": {
+      "min_lat": 13.0,
+      "max_lat": 21.8,
+      "min_lon": 71.2,
+      "max_lon": 77.6
+    },
+    "max_grade": "SCS",
+    "peak_intensity_kts": 60.0,
+    "track_points_count": 23,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2020-4-UNNAMED4",
+    "year": 2020,
+    "name": "UNNAMED-4",
+    "basin": "Bay of Bengal",
+    "start_date": "2020-10-11",
+    "end_date": "2020-10-14",
+    "centroid_lat": 16.4722,
+    "centroid_lon": 82.8111,
+    "bbox": {
+      "min_lat": 15.3,
+      "max_lat": 17.7,
+      "min_lon": 77.0,
+      "max_lon": 86.5
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 18,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2020-5-UNNAMED5",
+    "year": 2020,
+    "name": "UNNAMED-5",
+    "basin": "Arabian Sea",
+    "start_date": "2020-10-17",
+    "end_date": "2020-10-18",
+    "centroid_lat": 17.8,
+    "centroid_lon": 66.4556,
+    "bbox": {
+      "min_lat": 17.8,
+      "max_lat": 17.8,
+      "min_lon": 64.3,
+      "max_lon": 69.0
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 9,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2020-6-UNNAMED6",
+    "year": 2020,
+    "name": "UNNAMED-6",
+    "basin": "Bay of Bengal",
+    "start_date": "2020-10-22",
+    "end_date": "2020-10-23",
+    "centroid_lat": 21.17,
+    "centroid_lon": 88.25,
+    "bbox": {
+      "min_lat": 18.7,
+      "max_lat": 24.0,
+      "min_lon": 87.0,
+      "max_lon": 89.9
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 10,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2020-7-NIVAR",
+    "year": 2020,
+    "name": "NIVAR\u2019",
+    "basin": "Bay of Bengal",
+    "start_date": "2020-11-22",
+    "end_date": "2020-11-26",
+    "centroid_lat": 10.9536,
+    "centroid_lon": 81.7643,
+    "bbox": {
+      "min_lat": 8.5,
+      "max_lat": 14.0,
+      "min_lon": 79.3,
+      "max_lon": 85.3
+    },
+    "max_grade": "VSCS",
+    "peak_intensity_kts": 65.0,
+    "track_points_count": 28,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2020-8-GATI",
+    "year": 2020,
+    "name": "GATI\u2019",
+    "basin": "Arabian Sea",
+    "start_date": "2020-11-21",
+    "end_date": "2020-11-24",
+    "centroid_lat": 10.8563,
+    "centroid_lon": 50.8188,
+    "bbox": {
+      "min_lat": 10.4,
+      "max_lat": 11.7,
+      "min_lon": 46.8,
+      "max_lon": 57.4
+    },
+    "max_grade": "VSCS",
+    "peak_intensity_kts": 75.0,
+    "track_points_count": 16,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2020-9-BUREVI",
+    "year": 2020,
+    "name": "BUREVI\u2019",
+    "basin": "Bay of Bengal",
+    "start_date": "2020-11-30",
+    "end_date": "2020-12-05",
+    "centroid_lat": 8.6114,
+    "centroid_lon": 81.9829,
+    "bbox": {
+      "min_lat": 7.5,
+      "max_lat": 9.2,
+      "min_lon": 78.6,
+      "max_lon": 88.0
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 45.0,
+    "track_points_count": 35,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2021-1-UNNAMED1",
+    "year": 2021,
+    "name": "UNNAMED-1",
+    "basin": "Bay of Bengal",
+    "start_date": "2021-04-02",
+    "end_date": "2021-04-03",
+    "centroid_lat": 11.9286,
+    "centroid_lon": 96.8714,
+    "bbox": {
+      "min_lat": 11.0,
+      "max_lat": 13.2,
+      "min_lon": 96.3,
+      "max_lon": 97.6
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 7,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2021-2-TAUKTAE",
+    "year": 2021,
+    "name": "Tauktae",
+    "basin": "Arabian Sea",
+    "start_date": "2021-05-14",
+    "end_date": "2021-05-19",
+    "centroid_lat": 17.5625,
+    "centroid_lon": 72.285,
+    "bbox": {
+      "min_lat": 10.5,
+      "max_lat": 25.8,
+      "min_lon": 71.1,
+      "max_lon": 74.8
+    },
+    "max_grade": "ESCS",
+    "peak_intensity_kts": 100.0,
+    "track_points_count": 40,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2021-3-YAAS",
+    "year": 2021,
+    "name": "YAAS",
+    "basin": "Bay of Bengal",
+    "start_date": "2021-05-23",
+    "end_date": "2021-05-27",
+    "centroid_lat": 19.6226,
+    "centroid_lon": 87.8355,
+    "bbox": {
+      "min_lat": 16.1,
+      "max_lat": 24.7,
+      "min_lon": 84.8,
+      "max_lon": 90.2
+    },
+    "max_grade": "VSCS",
+    "peak_intensity_kts": 75.0,
+    "track_points_count": 31,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2021-4-UNNAMED4",
+    "year": 2021,
+    "name": "UNNAMED-4",
+    "basin": "Bay of Bengal",
+    "start_date": "2021-09-12",
+    "end_date": "2021-09-14",
+    "centroid_lat": 21.5417,
+    "centroid_lon": 84.9167,
+    "bbox": {
+      "min_lat": 20.3,
+      "max_lat": 23.0,
+      "min_lon": 82.0,
+      "max_lon": 87.4
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 12,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2021-5-GULAB",
+    "year": 2021,
+    "name": "GULAB",
+    "basin": "Bay of Bengal",
+    "start_date": "2021-09-24",
+    "end_date": "2021-09-28",
+    "centroid_lat": 18.4625,
+    "centroid_lon": 85.1333,
+    "bbox": {
+      "min_lat": 18.3,
+      "max_lat": 19.4,
+      "min_lon": 77.3,
+      "max_lon": 91.2
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 45.0,
+    "track_points_count": 24,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2021-6-SHAHEEN",
+    "year": 2021,
+    "name": "SHAHEEN",
+    "basin": "Arabian Sea",
+    "start_date": "2021-09-30",
+    "end_date": "2021-10-04",
+    "centroid_lat": 23.7031,
+    "centroid_lon": 61.7437,
+    "bbox": {
+      "min_lat": 22.7,
+      "max_lat": 24.5,
+      "min_lon": 56.0,
+      "max_lon": 69.5
+    },
+    "max_grade": "SCS",
+    "peak_intensity_kts": 60.0,
+    "track_points_count": 32,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2021-7-UNNAMED7",
+    "year": 2021,
+    "name": "UNNAMED-7",
+    "basin": "Arabian Sea",
+    "start_date": "2021-10-07",
+    "end_date": "2021-10-08",
+    "centroid_lat": 14.4556,
+    "centroid_lon": 66.6,
+    "bbox": {
+      "min_lat": 14.0,
+      "max_lat": 14.7,
+      "min_lon": 65.8,
+      "max_lon": 67.5
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 9,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2021-8-UNNAMED8",
+    "year": 2021,
+    "name": "UNNAMED-8",
+    "basin": "Bay of Bengal",
+    "start_date": "2021-11-10",
+    "end_date": "2021-11-11",
+    "centroid_lat": 12.1143,
+    "centroid_lon": 81.3286,
+    "bbox": {
+      "min_lat": 10.6,
+      "max_lat": 13.1,
+      "min_lon": 79.8,
+      "max_lon": 83.4
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 7,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2021-9-UNNAMED9",
+    "year": 2021,
+    "name": "UNNAMED-9",
+    "basin": "Bay of Bengal",
+    "start_date": "2021-11-18",
+    "end_date": "2021-11-18",
+    "centroid_lat": 11.9,
+    "centroid_lon": 80.85,
+    "bbox": {
+      "min_lat": 11.0,
+      "max_lat": 12.7,
+      "min_lon": 79.7,
+      "max_lon": 82.3
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 6,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2021-10-JAWAD",
+    "year": 2021,
+    "name": "JAWAD",
+    "basin": "Bay of Bengal",
+    "start_date": "2021-12-02",
+    "end_date": "2021-12-05",
+    "centroid_lat": 16.3045,
+    "centroid_lon": 85.7091,
+    "bbox": {
+      "min_lat": 11.0,
+      "max_lat": 20.6,
+      "min_lon": 84.7,
+      "max_lon": 89.0
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 40.0,
+    "track_points_count": 22,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-1-UNNAMED1",
+    "year": 2022,
+    "name": "UNNAMED-1",
+    "basin": "Bay of Bengal",
+    "start_date": "2022-03-03",
+    "end_date": "2022-03-06",
+    "centroid_lat": 9.2,
+    "centroid_lon": 82.9,
+    "bbox": {
+      "min_lat": 5.3,
+      "max_lat": 11.7,
+      "min_lon": 82.2,
+      "max_lon": 84.0
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 16,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-2-UNNAMED2",
+    "year": 2022,
+    "name": "UNNAMED-2",
+    "basin": "Bay of Bengal",
+    "start_date": "2022-03-20",
+    "end_date": "2022-03-23",
+    "centroid_lat": 13.6471,
+    "centroid_lon": 93.7882,
+    "bbox": {
+      "min_lat": 9.8,
+      "max_lat": 19.0,
+      "min_lon": 92.5,
+      "max_lon": 94.6
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 17,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-3-ASANI",
+    "year": 2022,
+    "name": "ASANI",
+    "basin": "Bay of Bengal",
+    "start_date": "2022-05-07",
+    "end_date": "2022-05-12",
+    "centroid_lat": 14.32,
+    "centroid_lon": 85.1514,
+    "bbox": {
+      "min_lat": 9.4,
+      "max_lat": 16.3,
+      "min_lon": 80.9,
+      "max_lon": 91.3
+    },
+    "max_grade": "SCS",
+    "peak_intensity_kts": 55.0,
+    "track_points_count": 35,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-4-UNNAMED4",
+    "year": 2022,
+    "name": "UNNAMED-4",
+    "basin": "Bay of Bengal",
+    "start_date": "2022-05-20",
+    "end_date": "2022-05-20",
+    "centroid_lat": 16.8,
+    "centroid_lon": 97.62,
+    "bbox": {
+      "min_lat": 16.3,
+      "max_lat": 17.4,
+      "min_lon": 97.3,
+      "max_lon": 98.0
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 5,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-5-UNNAMED5",
+    "year": 2022,
+    "name": "UNNAMED-5",
+    "basin": "Arabian Sea",
+    "start_date": "2022-07-16",
+    "end_date": "2022-07-17",
+    "centroid_lat": 22.6667,
+    "centroid_lon": 68.1778,
+    "bbox": {
+      "min_lat": 21.6,
+      "max_lat": 23.4,
+      "min_lon": 66.3,
+      "max_lon": 69.0
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 9,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-6-UNNAMED6",
+    "year": 2022,
+    "name": "UNNAMED-6",
+    "basin": "North Indian Ocean",
+    "start_date": "2022-08-09",
+    "end_date": "2022-08-09",
+    "centroid_lat": 21.075,
+    "centroid_lon": 84.6,
+    "bbox": {
+      "min_lat": 20.8,
+      "max_lat": 21.5,
+      "min_lon": 83.3,
+      "max_lon": 85.6
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 4,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-7-UNNAMED7",
+    "year": 2022,
+    "name": "UNNAMED-7",
+    "basin": "Arabian Sea",
+    "start_date": "2022-08-12",
+    "end_date": "2022-08-13",
+    "centroid_lat": 22.2143,
+    "centroid_lon": 64.7143,
+    "bbox": {
+      "min_lat": 22.0,
+      "max_lat": 22.5,
+      "min_lon": 63.4,
+      "max_lon": 66.5
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 7,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-8-UNNAMED8",
+    "year": 2022,
+    "name": "UNNAMED-8",
+    "basin": "Bay of Bengal",
+    "start_date": "2022-08-14",
+    "end_date": "2022-08-16",
+    "centroid_lat": 23.0333,
+    "centroid_lon": 81.6833,
+    "bbox": {
+      "min_lat": 21.7,
+      "max_lat": 24.9,
+      "min_lon": 76.1,
+      "max_lon": 87.8
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 12,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-9-UNNAMED9",
+    "year": 2022,
+    "name": "UNNAMED-9",
+    "basin": "Bay of Bengal",
+    "start_date": "2022-08-19",
+    "end_date": "2022-08-23",
+    "centroid_lat": 23.1523,
+    "centroid_lon": 82.9182,
+    "bbox": {
+      "min_lat": 20.5,
+      "max_lat": 24.8,
+      "min_lon": 76.2,
+      "max_lon": 89.7
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 22,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-10-UNNAMED10",
+    "year": 2022,
+    "name": "UNNAMED-10",
+    "basin": "North Indian Ocean",
+    "start_date": "2022-09-11",
+    "end_date": "2022-09-12",
+    "centroid_lat": 19.9667,
+    "centroid_lon": 82.6167,
+    "bbox": {
+      "min_lat": 19.5,
+      "max_lat": 20.8,
+      "min_lon": 80.8,
+      "max_lon": 84.7
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 6,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-11-SITRANG",
+    "year": 2022,
+    "name": "Sitrang",
+    "basin": "Bay of Bengal",
+    "start_date": "2022-10-22",
+    "end_date": "2022-10-25",
+    "centroid_lat": 18.035,
+    "centroid_lon": 89.595,
+    "bbox": {
+      "min_lat": 12.7,
+      "max_lat": 24.5,
+      "min_lon": 88.1,
+      "max_lon": 92.4
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 45.0,
+    "track_points_count": 20,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-12-UNNAMED12",
+    "year": 2022,
+    "name": "UNNAMED-12",
+    "basin": "Bay of Bengal",
+    "start_date": "2022-11-20",
+    "end_date": "2022-11-22",
+    "centroid_lat": 11.6545,
+    "centroid_lon": 83.8727,
+    "bbox": {
+      "min_lat": 10.0,
+      "max_lat": 13.1,
+      "min_lon": 81.4,
+      "max_lon": 85.5
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 11,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-13-MANDOUS",
+    "year": 2022,
+    "name": "MANDOUS",
+    "basin": "Bay of Bengal",
+    "start_date": "2022-12-06",
+    "end_date": "2022-12-10",
+    "centroid_lat": 10.4926,
+    "centroid_lon": 82.8444,
+    "bbox": {
+      "min_lat": 8.2,
+      "max_lat": 12.9,
+      "min_lon": 79.3,
+      "max_lon": 88.2
+    },
+    "max_grade": "SCS",
+    "peak_intensity_kts": 50.0,
+    "track_points_count": 27,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-14-UNNAMED14",
+    "year": 2022,
+    "name": "UNNAMED-14",
+    "basin": "Arabian Sea",
+    "start_date": "2022-12-14",
+    "end_date": "2022-12-17",
+    "centroid_lat": 13.9187,
+    "centroid_lon": 65.6375,
+    "bbox": {
+      "min_lat": 13.5,
+      "max_lat": 14.1,
+      "min_lon": 61.4,
+      "max_lon": 69.6
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 16,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2022-15-UNNAMED15",
+    "year": 2022,
+    "name": "UNNAMED-15",
+    "basin": "Bay of Bengal",
+    "start_date": "2022-12-22",
+    "end_date": "2022-12-25",
+    "centroid_lat": 9.8353,
+    "centroid_lon": 83.8882,
+    "bbox": {
+      "min_lat": 8.5,
+      "max_lat": 10.8,
+      "min_lon": 81.6,
+      "max_lon": 85.4
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 17,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2023-1-UNNAMED1",
+    "year": 2023,
+    "name": "UNNAMED-1",
+    "basin": "Bay of Bengal",
+    "start_date": "2023-01-30",
+    "end_date": "2023-02-02",
+    "centroid_lat": 7.9222,
+    "centroid_lon": 83.3444,
+    "bbox": {
+      "min_lat": 6.3,
+      "max_lat": 8.6,
+      "min_lon": 80.3,
+      "max_lon": 87.2
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 18,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2023-2-MOCHA",
+    "year": 2023,
+    "name": "MOCHA",
+    "basin": "Bay of Bengal",
+    "start_date": "2023-05-09",
+    "end_date": "2023-05-15",
+    "centroid_lat": 15.0125,
+    "centroid_lon": 90.0225,
+    "bbox": {
+      "min_lat": 8.3,
+      "max_lat": 23.9,
+      "min_lon": 88.0,
+      "max_lon": 97.8
+    },
+    "max_grade": "ESCS",
+    "peak_intensity_kts": 115.0,
+    "track_points_count": 40,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2023-3-BIPARJOY",
+    "year": 2023,
+    "name": "BIPARJOY",
+    "basin": "Arabian Sea",
+    "start_date": "2023-06-06",
+    "end_date": "2023-06-19",
+    "centroid_lat": 19.068,
+    "centroid_lon": 67.8289,
+    "bbox": {
+      "min_lat": 11.3,
+      "max_lat": 26.3,
+      "min_lon": 66.0,
+      "max_lon": 76.0
+    },
+    "max_grade": "ESCS",
+    "peak_intensity_kts": 90.0,
+    "track_points_count": 97,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2023-4-UNNAMED4",
+    "year": 2023,
+    "name": "UNNAMED-4",
+    "basin": "Bay of Bengal",
+    "start_date": "2023-08-01",
+    "end_date": "2023-08-03",
+    "centroid_lat": 22.7077,
+    "centroid_lon": 87.0385,
+    "bbox": {
+      "min_lat": 20.5,
+      "max_lat": 23.5,
+      "min_lon": 83.1,
+      "max_lon": 91.5
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 13,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2023-5-UNNAMED5",
+    "year": 2023,
+    "name": "UNNAMED-5",
+    "basin": "Arabian Sea",
+    "start_date": "2023-09-30",
+    "end_date": "2023-10-01",
+    "centroid_lat": 16.54,
+    "centroid_lon": 73.32,
+    "bbox": {
+      "min_lat": 15.9,
+      "max_lat": 17.0,
+      "min_lon": 72.8,
+      "max_lon": 74.0
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 5,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2023-6-TEJ",
+    "year": 2023,
+    "name": "TEJ",
+    "basin": "Arabian Sea",
+    "start_date": "2023-10-20",
+    "end_date": "2023-10-24",
+    "centroid_lat": 13.0152,
+    "centroid_lon": 55.2667,
+    "bbox": {
+      "min_lat": 9.3,
+      "max_lat": 16.2,
+      "min_lon": 51.0,
+      "max_lon": 61.7
+    },
+    "max_grade": "ESCS",
+    "peak_intensity_kts": 95.0,
+    "track_points_count": 33,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2023-7-HAMOON",
+    "year": 2023,
+    "name": "HAMOON",
+    "basin": "Bay of Bengal",
+    "start_date": "2023-10-21",
+    "end_date": "2023-10-25",
+    "centroid_lat": 18.3897,
+    "centroid_lon": 88.4172,
+    "bbox": {
+      "min_lat": 14.7,
+      "max_lat": 22.7,
+      "min_lon": 86.2,
+      "max_lon": 92.7
+    },
+    "max_grade": "VSCS",
+    "peak_intensity_kts": 65.0,
+    "track_points_count": 29,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2023-8-MIDHILI",
+    "year": 2023,
+    "name": "MIDHILI",
+    "basin": "Bay of Bengal",
+    "start_date": "2023-11-15",
+    "end_date": "2023-11-18",
+    "centroid_lat": 19.2412,
+    "centroid_lon": 88.5294,
+    "bbox": {
+      "min_lat": 14.5,
+      "max_lat": 23.7,
+      "min_lon": 86.4,
+      "max_lon": 91.7
+    },
+    "max_grade": "SCS",
+    "peak_intensity_kts": 50.0,
+    "track_points_count": 17,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2023-9-MICHAUNG",
+    "year": 2023,
+    "name": "MICHAUNG",
+    "basin": "Bay of Bengal",
+    "start_date": "2023-12-01",
+    "end_date": "2023-12-06",
+    "centroid_lat": 12.8882,
+    "centroid_lon": 82.0559,
+    "bbox": {
+      "min_lat": 9.1,
+      "max_lat": 17.4,
+      "min_lon": 80.2,
+      "max_lon": 86.4
+    },
+    "max_grade": "SCS",
+    "peak_intensity_kts": 55.0,
+    "track_points_count": 34,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2024-1-REMAL",
+    "year": 2024,
+    "name": "REMAL",
+    "basin": "Bay of Bengal",
+    "start_date": "2024-05-24",
+    "end_date": "2024-05-28",
+    "centroid_lat": 20.44,
+    "centroid_lon": 89.57,
+    "bbox": {
+      "min_lat": 15.0,
+      "max_lat": 25.1,
+      "min_lon": 88.4,
+      "max_lon": 91.8
+    },
+    "max_grade": "SCS",
+    "peak_intensity_kts": 60.0,
+    "track_points_count": 30,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2024-2-UNNAMED2",
+    "year": 2024,
+    "name": "UNNAMED-2",
+    "basin": "Bay of Bengal",
+    "start_date": "2024-07-19",
+    "end_date": "2024-07-20",
+    "centroid_lat": 19.4429,
+    "centroid_lon": 85.7,
+    "bbox": {
+      "min_lat": 19.1,
+      "max_lat": 19.7,
+      "min_lon": 85.4,
+      "max_lon": 86.2
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 7,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2024-3-UNNAMED3",
+    "year": 2024,
+    "name": "UNNAMED-3",
+    "basin": "North Indian Ocean",
+    "start_date": "2024-08-02",
+    "end_date": "2024-08-05",
+    "centroid_lat": 25.5412,
+    "centroid_lon": 79.8588,
+    "bbox": {
+      "min_lat": 24.2,
+      "max_lat": 28.8,
+      "min_lon": 72.0,
+      "max_lon": 85.2
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 17,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2024-4-ASNA",
+    "year": 2024,
+    "name": "ASNA",
+    "basin": "North Indian Ocean",
+    "start_date": "2024-08-25",
+    "end_date": "2024-09-02",
+    "centroid_lat": 23.5041,
+    "centroid_lon": 68.3551,
+    "bbox": {
+      "min_lat": 20.9,
+      "max_lat": 24.6,
+      "min_lon": 61.2,
+      "max_lon": 77.3
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 40.0,
+    "track_points_count": 49,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2024-5-UNNAMED5",
+    "year": 2024,
+    "name": "UNNAMED-5",
+    "basin": "Bay of Bengal",
+    "start_date": "2024-08-31",
+    "end_date": "2024-09-02",
+    "centroid_lat": 18.6692,
+    "centroid_lon": 82.2692,
+    "bbox": {
+      "min_lat": 17.5,
+      "max_lat": 19.8,
+      "min_lon": 79.5,
+      "max_lon": 84.6
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 13,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2024-6-UNNAMED6",
+    "year": 2024,
+    "name": "UNNAMED-6",
+    "basin": "Bay of Bengal",
+    "start_date": "2024-09-08",
+    "end_date": "2024-09-10",
+    "centroid_lat": 19.8769,
+    "centroid_lon": 85.3308,
+    "bbox": {
+      "min_lat": 17.9,
+      "max_lat": 21.9,
+      "min_lon": 82.1,
+      "max_lon": 87.0
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 13,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2024-7-UNNAMED7",
+    "year": 2024,
+    "name": "UNNAMED-7",
+    "basin": "North Indian Ocean",
+    "start_date": "2024-09-11",
+    "end_date": "2024-09-13",
+    "centroid_lat": 26.38,
+    "centroid_lon": 79.11,
+    "bbox": {
+      "min_lat": 24.0,
+      "max_lat": 28.2,
+      "min_lon": 78.2,
+      "max_lon": 80.0
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 10,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2024-8-UNNAMED8",
+    "year": 2024,
+    "name": "UNNAMED-8",
+    "basin": "Bay of Bengal",
+    "start_date": "2024-09-13",
+    "end_date": "2024-09-17",
+    "centroid_lat": 22.9864,
+    "centroid_lon": 86.5909,
+    "bbox": {
+      "min_lat": 22.0,
+      "max_lat": 24.2,
+      "min_lon": 80.3,
+      "max_lon": 90.8
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 22,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2024-9-UNNAMED9",
+    "year": 2024,
+    "name": "UNNAMED-9",
+    "basin": "Arabian Sea",
+    "start_date": "2024-10-13",
+    "end_date": "2024-10-15",
+    "centroid_lat": 16.3455,
+    "centroid_lon": 62.3727,
+    "bbox": {
+      "min_lat": 15.6,
+      "max_lat": 18.3,
+      "min_lon": 58.8,
+      "max_lon": 65.0
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 11,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2024-10-UNNAMED10",
+    "year": 2024,
+    "name": "UNNAMED-10",
+    "basin": "Bay of Bengal",
+    "start_date": "2024-10-15",
+    "end_date": "2024-10-16",
+    "centroid_lat": 12.3429,
+    "centroid_lon": 82.8857,
+    "bbox": {
+      "min_lat": 11.4,
+      "max_lat": 13.4,
+      "min_lon": 80.8,
+      "max_lon": 84.4
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 7,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2024-11-DANA",
+    "year": 2024,
+    "name": "DANA",
+    "basin": "Bay of Bengal",
+    "start_date": "2024-10-22",
+    "end_date": "2024-10-25",
+    "centroid_lat": 18.5185,
+    "centroid_lon": 88.4185,
+    "bbox": {
+      "min_lat": 15.4,
+      "max_lat": 21.4,
+      "min_lon": 86.2,
+      "max_lon": 91.6
+    },
+    "max_grade": "SCS",
+    "peak_intensity_kts": 60.0,
+    "track_points_count": 27,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2024-12-FENGAL",
+    "year": 2024,
+    "name": "Fengal",
+    "basin": "Bay of Bengal",
+    "start_date": "2024-11-25",
+    "end_date": "2024-12-01",
+    "centroid_lat": 9.8075,
+    "centroid_lon": 81.8075,
+    "bbox": {
+      "min_lat": 5.0,
+      "max_lat": 12.3,
+      "min_lon": 79.2,
+      "max_lon": 85.3
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 45.0,
+    "track_points_count": 40,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2024-13-UNNAMED13",
+    "year": 2024,
+    "name": "UNNAMED-13",
+    "basin": "Bay of Bengal",
+    "start_date": "2024-12-20",
+    "end_date": "2024-12-21",
+    "centroid_lat": 13.92,
+    "centroid_lon": 84.1,
+    "bbox": {
+      "min_lat": 13.7,
+      "max_lat": 14.1,
+      "min_lon": 83.5,
+      "max_lon": 84.6
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 5,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-1-UNNAMED1",
+    "year": 2025,
+    "name": "UNNAMED-1",
+    "basin": "Arabian Sea",
+    "start_date": "2025-05-24",
+    "end_date": "2025-05-24",
+    "centroid_lat": 17.12,
+    "centroid_lon": 73.82,
+    "bbox": {
+      "min_lat": 17.0,
+      "max_lat": 17.4,
+      "min_lon": 73.0,
+      "max_lon": 75.3
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 5,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-2-UNNAMED2",
+    "year": 2025,
+    "name": "UNNAMED-2",
+    "basin": "Bay of Bengal",
+    "start_date": "2025-05-29",
+    "end_date": "2025-05-30",
+    "centroid_lat": 22.85,
+    "centroid_lon": 89.0,
+    "bbox": {
+      "min_lat": 20.8,
+      "max_lat": 25.1,
+      "min_lon": 88.3,
+      "max_lon": 90.2
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 8,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-3-UNNAMED3",
+    "year": 2025,
+    "name": "UNNAMED-3",
+    "basin": "North Indian Ocean",
+    "start_date": "2025-07-14",
+    "end_date": "2025-07-15",
+    "centroid_lat": 23.45,
+    "centroid_lon": 87.975,
+    "bbox": {
+      "min_lat": 23.0,
+      "max_lat": 24.0,
+      "min_lon": 86.7,
+      "max_lon": 88.8
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 20.0,
+    "track_points_count": 4,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-4-UNNAMED4",
+    "year": 2025,
+    "name": "UNNAMED-4",
+    "basin": "North Indian Ocean",
+    "start_date": "2025-07-15",
+    "end_date": "2025-07-15",
+    "centroid_lat": 28.325,
+    "centroid_lon": 74.4,
+    "bbox": {
+      "min_lat": 27.4,
+      "max_lat": 29.2,
+      "min_lon": 73.5,
+      "max_lon": 75.4
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 20.0,
+    "track_points_count": 4,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-5-UNNAMED5",
+    "year": 2025,
+    "name": "UNNAMED-5",
+    "basin": "North Indian Ocean",
+    "start_date": "2025-07-17",
+    "end_date": "2025-07-19",
+    "centroid_lat": 26.52,
+    "centroid_lon": 77.6267,
+    "bbox": {
+      "min_lat": 25.2,
+      "max_lat": 27.5,
+      "min_lon": 73.0,
+      "max_lon": 81.8
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 15,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-6-UNNAMED6",
+    "year": 2025,
+    "name": "UNNAMED-6",
+    "basin": "Bay of Bengal",
+    "start_date": "2025-07-25",
+    "end_date": "2025-07-26",
+    "centroid_lat": 22.72,
+    "centroid_lon": 85.47,
+    "bbox": {
+      "min_lat": 21.4,
+      "max_lat": 23.3,
+      "min_lon": 81.0,
+      "max_lon": 89.5
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 10,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-7-UNNAMED7",
+    "year": 2025,
+    "name": "UNNAMED-7",
+    "basin": "Bay of Bengal",
+    "start_date": "2025-08-18",
+    "end_date": "2025-08-19",
+    "centroid_lat": 19.4,
+    "centroid_lon": 84.4,
+    "bbox": {
+      "min_lat": 18.9,
+      "max_lat": 20.0,
+      "min_lon": 83.3,
+      "max_lon": 85.0
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 20.0,
+    "track_points_count": 5,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-8-UNNAMED8",
+    "year": 2025,
+    "name": "UNNAMED-8",
+    "basin": "North Indian Ocean",
+    "start_date": "2025-09-06",
+    "end_date": "2025-09-10",
+    "centroid_lat": 24.9524,
+    "centroid_lon": 68.8286,
+    "bbox": {
+      "min_lat": 24.2,
+      "max_lat": 25.9,
+      "min_lon": 63.5,
+      "max_lon": 72.5
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 21,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-9-UNNAMED9",
+    "year": 2025,
+    "name": "UNNAMED-9",
+    "basin": "Bay of Bengal",
+    "start_date": "2025-09-26",
+    "end_date": "2025-09-28",
+    "centroid_lat": 19.6,
+    "centroid_lon": 82.75,
+    "bbox": {
+      "min_lat": 19.3,
+      "max_lat": 20.3,
+      "min_lon": 77.0,
+      "max_lon": 86.1
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 8,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-10-UNNAMED10",
+    "year": 2025,
+    "name": "UNNAMED-10",
+    "basin": "Bay of Bengal",
+    "start_date": "2025-10-01",
+    "end_date": "2025-10-03",
+    "centroid_lat": 18.5909,
+    "centroid_lon": 85.1,
+    "bbox": {
+      "min_lat": 15.8,
+      "max_lat": 21.2,
+      "min_lon": 83.6,
+      "max_lon": 86.5
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 11,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-11-SHAKHTI",
+    "year": 2025,
+    "name": "Shakhti",
+    "basin": "Arabian Sea",
+    "start_date": "2025-10-01",
+    "end_date": "2025-10-07",
+    "centroid_lat": 20.7976,
+    "centroid_lon": 63.6,
+    "bbox": {
+      "min_lat": 18.9,
+      "max_lat": 22.1,
+      "min_lon": 60.1,
+      "max_lon": 68.3
+    },
+    "max_grade": "SCS",
+    "peak_intensity_kts": 60.0,
+    "track_points_count": 41,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-12-UNNAMED12",
+    "year": 2025,
+    "name": "UNNAMED-12",
+    "basin": "Arabian Sea",
+    "start_date": "2025-10-22",
+    "end_date": "2025-10-31",
+    "centroid_lat": 15.506,
+    "centroid_lon": 68.356,
+    "bbox": {
+      "min_lat": 8.6,
+      "max_lat": 19.4,
+      "min_lon": 66.4,
+      "max_lon": 70.7
+    },
+    "max_grade": "D",
+    "peak_intensity_kts": 25.0,
+    "track_points_count": 50,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-13-MONTHA",
+    "year": 2025,
+    "name": "Montha",
+    "basin": "Bay of Bengal",
+    "start_date": "2025-10-25",
+    "end_date": "2025-10-29",
+    "centroid_lat": 13.8875,
+    "centroid_lon": 84.3375,
+    "bbox": {
+      "min_lat": 10.8,
+      "max_lat": 19.6,
+      "min_lon": 80.7,
+      "max_lon": 89.0
+    },
+    "max_grade": "SCS",
+    "peak_intensity_kts": 50.0,
+    "track_points_count": 32,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-14-SENYAR",
+    "year": 2025,
+    "name": "SENYAR",
+    "basin": "Bay of Bengal",
+    "start_date": "2025-11-25",
+    "end_date": "2025-11-27",
+    "centroid_lat": 4.3824,
+    "centroid_lon": 98.9412,
+    "bbox": {
+      "min_lat": 3.6,
+      "max_lat": 5.4,
+      "min_lon": 97.8,
+      "max_lon": 100.9
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 40.0,
+    "track_points_count": 17,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2025-15-DITWAH",
+    "year": 2025,
+    "name": "Ditwah",
+    "basin": "Bay of Bengal",
+    "start_date": "2025-11-26",
+    "end_date": "2025-12-02",
+    "centroid_lat": 10.0439,
+    "centroid_lon": 80.9122,
+    "bbox": {
+      "min_lat": 5.9,
+      "max_lat": 13.0,
+      "min_lon": 80.2,
+      "max_lon": 82.6
+    },
+    "max_grade": "CS",
+    "peak_intensity_kts": 40.0,
+    "track_points_count": 41,
+    "is_tentative_2026": false
+  },
+  {
+    "system_id": "IMD-2026-1-UNNAMED1",
+    "year": 2026,
+    "name": "UNNAMED-1",
+    "basin": "Bay of Bengal",
+    "start_date": "2026-01-07",
+    "end_date": "2026-01-10",
+    "centroid_lat": 6.9389,
+    "centroid_lon": 83.8778,
+    "bbox": {
+      "min_lat": 4.8,
+      "max_lat": 9.3,
+      "min_lon": 80.8,
+      "max_lon": 88.2
+    },
+    "max_grade": "DD",
+    "peak_intensity_kts": 30.0,
+    "track_points_count": 18,
+    "is_tentative_2026": true
+  }
+]

@@ -1,0 +1,21 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Explicit text files with LF line endings
+*.json text eol=lf
+*.py text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.md text eol=lf
+*.csv text eol=lf
+
+# Binary files - preserve raw bytes exactly
+*.nc binary
+*.joblib binary
+*.parquet binary
+*.pkl binary
+*.db binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary

@@ -1,0 +1,52 @@
+{
+  "dataset_id": "cmems_mod_glo_phy_my_0.083deg_P1D-m",
+  "source": "Copernicus Marine Service (E.U. Copernicus Programme)",
+  "product": "Global Ocean Physics Reanalysis (GLORYS12V1 / Multi-Year)",
+  "spatial_resolution": "0.083\u00b0 (~9 km)",
+  "temporal_resolution": "Daily (P1D)",
+  "depth_level_m": 0.49402499198913574,
+  "target_variables": [
+    "mlotst",
+    "so",
+    "thetao",
+    "uo",
+    "vo",
+    "zos"
+  ],
+  "derived_variables": [
+    "cur (Surface Current Speed via sqrt(uo\u00b2 + vo\u00b2))"
+  ],
+  "validation": {
+    "is_valid": true,
+    "file_size_bytes": 6590783,
+    "file_size_human": "6.29 MB",
+    "variables_found": [
+      "thetao",
+      "so",
+      "uo",
+      "vo",
+      "zos",
+      "mlotst"
+    ],
+    "missing_variables": [],
+    "variables_valid": true,
+    "spatial_bounds": {
+      "min_lat": 0.0,
+      "max_lat": 25.0,
+      "min_lon": 50.0,
+      "max_lon": 100.0
+    },
+    "bounds_valid": true,
+    "depth_m": 0.49402499198913574,
+    "depth_valid": true,
+    "start_date": "2024-06-24",
+    "end_date": "2026-06-23",
+    "total_days": 730,
+    "time_valid": true,
+    "daily_frequency": true,
+    "integrity_valid": true,
+    "validated_at": "2026-09-13T11:56:41.008714+00:00"
+  },
+  "downloaded_at": "2026-09-13T11:56:41.009067+00:00",
+  "file_path": "C:\\Users\\Samar\\OneDrive\\Desktop\\sih test\\Sagar-Drishti\\backend\\data\\copernicus\\copernicus_phy_2yr_surface.nc"
+}

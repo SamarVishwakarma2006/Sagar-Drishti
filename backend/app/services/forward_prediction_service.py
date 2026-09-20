@@ -620,6 +620,11 @@ class ForwardPredictionService:
 
         # 1. Model integrity check
         try:
+            if self.evaluator is None:
+                self.evaluator = CycloneIntensityProspectiveEvaluator(
+                    project_root=self.project_root,
+                    evaluation_mode=self.evaluation_mode
+                )
             m_hash = self.evaluator.verify_model_integrity()
             checks.append({
                 "check": "FROZEN_MODEL_INTEGRITY",
@@ -889,6 +894,48 @@ class ForwardPredictionService:
 
         t_origin = _to_utc_timestamp(forecast_origin_timestamp)
         now_created_iso = forecast_created_at or t_origin.isoformat()
+
+        # Ensure evaluator is initialized
+        if self.evaluator is None:
+            try:
+                self.evaluator = CycloneIntensityProspectiveEvaluator(
+                    project_root=self.project_root,
+                    evaluation_mode=self.evaluation_mode
+                )
+            except Exception as e:
+                logger.error(f"Failed to load frozen prospective evaluator: {e}")
+                return {
+                    "status": "EVALUATOR_UNAVAILABLE",
+                    "system_id": system_id,
+                    "origin": str(forecast_origin_timestamp),
+                    "valid_time": str(forecast_origin_timestamp),
+                    "predicted_vmax_24h": None,
+                    "raw_predicted_vmax_24h": None,
+                    "reported_predicted_vmax_24h": None,
+                    "clipping_applied": False,
+                    "clipping_bounds": [15.0, 165.0],
+                    "model_version": MODEL_VERSION,
+                    "model_hash": FROZEN_MODEL_SHA256,
+                    "feature_contract_version": FEATURE_CONTRACT_VERSION,
+                    "feature_contract_hash": FROZEN_FEATURE_CONTRACT_SHA256,
+                    "preprocessing_version": PREPROCESSING_VERSION,
+                    "preprocessing_hash": FROZEN_PREPROCESSING_SHA256,
+                    "input_dataset_source": "DEMO_FIXTURE" if demo_scenario_id else "USER_OBSERVATIONS",
+                    "input_cutoff": str(forecast_origin_timestamp),
+                    "observation_cutoff": str(observation_timestamp or forecast_origin_timestamp),
+                    "availability_cutoff": str(data_availability_timestamp or observation_timestamp or forecast_origin_timestamp),
+                    "causal_firewall": "FAIL",
+                    "feature_completeness": 0.0,
+                    "missing_features": FROZEN_29_FEATURES,
+                    "scientific_disclaimer": SCIENTIFIC_DISCLAIMER,
+                    "evaluation_status": "EVALUATOR_UNAVAILABLE",
+                    "evaluation_mode": eff_eval_mode.value,
+                    "warnings": [f"Model evaluator initialization failed: {str(e)}"],
+                    "threat_assessment": classify_intensity(None),
+                    "intensity_threat_level": "UNKNOWN",
+                    "intensity_band": "N/A",
+                    "predicted_vmax_kt": None,
+                }
 
         # 2. Enforce Dual Causal Firewall
         try:

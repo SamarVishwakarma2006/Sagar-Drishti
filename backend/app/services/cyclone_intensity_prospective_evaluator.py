@@ -42,7 +42,9 @@ logger = logging.getLogger("sagar_drishti.prospective_evaluator")
 # -----------------------------------------------------------------------------
 
 FROZEN_MODEL_SHA256 = "3abf49bc7b167c96f91425cf97d12afd606bb025f5310e774648cd52a3a1423f"
-FROZEN_FEATURE_CONTRACT_SHA256 = "258690562dc9a79589ddfabd6956feb4b36726f2a9bcb093177ea7e0dd26f896"
+# Canonical LF hash for cross-platform Linux/Git environments, and legacy CRLF hash for Windows
+FROZEN_FEATURE_CONTRACT_SHA256 = "91ff863c250f9c2d5d9f34d048608a5e53020aa03e0df73b96a18983fa430534"
+FROZEN_FEATURE_CONTRACT_CRLF_SHA256 = "258690562dc9a79589ddfabd6956feb4b36726f2a9bcb093177ea7e0dd26f896"
 FROZEN_PREPROCESSING_SHA256 = "591143af5765a2680612b13572b3ec0a058d0e478547bbc0482f027f8f4cbe62"
 FROZEN_DATASET_SHA256 = "8bcb247a5b5efb77005704b793c019ce2643c38852ab880881b20845dff25cd0"
 MODEL_VERSION = "SD-INTENSITY-EXP-E-V1.0"
@@ -233,11 +235,20 @@ class CycloneIntensityProspectiveEvaluator:
             self._log_causal_event(msg, "CRITICAL")
             raise ModelHashMismatchError(msg)
         
-        # Also verify feature contract hash
+        # Also verify feature contract hash (normalizing line endings for cross-platform Git checkouts)
         if self.contract_path.exists():
-            fc_hash = hashlib.sha256(self.contract_path.read_bytes()).hexdigest()
-            if fc_hash != FROZEN_FEATURE_CONTRACT_SHA256:
-                raise ModelHashMismatchError(f"Feature contract hash mismatch: {fc_hash} != {FROZEN_FEATURE_CONTRACT_SHA256}")
+            raw_fc_bytes = self.contract_path.read_bytes()
+            normalized_fc_bytes = raw_fc_bytes.replace(b"\r\n", b"\n")
+            fc_hash_normalized = hashlib.sha256(normalized_fc_bytes).hexdigest()
+            fc_hash_raw = hashlib.sha256(raw_fc_bytes).hexdigest()
+            if (
+                fc_hash_normalized != FROZEN_FEATURE_CONTRACT_SHA256
+                and fc_hash_raw != FROZEN_FEATURE_CONTRACT_CRLF_SHA256
+                and fc_hash_raw != FROZEN_FEATURE_CONTRACT_SHA256
+            ):
+                raise ModelHashMismatchError(
+                    f"Feature contract hash mismatch: {fc_hash_raw} != {FROZEN_FEATURE_CONTRACT_SHA256}"
+                )
 
         # Also verify preprocessing hash
         keycard_path = self.project_root / "research" / "cyclone_intensity" / "test_keycard.json"

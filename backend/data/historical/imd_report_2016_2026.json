@@ -1,0 +1,38 @@
+{
+  "workbook_path": "C:\\Users\\Samar\\OneDrive\\Desktop\\sih test\\Sagar-Drishti\\78b4b0_Best_Tracks__Data__1982-2026_.xlsx",
+  "years_discovered": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "total_systems_discovered": 117,
+  "total_track_points": 2544,
+  "date_range": {
+    "start": "2016-05-17",
+    "end": "2026-01-10"
+  },
+  "missing_coordinate_count": 145,
+  "duplicate_count": 0,
+  "invalid_coordinate_count": 0,
+  "parsing_failures": 0,
+  "category_grade_distribution": {
+    "D": 874,
+    "DD": 460,
+    "CS": 546,
+    "UNKNOWN": 1,
+    "SCS": 261,
+    "VSCS": 272,
+    "ESCS": 105,
+    "SUCS": 25
+  },
+  "tentative_2026_records_count": 18,
+  "finalized_historical_records_count": 2526
+}
