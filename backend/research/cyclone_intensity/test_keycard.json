@@ -1,0 +1,31 @@
+{
+  "keycard_id": "SD-KEYCARD-CYCLONE-INTENSITY-2026-V1",
+  "created_at": "2026-09-13T07:45:00Z",
+  "status": "FROZEN_AUTHORIZED_FOR_SINGLE_PASS",
+  "MODEL_CONFIGURATION_FROZEN": true,
+  "VALIDATION_SELECTION_COMPLETE": true,
+  "DATASET_HASH": "8bcb247a5b5efb77005704b793c019ce2643c38852ab880881b20845dff25cd0",
+  "FEATURE_CONTRACT_HASH": "258690562dc9a79589ddfabd6956feb4b36726f2a9bcb093177ea7e0dd26f896",
+  "MODEL_SELECTION_HASH": "b53b196e6c29e837bf2fb0ebc8780a3bfe927b535ff580a7667b74fa37db7bad",
+  "FINAL_MODEL_HASH": "3abf49bc7b167c96f91425cf97d12afd606bb025f5310e774648cd52a3a1423f",
+  "PREPROCESSING_HASH": "591143af5765a2680612b13572b3ec0a058d0e478547bbc0482f027f8f4cbe62",
+  "TEST_ACCESS_COUNT": 0,
+  "selected_model": {
+    "experiment_id": "EXP-E-CORE-ENVIRONMENT-RADIAL-CONTRASTS",
+    "family": "XGBoost",
+    "hyperparameters": {
+      "n_estimators": 200,
+      "max_depth": 3,
+      "learning_rate": 0.03,
+      "subsample": 0.85,
+      "colsample_bytree": 0.85,
+      "objective": "reg:absoluteerror",
+      "tree_method": "hist",
+      "random_state": 42,
+      "n_jobs": 12
+    },
+    "feature_count": 29,
+    "random_seed": 42
+  },
+  "single_pass_policy": "STRICT_READ_ONLY (Any second evaluation request will raise TestSetQuarantineViolationError)"
+}

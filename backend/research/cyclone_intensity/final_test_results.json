@@ -1,0 +1,53 @@
+{
+  "execution_timestamp": "2026-09-13T07:50:12.625397+00:00",
+  "test_partition": "2024-2026",
+  "total_test_storms": 29,
+  "test_storms_with_valid_targets": 24,
+  "test_target_fixes": 396,
+  "model_performance": {
+    "row_mae": 6.147,
+    "row_rmse": 7.879,
+    "row_bias": 3.022,
+    "row_median_ae": 4.987,
+    "storm_mae_mean": 5.629,
+    "storm_mae_median": 4.469,
+    "storm_mae_std": 3.312,
+    "storm_mae_min": 0.235,
+    "storm_mae_max": 13.366,
+    "storms_count": 24,
+    "rows_count": 396
+  },
+  "baselines_on_test": {
+    "persistence": {
+      "row_mae": 7.045,
+      "row_rmse": 10.157,
+      "row_bias": 0.833,
+      "storm_mae_mean": 6.199
+    },
+    "damped_trend": {
+      "row_mae": 6.932,
+      "row_rmse": 10.039,
+      "row_bias": 1.452,
+      "storm_mae_mean": 6.259
+    }
+  },
+  "skill_metrics": {
+    "skill_over_persistence_pct": 9.2,
+    "skill_over_damped_trend_pct": 10.06
+  },
+  "test_bootstrap_ci95": {
+    "iterations": 1000,
+    "storm_mae_ci95": [
+      4.403,
+      6.98
+    ],
+    "persistence_skill_ci95": [
+      -20.26,
+      28.75
+    ],
+    "trend_skill_ci95": [
+      -16.64,
+      28.42
+    ]
+  }
+}

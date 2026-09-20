@@ -1,0 +1,87 @@
+{
+  "protocol_id": "SD-VALIDATION-PROTOCOL-INTENSITY-V1",
+  "created_at": "2026-09-13T07:25:00Z",
+  "status": "FROZEN_PRE_TRAINING_PROTOCOL",
+  "partition_definitions": {
+    "train": {
+      "years": "2016-2021",
+      "storm_count": 64,
+      "candidate_fixes": 1488,
+      "valid_targets": 1121,
+      "usage": "Model fitting, train-only imputation parameter estimation"
+    },
+    "validation": {
+      "years": "2022-2023",
+      "storm_count": 24,
+      "candidate_fixes": 506,
+      "valid_targets": 382,
+      "usage": "Hyperparameter selection, feature ablation comparison, early stopping"
+    },
+    "test": {
+      "years": "2024-2026",
+      "storm_count": 29,
+      "candidate_fixes": 541,
+      "valid_targets": 396,
+      "usage": "PERMANENTLY_QUARANTINED (Single-pass evaluation after all models and configs are frozen)"
+    }
+  },
+  "effective_sample_size_accounting": {
+    "total_storm_systems": 117,
+    "upper_bound_independent_units": 117,
+    "total_target_fixes": 1899,
+    "empirical_target_lag1_autocorrelation": {
+      "train": 0.876,
+      "validation": 0.852,
+      "test": 0.833
+    },
+    "scientific_statement": "Because 6-hourly fixes within the same cyclone system exhibit extreme temporal autocorrelation (r > 0.85), individual rows must NEVER be treated as independent statistical degrees of freedom. Model selection and uncertainty estimates must be evaluated at the storm cluster level."
+  },
+  "evaluation_metrics": {
+    "primary_metric": {
+      "name": "Storm-Aggregated Mean Absolute Error (Storm-MAE)",
+      "units": "knots",
+      "formula": "MAE_storm = (1 / |S|) * sum_{s in S} [ (1 / N_s) * sum_{i=1}^{N_s} |y_{s,i} - y_hat_{s,i}| ]",
+      "rationale": "Prevents long-lived stalled storms from dominating validation decisions over short-lived rapid systems."
+    },
+    "secondary_metrics": [
+      {
+        "name": "Row-Level Mean Absolute Error (Row-MAE)",
+        "units": "knots",
+        "formula": "MAE_row = (1 / N) * sum_{i=1}^N |y_i - y_hat_i|"
+      },
+      {
+        "name": "Root Mean Squared Error (RMSE)",
+        "units": "knots",
+        "formula": "RMSE = sqrt( (1 / N) * sum_{i=1}^N (y_i - y_hat_i)^2 )"
+      },
+      {
+        "name": "Mean Error / Bias",
+        "units": "knots",
+        "formula": "Bias = (1 / N) * sum_{i=1}^N (y_hat_i - y_i)"
+      },
+      {
+        "name": "Skill Score Over Persistence",
+        "units": "percentage",
+        "formula": "Skill_pers = (1 - (MAE_model / MAE_persistence)) * 100%"
+      }
+    ]
+  },
+  "uncertainty_estimation_protocol": {
+    "method": "STORM_LEVEL_CLUSTERED_BOOTSTRAP",
+    "iterations": 1000,
+    "resampling_unit": "system_id (entire storm sequence sampled with replacement)",
+    "reported_intervals": "95% empirical percentile confidence interval [2.5th, 97.5th percentiles]"
+  },
+  "preprocessing_and_missing_data_protocol": {
+    "missing_data_strategy": "NATIVE_TREE_OR_TRAIN_ONLY_MEDIAN",
+    "details": "LightGBM and XGBoost support native NaN routing during tree splitting. For architectures requiring imputation, median imputers must be fitted strictly on TRAIN partition and transformed onto VALIDATION without refitting.",
+    "scaling_policy": "NO_SCALING (Decision tree algorithms are monotonic and invariant to monotonic feature scaling; scaling is omitted by design)"
+  },
+  "model_selection_hierarchy": [
+    "1. Lowest Validation Storm-MAE",
+    "2. Lowest Validation RMSE",
+    "3. Positive Skill Over Persistence (Skill_pers > 0%)",
+    "4. Inter-Storm Stability (lowest standard deviation of storm-specific MAEs)",
+    "5. Parsimony (if storm-MAE difference is <= 0.2 kt, choose lower complexity / fewer features)"
+  ]
+}

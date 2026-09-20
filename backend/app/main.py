@@ -28,21 +28,26 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS Configuration: allow local development origins and environment-configured origins
+# CORS Configuration: allow local development origins, production Vercel frontend, and environment-configured origins
+default_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://sagar-drishti-two.vercel.app",
+]
+
 allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "")
 if allowed_origins_env:
-    allowed_origins = [orig.strip() for orig in allowed_origins_env.split(",") if orig.strip()]
+    env_origins = [orig.strip() for orig in allowed_origins_env.split(",") if orig.strip()]
+    allowed_origins = list(dict.fromkeys(default_origins + env_origins))
 else:
-    allowed_origins = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ]
+    allowed_origins = default_origins
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    allow_origin_regex=r"^https:\/\/sagar-drishti[a-zA-Z0-9-]*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

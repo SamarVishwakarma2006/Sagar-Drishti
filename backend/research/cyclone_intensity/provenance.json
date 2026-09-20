@@ -1,0 +1,23 @@
+{
+  "timestamp_utc": "2026-09-13T07:50:30.201892+00:00",
+  "environment": {
+    "python_version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "win32",
+    "lightgbm_version": "4.7.0",
+    "xgboost_version": "3.4.1",
+    "sklearn_version": "1.8+",
+    "numpy_version": "2.5.1",
+    "pandas_version": "3.0.5"
+  },
+  "artifact_hashes": {
+    "dataset_parquet_sha256": "8bcb247a5b5efb77005704b793c019ce2643c38852ab880881b20845dff25cd0",
+    "feature_contract_sha256": "258690562dc9a79589ddfabd6956feb4b36726f2a9bcb093177ea7e0dd26f896",
+    "feature_groups_sha256": "6454534b500939066b704432304e7f947361c43f038c398aef459e4724189fe3",
+    "training_config_sha256": "e555e07efa778d4d453ac50adc7957ebf494227704cd3de45b86afc9ee0074eb",
+    "baseline_spec_sha256": "72e4f0f4cceaf90de686e8e287ba69180700132dcb318aa48a517ec4774a82ea",
+    "protected_manifest_sha256": "ba731d0e32b98e9e5cff5d89ee1bf8d8319304641876da334ae1264fc28ae136",
+    "frozen_model_joblib_sha256": "3abf49bc7b167c96f91425cf97d12afd606bb025f5310e774648cd52a3a1423f",
+    "test_keycard_sha256": "1d29b1fa6dab59bd9b2f95192c6de3a0460a9527db846f5f2e1d8282d5cc168f",
+    "final_test_results_sha256": "b4db8dd510b21b8c6f41d8f6874221ff43b7c46d4ea9e5be9b25f13e194ab9d0"
+  }
+}

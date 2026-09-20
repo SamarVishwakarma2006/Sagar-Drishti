@@ -263,12 +263,30 @@ class ForwardPredictionService:
         db_dir: Optional[Union[str, Path]] = None,
         evaluation_mode: EvaluationMode = EvaluationMode.TRUE_PROSPECTIVE,
     ):
-        self.project_root = Path(project_root) if project_root else Path(__file__).resolve().parent.parent.parent.parent
-        self.evaluator = CycloneIntensityProspectiveEvaluator(
-            project_root=self.project_root,
-            evaluation_mode=evaluation_mode,
-            db_dir=db_dir
-        )
+        candidate_roots = [
+            Path(project_root) if project_root else None,
+            Path(__file__).resolve().parent.parent.parent.parent,
+            Path(__file__).resolve().parent.parent.parent,
+            Path.cwd(),
+            Path.cwd().parent,
+        ]
+        resolved_root = None
+        for cand in candidate_roots:
+            if cand and (cand / "research" / "cyclone_intensity" / "models" / "final_intensity_model.joblib").exists():
+                resolved_root = cand
+                break
+        if not resolved_root:
+            resolved_root = Path(project_root) if project_root else Path(__file__).resolve().parent.parent.parent.parent
+        self.project_root = resolved_root
+        try:
+            self.evaluator = CycloneIntensityProspectiveEvaluator(
+                project_root=self.project_root,
+                evaluation_mode=evaluation_mode,
+                db_dir=db_dir
+            )
+        except Exception as e:
+            logger.warning(f"ForwardPredictionService evaluator init warning: {e}")
+            self.evaluator = None
         self.evaluation_mode = evaluation_mode
         self._demo_scenarios = self._init_demo_scenarios()
 

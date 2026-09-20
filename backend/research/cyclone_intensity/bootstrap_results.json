@@ -1,0 +1,77 @@
+{
+  "EXP-A-KINEMATICS-ONLY": {
+    "iterations": 1000,
+    "storm_mae_ci95": [
+      6.054,
+      9.531
+    ],
+    "persistence_skill_ci95": [
+      -47.76,
+      21.15
+    ],
+    "trend_skill_ci95": [
+      -49.97,
+      18.01
+    ]
+  },
+  "EXP-B-KINEMATICS-ATMOSPHERE": {
+    "iterations": 1000,
+    "storm_mae_ci95": [
+      5.704,
+      9.254
+    ],
+    "persistence_skill_ci95": [
+      -37.09,
+      24.1
+    ],
+    "trend_skill_ci95": [
+      -37.64,
+      20.2
+    ]
+  },
+  "EXP-C-KINEMATICS-OCEAN": {
+    "iterations": 1000,
+    "storm_mae_ci95": [
+      6.038,
+      9.611
+    ],
+    "persistence_skill_ci95": [
+      -52.73,
+      23.34
+    ],
+    "trend_skill_ci95": [
+      -54.03,
+      19.31
+    ]
+  },
+  "EXP-D-KINEMATICS-ATMOS-OCEAN-FLAT": {
+    "iterations": 1000,
+    "storm_mae_ci95": [
+      5.861,
+      9.304
+    ],
+    "persistence_skill_ci95": [
+      -44.22,
+      24.12
+    ],
+    "trend_skill_ci95": [
+      -45.9,
+      20.14
+    ]
+  },
+  "EXP-E-CORE-ENVIRONMENT-RADIAL-CONTRASTS": {
+    "iterations": 1000,
+    "storm_mae_ci95": [
+      5.632,
+      9.156
+    ],
+    "persistence_skill_ci95": [
+      -40.5,
+      25.67
+    ],
+    "trend_skill_ci95": [
+      -41.01,
+      21.5
+    ]
+  }
+}

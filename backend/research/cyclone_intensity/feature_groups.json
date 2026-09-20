@@ -1,0 +1,207 @@
+{
+  "contract_id": "SD-CONTRACT-6HOURLY-STORM-CENTERED-V1",
+  "created_at": "2026-09-13T07:23:00Z",
+  "status": "FROZEN_PRE_TRAINING_DESIGN",
+  "feature_groups": {
+    "group_a_kinematics": {
+      "group_name": "Group A — Causal Kinematics & Position",
+      "description": "Causal synoptic intensity, past intensity change rates, translation velocity, and geographic coordinates at forecast origin T.",
+      "feature_count": 9,
+      "features": [
+        "vmax_current",
+        "dvmax_6h",
+        "dvmax_12h",
+        "dvmax_24h",
+        "pc_current",
+        "dpc_6h",
+        "translation_speed_kts",
+        "latitude_current",
+        "longitude_current"
+      ]
+    },
+    "group_b_atmosphere": {
+      "group_name": "Group B — Atmospheric Predictors (ERA5)",
+      "description": "6-hourly synoptic atmospheric fields (vertical wind shear, relative vorticity, relative humidity) extracted at origin T.",
+      "feature_count": 11,
+      "features": [
+        "vws_env_mean_200_800km",
+        "vws_env_min_200_800km",
+        "vws_core_mean_0_100km",
+        "vort_core_mean_0_100km",
+        "vort_core_max_0_100km",
+        "vort_env_mean_200_800km",
+        "rh_700_env_mean_200_800km",
+        "rh_700_env_min_200_800km",
+        "rh_700_core_mean_0_100km",
+        "rh_500_env_mean_200_800km",
+        "rh_500_core_mean_0_100km"
+      ]
+    },
+    "group_c_ocean": {
+      "group_name": "Group C — Ocean Thermodynamic Predictors (Copernicus)",
+      "description": "Strictly causal daily Copernicus ocean fields (SST, mixed layer depth, sea level anomaly) satisfying source_timestamp <= T.",
+      "feature_count": 4,
+      "features": [
+        "sst_core_mean_0_100km",
+        "sst_env_mean_200_800km",
+        "mld_core_mean_0_100km",
+        "sla_core_mean_0_100km"
+      ]
+    },
+    "group_d_storm_centered_spatial_structure": {
+      "group_name": "Group D — Storm-Centered Spatial-Structure Features",
+      "description": "Explicit machine-readable taxonomy separating inner core (0-100 km) and environmental annulus (200-800 km) spatial domains.",
+      "total_spatial_features": 15,
+      "core_features_0_100km": [
+        "vws_core_mean_0_100km",
+        "vort_core_mean_0_100km",
+        "vort_core_max_0_100km",
+        "rh_700_core_mean_0_100km",
+        "rh_500_core_mean_0_100km",
+        "sst_core_mean_0_100km",
+        "mld_core_mean_0_100km",
+        "sla_core_mean_0_100km"
+      ],
+      "environmental_features_200_800km": [
+        "vws_env_mean_200_800km",
+        "vws_env_min_200_800km",
+        "vort_env_mean_200_800km",
+        "rh_700_env_mean_200_800km",
+        "rh_700_env_min_200_800km",
+        "rh_500_env_mean_200_800km",
+        "sst_env_mean_200_800km"
+      ]
+    }
+  },
+  "ablation_experiments": {
+    "experiment_a": {
+      "experiment_id": "EXP-A-KINEMATICS-ONLY",
+      "hypothesis": "Causal kinematics and past intensity trends provide the primary predictive baseline.",
+      "feature_count": 9,
+      "features": [
+        "vmax_current",
+        "dvmax_6h",
+        "dvmax_12h",
+        "dvmax_24h",
+        "pc_current",
+        "dpc_6h",
+        "translation_speed_kts",
+        "latitude_current",
+        "longitude_current"
+      ]
+    },
+    "experiment_b": {
+      "experiment_id": "EXP-B-KINEMATICS-ATMOSPHERE",
+      "hypothesis": "Adding 6-hourly synoptic vertical shear, vorticity, and mid-level humidity improves intensity change forecasting over kinematics alone.",
+      "feature_count": 20,
+      "features": [
+        "vmax_current",
+        "dvmax_6h",
+        "dvmax_12h",
+        "dvmax_24h",
+        "pc_current",
+        "dpc_6h",
+        "translation_speed_kts",
+        "latitude_current",
+        "longitude_current",
+        "vws_env_mean_200_800km",
+        "vws_env_min_200_800km",
+        "vws_core_mean_0_100km",
+        "vort_core_mean_0_100km",
+        "vort_core_max_0_100km",
+        "vort_env_mean_200_800km",
+        "rh_700_env_mean_200_800km",
+        "rh_700_env_min_200_800km",
+        "rh_700_core_mean_0_100km",
+        "rh_500_env_mean_200_800km",
+        "rh_500_core_mean_0_100km"
+      ]
+    },
+    "experiment_c": {
+      "experiment_id": "EXP-C-KINEMATICS-OCEAN",
+      "hypothesis": "Adding SST, MLD, and SLA thermodynamic constraints improves intensity prediction without atmospheric fields.",
+      "feature_count": 13,
+      "features": [
+        "vmax_current",
+        "dvmax_6h",
+        "dvmax_12h",
+        "dvmax_24h",
+        "pc_current",
+        "dpc_6h",
+        "translation_speed_kts",
+        "latitude_current",
+        "longitude_current",
+        "sst_core_mean_0_100km",
+        "sst_env_mean_200_800km",
+        "mld_core_mean_0_100km",
+        "sla_core_mean_0_100km"
+      ]
+    },
+    "experiment_d": {
+      "experiment_id": "EXP-D-KINEMATICS-ATMOS-OCEAN-FLAT",
+      "hypothesis": "Joint atmospheric-oceanic environmental coupling provides superior skill over single-domain models (unconstrained tabular pooling).",
+      "feature_count": 24,
+      "features": [
+        "vmax_current",
+        "dvmax_6h",
+        "dvmax_12h",
+        "dvmax_24h",
+        "pc_current",
+        "dpc_6h",
+        "translation_speed_kts",
+        "latitude_current",
+        "longitude_current",
+        "vws_env_mean_200_800km",
+        "vws_env_min_200_800km",
+        "vws_core_mean_0_100km",
+        "vort_core_mean_0_100km",
+        "vort_core_max_0_100km",
+        "vort_env_mean_200_800km",
+        "rh_700_env_mean_200_800km",
+        "rh_700_env_min_200_800km",
+        "rh_700_core_mean_0_100km",
+        "rh_500_env_mean_200_800km",
+        "rh_500_core_mean_0_100km",
+        "sst_core_mean_0_100km",
+        "sst_env_mean_200_800km",
+        "mld_core_mean_0_100km",
+        "sla_core_mean_0_100km"
+      ]
+    },
+    "experiment_e": {
+      "experiment_id": "EXP-E-CORE-ENVIRONMENT-RADIAL-CONTRASTS",
+      "hypothesis": "Explicit core-minus-environment gradients provide direct physical signals of vortex ventilation, core moist envelope preservation, and localized thermodynamic anomalies, outperforming flat unconstrained pooling.",
+      "differentiation_from_d": "Unlike Experiment D which pools 24 flat features, Experiment E incorporates 5 pre-declared, frozen physical radial contrast differentials (core minus environmental annulus).",
+      "base_feature_count": 24,
+      "derived_contrast_count": 5,
+      "total_feature_count": 29,
+      "frozen_contrast_formulas": [
+        {
+          "contrast_name": "delta_vws_core_minus_env",
+          "formula": "vws_core_mean_0_100km - vws_env_mean_200_800km",
+          "physical_meaning": "Ventilation shear gradient (inner-core tilt vs environmental flow)"
+        },
+        {
+          "contrast_name": "delta_vort_core_minus_env",
+          "formula": "vort_core_mean_0_100km - vort_env_mean_200_800km",
+          "physical_meaning": "Vortex spin-up concentration gradient"
+        },
+        {
+          "contrast_name": "delta_rh700_core_minus_env",
+          "formula": "rh_700_core_mean_0_100km - rh_700_env_mean_200_800km",
+          "physical_meaning": "700 hPa moist core envelope protection vs dry air entrainment"
+        },
+        {
+          "contrast_name": "delta_rh500_core_minus_env",
+          "formula": "rh_500_core_mean_0_100km - rh_500_env_mean_200_800km",
+          "physical_meaning": "500 hPa mid-tropospheric humidity contrast"
+        },
+        {
+          "contrast_name": "delta_sst_core_minus_env",
+          "formula": "sst_core_mean_0_100km - sst_env_mean_200_800km",
+          "physical_meaning": "Core local SST anomaly vs ambient background basin temperature"
+        }
+      ]
+    }
+  }
+}

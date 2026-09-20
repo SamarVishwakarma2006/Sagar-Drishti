@@ -1,0 +1,22 @@
+{
+  "manifest_id": "SD-MANIFEST-PROSPECTIVE-EVAL-V1",
+  "generated_at_utc": "2026-09-13T08:43:22.396070+00:00",
+  "evaluation_mode": "AVAILABILITY_TIMESTAMP_REPLAY",
+  "framework_implementation_status": "READY",
+  "prospective_scientific_evidence_status": "INSUFFICIENT_PROSPECTIVE_EVIDENCE",
+  "model_hash": "3abf49bc7b167c96f91425cf97d12afd606bb025f5310e774648cd52a3a1423f",
+  "feature_contract_hash": "258690562dc9a79589ddfabd6956feb4b36726f2a9bcb093177ea7e0dd26f896",
+  "preprocessing_hash": "591143af5765a2680612b13572b3ec0a058d0e478547bbc0482f027f8f4cbe62",
+  "schema_fields_count": 17,
+  "historical_test_access_count": 1,
+  "historical_test_quarantine_preserved": true,
+  "artifact_hashes": {
+    "forecast_log_sha256": "c108daa64e29a5574081ad70e85f0909fe123286e650e38b034f223feb1b517f",
+    "target_arrival_log_sha256": "534cb506e063e69f7a148210747cfe301739a6cc33864777e57e1b29856cc959",
+    "prospective_metrics_sha256": "19c24fbe12f768e6c140cb073eb123c0c2d0cbaba2cbe212a58d5e2a100b4c5d",
+    "storm_metrics_sha256": "5d87be0a3bc4330e870e9685aa70f93b09aae2e5d27f372525613c915ab34c00",
+    "baseline_metrics_sha256": "215b916e98d8833949720efe2812ce8d0bab57b68045e592a1e7e9bb955fc9a5",
+    "drift_metrics_sha256": "bb7b2ae721d7e2eb0b83991d6c1038dd930bae37f1aef045ac533f4b5ddea027",
+    "model_manifest_sha256": "4086073af8ce6e5743c71b8837375c8a775dd9a4bcef0c58cde37421965a8c2c"
+  }
+}

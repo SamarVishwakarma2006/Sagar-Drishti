@@ -183,7 +183,22 @@ class CycloneIntensityProspectiveEvaluator:
         evaluation_mode: EvaluationMode = EvaluationMode.AVAILABILITY_TIMESTAMP_REPLAY,
         db_dir: Optional[Union[str, Path]] = None
     ):
-        self.project_root = Path(project_root) if project_root else Path(__file__).resolve().parent.parent.parent
+        # Search candidate roots where research/cyclone_intensity/models/final_intensity_model.joblib exists
+        candidate_roots = [
+            Path(project_root) if project_root else None,
+            Path(__file__).resolve().parent.parent.parent.parent,
+            Path(__file__).resolve().parent.parent.parent,
+            Path.cwd(),
+            Path.cwd().parent,
+        ]
+        resolved_root = None
+        for cand in candidate_roots:
+            if cand and (cand / "research" / "cyclone_intensity" / "models" / "final_intensity_model.joblib").exists():
+                resolved_root = cand
+                break
+        if not resolved_root:
+            resolved_root = Path(project_root) if project_root else Path(__file__).resolve().parent.parent.parent
+        self.project_root = resolved_root
         self.evaluation_mode = evaluation_mode if isinstance(evaluation_mode, EvaluationMode) else EvaluationMode(evaluation_mode)
         
         self.model_path = self.project_root / "research" / "cyclone_intensity" / "models" / "final_intensity_model.joblib"

@@ -1,0 +1,93 @@
+{
+  "pipeline_version": "SD-INTENSITY-FEATURE-PIPELINE-V1.0",
+  "audit_status": "POST_IMPLEMENTATION_RECONCILED",
+  "execution_timestamp": "2026-09-13T06:39:13Z",
+  "guardrail_status": "RESEARCH-ONLY / ZERO ML TRAINING",
+  "source_data_hashes": {
+    "raw_imd_parquet": "e3f1b87455e716767e3b34a05b3dff04587dc09c6689a7dc0eaf7b72f951b643",
+    "copernicus_ocean_nc": "a9f394bc01fb8f1c498e0283fcf26877e25c4915158f0a28fc9010e0c52690ad"
+  },
+  "output_data_hashes": {
+    "features_6hourly_candidate_parquet": "8bcb247a5b5efb77005704b793c019ce2643c38852ab880881b20845dff25cd0"
+  },
+  "accounting_summary": {
+    "total_raw_fixes": 2544,
+    "actual_excluded_raw_rows": 9,
+    "total_candidate_fixes": 2535,
+    "total_storms": 117,
+    "valid_intensity_target_pairs": 1899,
+    "rows_with_missing_targets": 636,
+    "rows_with_missing_atmospheric_features": 933,
+    "rows_with_missing_ocean_features": 433,
+    "rows_retained_with_partial_nans": 1238,
+    "rows_with_all_features_present": 1297,
+    "rows_with_all_features_present_and_valid_target": 1022
+  },
+  "ocean_provenance_decomposition": {
+    "A_PRE_COPERNICUS_NO_SOURCE": {
+      "count": 32,
+      "percentage": 1.26
+    },
+    "B_ACTUAL_SOURCE_AGE_GT_48H": {
+      "count": 0,
+      "percentage": 0.0
+    },
+    "C_OVERLAND_NO_MARINE_PIXELS": {
+      "count": 401,
+      "percentage": 15.82
+    },
+    "D_MISSING_SOURCE_DATA": {
+      "count": 0,
+      "percentage": 0.0
+    },
+    "E_INVALID_SOURCE_DATA": {
+      "count": 0,
+      "percentage": 0.0
+    },
+    "F_VALID_MARINE_OBSERVATIONS": {
+      "count": 2102,
+      "percentage": 82.92
+    },
+    "ocean_temporal_resolution": "daily",
+    "max_ocean_age_hours": 21.0,
+    "median_ocean_age_hours": 9.0,
+    "ocean_age_offset_distribution": {
+      "0h": {
+        "count": 396,
+        "percentage": 15.62
+      },
+      "3h": {
+        "count": 405,
+        "percentage": 15.98
+      },
+      "6h": {
+        "count": 402,
+        "percentage": 15.86
+      },
+      "9h": {
+        "count": 181,
+        "percentage": 7.14
+      },
+      "12h": {
+        "count": 404,
+        "percentage": 15.94
+      },
+      "15h": {
+        "count": 162,
+        "percentage": 6.39
+      },
+      "18h": {
+        "count": 400,
+        "percentage": 15.78
+      },
+      "21h": {
+        "count": 153,
+        "percentage": 6.04
+      },
+      "pre_copernicus_no_source": {
+        "count": 32,
+        "percentage": 1.26
+      }
+    }
+  }
+}

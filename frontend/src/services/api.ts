@@ -3,7 +3,31 @@ import { ClientCsvParser } from './clientCsvParser';
 import { ClientNetcdfParser } from './clientNetcdfParser';
 import { Ocean } from './syntheticOcean';
 
-const API_BASE = '/api';
+/**
+ * Resolves the API Base URL cleanly for both local development and production.
+ * Supports VITE_API_URL, with fallback to VITE_BACKEND_URL or production Render URL.
+ */
+function getApiBaseUrl(): string {
+  const envUrl = (
+    (import.meta.env.VITE_API_URL as string | undefined) ||
+    (import.meta.env.VITE_BACKEND_URL as string | undefined)
+  )?.trim();
+
+  if (envUrl) {
+    const cleanUrl = envUrl.replace(/\/+$/, '');
+    return cleanUrl.endsWith('/api') ? cleanUrl : `${cleanUrl}/api`;
+  }
+
+  // If in production build mode and no env var provided, default to the production Render backend
+  if (import.meta.env.PROD) {
+    return 'https://sagar-drishti.onrender.com/api';
+  }
+
+  // In local development, default to /api (forwarded by Vite dev server proxy)
+  return '/api';
+}
+
+export const API_BASE = getApiBaseUrl();
 
 export const OceanAPI = {
   /**
