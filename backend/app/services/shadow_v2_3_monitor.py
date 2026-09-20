@@ -506,6 +506,7 @@ class ShadowV23Monitor:
         ref_df = self._get_era5_reference()
         if ref_df is None:
             return {
+                "mode": "RESEARCH_ONLY",
                 "status": "REFERENCE_DATA_UNAVAILABLE",
                 "warning": None,
                 "features": {},

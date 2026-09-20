@@ -1,5 +1,7 @@
-# 🌊 Sagar Drishti (सागर दृष्टि)
+# 🌊 Sagar-Drishti (सागर दृष्टि)
 ## Immersive Ocean Observatory & High-Performance Decision Intelligence
+
+> **Sagar-Drishti** is an open-source, full-stack planetary-to-abyss 3D oceanographic observatory and decision-support platform. It integrates daily Copernicus Marine physics reanalysis, in-situ Argo profiling arrays, and calibrated machine learning models to enable multi-scale ocean exploration, 3-day operational early warning assessments, and prospective cyclone intensity forecasting workflows across the North Indian Ocean.
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
@@ -10,72 +12,135 @@
 [![Three.js](https://img.shields.io/badge/Three.js-r165-black.svg)](https://threejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **Sagar Drishti** is a full-stack planetary-to-abyss 3D oceanographic observatory and decision-support platform. It integrates daily Copernicus Marine physics reanalysis, in-situ Argo profiling arrays, and calibrated, leak-free machine learning to enable multi-scale ocean exploration, 3-day early warning assessments, and prospective cyclone intensity forecasting across the North Indian Ocean.
+![Interactive 3D ocean observatory](docs/screenshots/01-global-ocean-observatory.png)
+*Interactive 3D ocean observatory with global study-site navigation and data ingestion.*
 
----
-
-```
-                       OBSERVE ───► UNDERSTAND ───► DETECT ───► FORECAST ───► VALIDATE
-                          │             │             │            │             │
-                    CesiumJS Globe   Argo Floats   Operational    Frozen ML    Ground-Truth
-                    & Three.js Abyss  & Profiles  Alert Engine V2  Intensity    Verification
-```
+Sagar-Drishti provides a unified interface bridging planetary-scale circulation with localized, depth-resolved water column observations. Researchers and operational analysts can navigate pre-configured study sites across global ocean basins, inspect real-time surface parameters, and ingest custom gridded datasets without specialized desktop GIS software.
 
 ---
 
 ## 📌 Table of Contents
 
-1. [Executive Summary](#-executive-summary)
-2. [The Scientific Challenge](#-the-scientific-challenge)
-3. [Core Operational Workflow](#-core-operational-workflow)
-4. [Feature Showcase](#-feature-showcase)
-   - [1. 3D Planetary Orbit & Immersive Ocean Observatory](#1-3d-planetary-orbit--immersive-ocean-observatory)
-   - [2. Custom Ocean Data Ingestion](#2-custom-ocean-data-ingestion)
-   - [3. Surface Telemetry & Observation](#3-surface-telemetry--observation)
-   - [4. Operational Alert Engine V2](#4-operational-alert-engine-v2)
-   - [5. Prospective Forecast Mode](#5-prospective-forecast-mode)
-   - [6. Historical Disaster Catalog & Physical Reanalysis](#6-historical-disaster-catalog--physical-reanalysis)
-   - [7. Virtual Water Probe & Argo Profiling](#7-virtual-water-probe--argo-profiling)
-   - [8. Dive Mode (Volumetric Abyss Engine)](#8-dive-mode-volumetric-abyss-engine)
-   - [9. SagarBot Context-Grounded Co-Pilot](#9-sagarbot-context-grounded-co-pilot)
-5. [Scientific & Machine Learning Architecture](#-scientific--machine-learning-architecture)
-6. [Data Sources & Provenance](#-data-sources--provenance)
-7. [Scientific Integrity & Audit Safeguards](#-scientific-integrity--audit-safeguards)
-8. [System Requirements](#-system-requirements)
-9. [Installation & Setup](#-installation--setup)
-10. [Configuration](#-configuration)
-11. [How to Use (Interactive Walkthrough)](#-how-to-use-interactive-walkthrough)
-12. [Forecast & Model Limitations](#-forecast--model-limitations)
-13. [Project Directory Structure](#-project-directory-structure)
-14. [Troubleshooting](#-troubleshooting)
-15. [Automated Testing & Verification](#-automated-testing--verification)
-16. [License](#-license)
-17. [Credits & Acknowledgments](#-credits--acknowledgments)
+1. [What Sagar-Drishti Does](#what-sagar-drishti-does)
+2. [Explore the Ocean](#explore-the-ocean)
+3. [Oceanographic Layer Analysis](#oceanographic-layer-analysis)
+4. [Operational Early Warning](#operational-early-warning)
+5. [Forecast Mode](#forecast-mode)
+6. [Historical Reanalysis & Hazard Mapping](#historical-reanalysis--hazard-mapping)
+7. [Core Operational Workflow](#-core-operational-workflow)
+8. [Scientific & Machine Learning Architecture](#-scientific--machine-learning-architecture)
+9. [Data Sources & Provenance](#-data-sources--provenance)
+10. [Scientific Integrity & Audit Safeguards](#-scientific-integrity--audit-safeguards)
+11. [System Requirements](#-system-requirements)
+12. [Installation & Setup](#-installation--setup)
+13. [Configuration](#-configuration)
+14. [How to Use (Interactive Walkthrough)](#-how-to-use-interactive-walkthrough)
+15. [Forecast & Model Limitations](#-forecast--model-limitations)
+16. [Project Directory Structure](#-project-directory-structure)
+17. [Troubleshooting](#-troubleshooting)
+18. [Automated Testing & Verification](#-automated-testing--verification)
+19. [License](#-license)
+20. [Credits & Acknowledgments](#-credits--acknowledgments)
 
 ---
 
-## 🧭 Executive Summary
+## What Sagar-Drishti Does
 
-Oceanographic research and marine disaster management require synthesizing complex multi-dimensional datasets: satellite altimetry, high-resolution numerical reanalysis, in-situ profiling floats, and historical cyclone archives. Historically, these data streams have remained siloed across disparate file formats (`.nc`, `.csv`, `.grib`) and specialized desktop GIS software.
+Sagar-Drishti synthesizes heterogeneous physical oceanography data streams and machine learning evaluation pipelines into a streamlined interactive application:
 
-**Sagar Drishti** bridges this gap by combining:
-- A high-performance **FastAPI** backend that extracts, validates, and slices multi-gigabyte spatial grids via `xarray`, `netCDF4`, and `pandas`.
-- A modular **React 18 + Vite + TypeScript** frontend with dual-engine 3D visualization: **CesiumJS** for planetary orbital exploration and **Three.js** for volumetric underwater particle dynamics.
-- An **Operational Alert Engine V2** that computes calibrated 3-day cyclone risk probabilities with basin-specific policy thresholds and rolling multi-day persistence verification.
-- A **Prospective Forecast Mode** powered by a frozen, SHA-256 cryptographically verified research model for $T+24\text{h}$ cyclone intensity estimation ($V_{\max}$) and ground-truth validation.
-- **SagarBot**, a decision-support assistant strictly grounded in live 3D viewport telemetry, enforcing non-causal oceanographic language and reproducible scientific guardrails.
+- **Dual-Engine 3D Ocean Space**: Planetary orbital navigation powered by CesiumJS, transitioning into Three.js volumetric particle flow fields from the surface down to the benthic floor ($0\text{--}3,200+\text{ m}$).
+- **In-Situ CTD Telemetry**: Extraction and profiling of temperature, salinity, horizontal ocean currents, and dissolved oxygen curves matching active Argo profiling floats.
+- **Custom Ocean Data Ingestion**: Drag-and-drop parsing of gridded NetCDF (`.nc`, `.nc4`) and tabular Argo float profiles (`.csv`, `.txt`) with automated coordinate extraction, variable detection, and camera re-centering.
+- **Operational Early Warning Analysis**: Calibrated multi-day occurrence probabilities with basin-specific policy thresholds and rolling temporal persistence verification.
+- **Prospective Forecast Inference**: Strict causal evaluation workflows for cyclone intensity ($V_{\max}$) with cryptographic model hashing, schema verification, and ground-truth fix matching.
+- **Historical Hazard Reanalysis**: Integration of verified cyclone tracks and disaster catalogs with daily Copernicus Marine physics reanalysis states.
+- **Context-Grounded Assistance**: Telemetry-aware decision support (SagarBot) grounded in live viewport coordinates, depth, and parameter observations.
 
 ---
 
-## 🌊 The Scientific Challenge
+## Explore the Ocean
 
-The North Indian Ocean (encompassing the Bay of Bengal and the Arabian Sea) features complex oceanographic dynamics: high sea surface temperatures, rapid freshwater stratification from major river systems, barrier layer formation, and extreme seasonal monsoonal current reversals. 
+![Depth-aware underwater exploration](docs/screenshots/02-underwater-water-probe.png)
+*Depth-aware underwater exploration with interactive ocean variables and virtual water-probe telemetry.*
 
-Translating these oceanic pre-conditions into actionable decision intelligence introduces critical technical challenges:
-1. **Scale Disparity**: Bridging macro-scale planetary circulation ($1000\text{ km}$) with micro-scale in-situ Argo water-column profiles ($0\text{--}2000\text{ m}$).
-2. **Data Leakage in Predictive Modeling**: Traditional machine learning models trained on time-series frequently suffer from publication-timestamp leakage and random cross-validation contamination.
-3. **Calibrated Probability vs. Intensity**: Confusing event occurrence probabilities with numerical storm intensity ($V_{\max}$) leads to uncalibrated and misleading risk communication.
-4. **Usability vs. Scientific Rigor**: Balancing immediate human readability for emergency responders with strict scientific provenance, feature completeness contracts, and audit reproducibility.
+Sagar-Drishti enables seamless transitions from macro planetary orbit directly into the water column, providing an interactive environment to inspect subsurface conditions:
+
+- **Depth Navigation**: An interactive vertical depth slider with sunlit, mesopelagic, and bathypelagic indicators allows users to descend from the sea surface down to benthic depths ($0\text{ to }Z_{\max}$).
+- **Interactive Ocean Variables**: Switch across primary physical parameters—Sea Surface Temperature (`TEMP`), Practical Salinity (`SAL`), Current Velocity Magnitude (`CURRENT`), and Dissolved Oxygen ($\text{O}_2$).
+- **Virtual Water Probe**: Click anywhere in the volumetric field or select active Argo float beacons to deploy an ocean field sampler displaying live depth, timestamp, and parameter readouts.
+- **Vertical Profile Telemetry**: Dynamic CTD profile charts visualize the thermocline and mixed-layer structure from surface to seafloor, with one-click structured JSON telemetry export.
+- **Integrated Assistant**: Direct access to SagarBot for instant oceanographic interpretation grounded in the active viewport's physical readings.
+
+---
+
+## Oceanographic Layer Analysis
+
+![Interactive ocean-layer controls](docs/screenshots/06-ocean-layer-controls.png)
+*Interactive ocean-layer controls with configurable color scales, ranges, opacity, vertical exaggeration, and depth-profile telemetry.*
+
+The platform provides dedicated scientific visualization controls tailored for physical oceanography and hydrographic inspection:
+
+- **Perceptually Uniform Color Palettes**: Configurable scientific color scales based on standard oceanographic palettes, including `Thermal`, `Haline`, `Speed`, `Dissolved O2`, `Viridis`, `Deep`, and diverging `Curl`.
+- **Numerical Range Bounds**: User-defined minimum and maximum numerical bounds with linear normalization to isolate specific temperature anomalies or salinity fronts.
+- **Layer Opacity & Vertical Exaggeration**: Real-time slider controls for field opacity and vertical exaggeration ($1.0\times$ to $25.0\times$), enhancing subtle vertical stratification and pycnoclines in steep bathymetry.
+- **Data Provenance Indicators**: Interface markers clearly distinguishing modeled reanalysis fields from observed in-situ measurements and historical baselines.
+- **Full Water-Column Telemetry**: Real-time vertical depth profiles ($0\text{--}2000\text{ m}$) illustrating mixed-layer depth, thermocline steepness, and dissolved oxygen minimum zones.
+
+---
+
+## Operational Early Warning
+
+![Operational alert analysis](docs/screenshots/03-operational-alert-engine.png)
+*Operational alert analysis combining calibrated probability, risk tiers, forecast horizons, and temporal persistence.*
+
+The Operational Alert Engine evaluates upper-ocean thermal and haline pre-conditioning to compute probabilistic disaster risk across defined forecast horizons:
+
+- **Forecast Horizons**: Multi-lead assessment covering active ($0\text{d}$), $1\text{d}$, $2\text{d}$, and $3\text{d}$ prospective lead times.
+- **Calibrated Event Probability**: Isotonically calibrated probabilities reflecting whether ocean heat content, sea surface temperature, and salinity stratification exceed climatological baselines.
+- **Basin-Specific Policy Thresholds**: Tailored alert thresholds tuned to regional ocean dynamics (e.g., $20.0\%$ for the Bay of Bengal, $8.0\%$ for the Arabian Sea).
+- **Risk Tiers & Decision Rules**: Deterministic categorization into `LOW TIER`, `MODERATE TIER`, or `HIGH TIER` risk, generating clear operational statuses (`NO ALERT`, `WATCH`, or `ALERT`).
+- **Temporal Persistence Verification**: A rolling multi-day persistence filter that requires signal consistency across consecutive observation cycles, preventing false alarms from transient, single-timestep fluctuations.
+- **Physical Context**: Regional ocean drop-point telemetry inherited from nearest climatic regimes with latitude-adjusted physical baselines.
+
+> [!NOTE]
+> The Operational Alert Engine evaluates pre-conditioning risk indicators. It is an analytical decision-support prototype and does not replace official meteorological advisories issued by national forecasting agencies.
+
+---
+
+## Forecast Mode
+
+![Prospective forecast workflow](docs/screenshots/04-forecast-mode.png)
+*Prospective forecast workflow with model metadata, threat assessment, provenance, and validation information.*
+
+> [!IMPORTANT]
+> **Scientific Integrity Notice**: The scenario displayed in the screenshot above is a **synthetic test fixture** (`SYNTHETIC_TEST_FIXTURE`) with simulated threat interpretation (`SIMULATED THREAT INTERPRETATION — TEST FIXTURE ONLY`). It is used exclusively to demonstrate the forecast interface, causal firewall, and inference workflow. The displayed $78.08\text{ kt}$ value is not an operational prediction of a real meteorological event. Zero prospective forecasting skill or meteorological accuracy is claimed for synthetic fixtures.
+
+Forecast Mode implements a disciplined machine learning inference pipeline designed for rigorous prospective evaluation:
+
+- **Prospective Evaluation Workflow**: Enforces strict chronological evaluation beyond the model training cutoff date ($T > 2026\text{-}06\text{-}23$), eliminating lookahead bias and temporal leakage.
+- **Frozen Model Provenance**: The inference pipeline verifies model weights against a cryptographic SHA-256 digest (`3abf49bc...`), guaranteeing complete model immutability during evaluation.
+- **Causal Firewall & Schema Contract**: Pre-flight checks validate that every feature in the input vector satisfies observation timestamp constraints ($T_{\text{obs}} \le T_{\text{origin}}$) and conforms to the 29-feature schema contract.
+- **Intensity vs. Probability Segregation**: Forecast output predicts continuous maximum sustained 10-meter wind speed ($V_{\max}$ in knots) and classifies the threat category. Risk assessment is designated as `BASED ON INTENSITY` while strictly setting `Probability: N/A` to avoid conflating numerical intensity with event occurrence likelihood.
+- **Ground-Truth Verification**: Supports post-event validation by matching model inferences against observed best-track data fixes once official ground-truth observations become available.
+
+---
+
+## Historical Reanalysis & Hazard Mapping
+
+![Historical disaster reanalysis](docs/screenshots/05-historical-reanalysis.png)
+*Historical disaster reanalysis with event tracks, hazard zones, and ocean-state context.*
+
+The Historical Disaster & Reanalysis module bridges retrospective disaster documentation with continuous physical ocean reanalysis:
+
+- **Authoritative Disaster Catalog**: Integrated historical cyclonic events and marine hazards referencing official India Meteorological Department (IMD) and INCOIS records:
+  - *Severe Cyclonic Storm Dana* (October 2024 · Odisha & West Bengal Coast)
+  - *Severe Cyclonic Storm Asna* (August–September 2024 · Arabian Sea & Gujarat)
+  - *Cyclonic Storm Fengal* (November–December 2024 · SW Bay of Bengal & Puducherry)
+  - *Deep Depression BOB 05* (September 2024 · Odisha & North Andhra Pradesh)
+  - *Kallakkadal Swell Surge Events* (July 2024 · Kerala & Lakshadweep Coast)
+  - *Marine Heatwave Events* (July 2024 · Northern Bay of Bengal Plume)
+- **3D Globe Hazard Markers**: Projects verified storm tracks, central coordinate nodes with intensity markers (e.g., $30\text{ kt}$, $45\text{ kt}$, $60\text{ kt}$), and dynamic hazard zones directly onto the planetary globe.
+- **Temporal Reanalysis Navigation**: Select any historical date to evaluate authentic Copernicus Marine physics grids (`cmems_mod_glo_phy_my_0.083deg_P1D-m`) and examine the oceanic pre-conditions that coincided with documented severe weather events.
 
 ---
 
@@ -102,95 +167,6 @@ flowchart LR
 6. **Detect**: Operational Alert Engine V2 computing calibrated event probabilities, policy thresholds, and rolling persistence checks.
 7. **Forecast**: Prospective intensity predictions ($V_{\max}$) under frozen-model constraints ($T > 2026\text{-}06\text{-}23$).
 8. **Validate**: Immediate comparison against historical disaster analogs and ground-truth fix verification.
-
----
-
-## 💎 Feature Showcase
-
-### 1. 3D Planetary Orbit & Immersive Ocean Observatory
-- **Global Planetary Canvas**: Built on CesiumJS using high-resolution Natural Earth II imagery.
-- **Curated Study Sites**: Instant navigation to key marine domains:
-  - *Bay of Bengal Central Deep Basin* ($16.8^\circ\text{N}, 87.2^\circ\text{E}$ · Floor: $3,200\text{ m}$)
-  - *Arabian Sea Upwelling Zone* ($17.5^\circ\text{N}, 68.2^\circ\text{E}$ · Floor: $3,650\text{ m}$)
-  - *Equatorial Indian Ocean Channel* ($0.0^\circ\text{N}, 80.5^\circ\text{E}$ · Floor: $4,400\text{ m}$)
-  - *Lakshadweep Sea Coral Ridge* ($10.5^\circ\text{N}, 72.2^\circ\text{E}$ · Floor: $2,100\text{ m}$)
-  - *Andaman Sea Trench Basin* ($11.2^\circ\text{N}, 93.8^\circ\text{E}$ · Floor: $3,800\text{ m}$)
-- **Interactive Controls**: Drag to orbit, scroll to zoom, recenter, and inspect live geographic coordinates.
-
-### 2. Custom Ocean Data Ingestion
-- **Supported Formats**: Gridded NetCDF (`.nc`, `.nc4`) and tabular Argo/CTD ASCII (`.csv`, `.txt`).
-- **Automated Parameter Extraction**:
-  - Automatically identifies spatial dimensions (`lat`, `lon`, `depth`, `elevation`).
-  - Detects physical variables (`thetao`/`temp`, `so`/`sal`, `uo`/`vo`/`current`, `zos`/`ssh`, `mlotst`/`mld`, `oxygen`).
-  - Computes spatial bounding boxes and auto-flies the planetary camera to newly uploaded assets.
-  - Automatically adjusts the 3D depth slider and float parking limits to the file's detected $Z_{\max}$.
-
-### 3. Surface Telemetry & Observation
-- Immediate floating readout of physical ocean conditions at any selected study site or uploaded grid:
-  - **SST**: Sea Surface Temperature (°C)
-  - **SSS**: Practical Salinity (PSU)
-  - **Surface Current**: Horizontal velocity magnitude (m/s) and heading azimuth
-  - **Seafloor**: Bathymetric depth (m)
-  - **Data Provenance**: Clear distinction between `OBSERVED`, `MODELLED`, and `HISTORICAL` data streams.
-
-### 4. Operational Alert Engine V2
-- **Calibrated Event Probabilities**: Evaluates whether atmospheric and upper-ocean heat/salinity structures exceed normal background climatology.
-- **Basin-Specific Policy Thresholds**:
-  - **Bay of Bengal**: $20.0\%$ calibrated alert threshold
-  - **Arabian Sea**: $8.0\%$ calibrated alert threshold
-- **Risk Tiers**: Automatic classification into `LOW`, `MODERATE`, or `HIGH` risk tiers.
-- **Decision Engine**: Emits deterministic `NO ALERT`, `WATCH`, or `ALERT` statuses.
-- **Rolling Persistence Check**: Filters out transient single-timestep spikes by requiring multi-day signal persistence before triggering operational alerts.
-- **Physical Feature Indicators**: Displays top associated physical drivers (e.g., 14-day SST mean, 30-day salinity anomaly) strictly framed as non-causal statistical correlations.
-- **Temporal Scale Breakdown**: Deduplicated canonical windows (`CURRENT`, `7 DAY`, `14 DAY`, `30 DAY`) representing multi-scale oceanic preconditioning.
-
-### 5. Prospective Forecast Mode
-- **Prospective Forward Inference**: Designed for evaluation beyond the training cutoff date ($T > 2026\text{-}06\text{-}23$).
-- **Frozen Research Model**: Enforces cryptographic SHA-256 weight verification (`3abf49bc...`) to guarantee model immutability.
-- **Pre-Flight Validation Check**: Automatically inspects input vectors against a 29-feature schema contract:
-  - Verifies observation timestamp ($T \le \text{origin}$).
-  - Enforces causal firewalls (forbids publication timestamps ahead of evaluation time).
-  - Validates feature completeness and numerical physical boundaries.
-- **Forecast Output**:
-  - **Predicted Intensity ($V_{\max}$)**: Maximum sustained 10-meter wind speed at $T+24\text{h}$ with physical boundary guardrails ($[15, 165]\text{ kt}$).
-  - **Threat Classification**: Categorized from *Weak System* ($< 34\text{ kt}$) to *Super Cyclonic Storm* ($\ge 96\text{ kt}$).
-  - **Risk Assessment**: Transparently designated as `BASED ON INTENSITY` (preserving `Probability: N/A` to prevent confusing intensity with occurrence likelihood).
-  - **Ground-Truth Verification**: Matches forecasts against observed best-track coordinates when ground-truth fixes become available.
-- **Prominent Synthetic Disclaimers**: Explicit warning banners when evaluating synthetic testbeds to prevent misinterpretation as operational forecasts.
-
-### 6. Historical Disaster Catalog & Physical Reanalysis
-- **Copernicus Physical Reanalysis**: Integrated 2-year daily high-resolution ocean reanalysis ($2024\text{-}06\text{-}24$ to $2026\text{-}06\text{-}23$).
-- **Documented Disaster Catalog**: Authoritative archives from IMD (India Meteorological Department) and NDMA:
-  - *Severe Cyclonic Storm Dana* (October 2024 · Odisha/West Bengal)
-  - *Severe Cyclonic Storm Asna* (August–September 2024 · Arabian Sea/Gujarat)
-  - *Cyclonic Storm Fengal* (November–December 2024 · Puducherry/Tamil Nadu)
-  - *Deep Depression BOB 05* (September 2024)
-  - *Extremely Severe Cyclonic Storm Biparjoy* (June 2023)
-  - *Super Cyclonic Storm Amphan* (May 2020)
-- **3D Globe Hazard Markers**: Visualizes full cyclone tracks, central storm coordinates, and spatial bounding boxes on the planetary globe.
-- **Parameter Analog Matching**: Calculates multi-parameter similarity scores between currently observed ocean states and historical disaster pre-conditions.
-
-### 7. Virtual Water Probe & Argo Profiling
-- **In-Situ Floats**: Real Argo profiling floats with WMO IDs, reporting cycle numbers, and actual parking depths ($0\text{--}2000\text{ m}$).
-- **Virtual Water Probes**: Interactively deployable virtual probes at any coordinate within the ocean domain.
-- **Vertical Profile Chart**: Real-time depth profiling ($0\text{ to }Z_{\max}$) rendering Temperature, Salinity, Velocity, and Dissolved Oxygen curves with interactive depth line indicators.
-- **Oceanographic Interpretation**: Explains thermocline gradients, mixed layer depths, and dissolved oxygen minimum zones.
-- **Export**: One-click **Copy JSON Telemetry** to clipboard for reproducible research workflows.
-
-### 8. Dive Mode (Volumetric Abyss Engine)
-- **Seamless Camera Descent**: Animated camera dive transition with volumetric atmospheric veiling from orbit into the abyss.
-- **Particle Flow Dynamics**: Thousands of Three.js volumetric flow particles driven by real ocean current vectors ($u, v, w$).
-- **Scientific Colorbars**: Authentic `cmocean` palettes (`thermal`, `haline`, `speed`, `oxy`, `viridis`, `deep`, `curl`).
-- **Layer & Exaggeration Controls**: Adjust vertical depth exaggeration ($1\times$ to $25\times$), layer opacity, and numerical min/max colorbar clamping.
-
-### 9. SagarBot Context-Grounded Co-Pilot
-- **Live Telemetry Grounding**: SagarBot packages current 3D depth, observed parameter values, coordinate bounds, active date, and nearby Argo float IDs with every query.
-- **Structured Decision Support**: Formats risk queries into clear, human-readable sections:
-  - **Current Risk**: `LOW — NO ALERT`, `WATCH`, `ALERT`, or `HIGH ALERT`
-  - **Evidence**: Event probability, policy threshold, and persistence status
-  - **Why**: Non-causal physical indicators associated with the score
-  - **Limitations**: Transparent disclosure of model boundaries and single-event test splits
-- **Multi-LLM & Offline Fallback**: Seamlessly connects to Google Gemini, Groq, or OpenAI when API keys are provided; automatically falls back to an offline deterministic ocean physics engine when offline.
 
 ---
 
@@ -499,6 +475,15 @@ In accordance with scientific integrity standards, Sagar Drishti maintains expli
 
 ```
 Sagar-Drishti/
+├── docs/                                # Architectural documentation & screenshot assets
+│   ├── forward_prediction.md            # Forward forecasting methodology & forensic report
+│   └── screenshots/                     # Documentation screenshot assets
+│       ├── 01-global-ocean-observatory.png
+│       ├── 02-underwater-water-probe.png
+│       ├── 03-operational-alert-engine.png
+│       ├── 04-forecast-mode.png
+│       ├── 05-historical-reanalysis.png
+│       └── 06-ocean-layer-controls.png
 ├── backend/                             # High-Performance FastAPI Backend
 │   ├── app/
 │   │   ├── api/
